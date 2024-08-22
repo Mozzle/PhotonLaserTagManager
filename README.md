@@ -1,6 +1,6 @@
 # Insert Team Name Here
 
-Name             - Github Username
+### Name             - Github Username
 
 Nathaniel Bowles -
 
