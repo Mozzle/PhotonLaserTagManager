@@ -2,7 +2,7 @@
 
 ### Name             - Github Username
 
-Nathaniel Bowles -
+Nathaniel Bowles - NBCode45
 
 Dylan Collier    - Mozzle
 
