@@ -1,4 +1,4 @@
-# Insert Team Name Here
+# 'Theranos, Inc.' Team
 
 ### Name             - Github Username
 
