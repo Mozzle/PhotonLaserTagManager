@@ -8,6 +8,16 @@ public class PhotonSystem extends JFrame {
     private Controller controller;
     private View view;
 
+    /*-----------------------------------------------------------
+     * 
+     *      PhotonSystem()
+     * 
+     *  DESCRIPTION: Highest level program initializer
+     * 
+     *  REQUIREMENTS: 5, 
+     * 
+    ---------------------------------------------------------- */
+    
     public PhotonSystem()
     {
         model = new Model();
@@ -25,6 +35,17 @@ public class PhotonSystem extends JFrame {
 		this.setVisible(true);
     }
 
+    /*-----------------------------------------------------------
+     * 
+     *      run()
+     * 
+     *  DESCRIPTION: The main program superloop. Executes for
+     *  entire duration of program.
+     * 
+     *  REQUIREMENTS: 4, 
+     * 
+    ---------------------------------------------------------- */
+
     public void run() {
         while(true) //Main program superloop
         {
@@ -41,6 +62,17 @@ public class PhotonSystem extends JFrame {
 			}
         }
     }
+
+
+    /*-----------------------------------------------------------
+     * 
+     *      main()
+     * 
+     *  DESCRIPTION: Entry point of all Java program
+     * 
+     *  REQUIREMENTS:
+     * 
+    ---------------------------------------------------------- */
 
     public static void main(String[] args) 
     {

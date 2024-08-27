@@ -12,11 +12,31 @@ public class Controller implements ActionListener, MouseListener, KeyListener
     private View view;
     private Model model;
 
+    /*-----------------------------------------------------------
+     * 
+     *      Controller()
+     * 
+     *  DESCRIPTION: Controller class initializer
+     * 
+     *  REQUIREMENTS: 
+     * 
+    ---------------------------------------------------------- */
     public Controller(Model m)
     {
         // Initialization
         model = m;
     }
+
+    /*-----------------------------------------------------------
+     * 
+     *      update()
+     * 
+     *  DESCRIPTION: May not be necessary to implement, since 
+     *  Controller uses interrupt functions like mousePressed()
+     * 
+     *  REQUIREMENTS: 
+     * 
+    ---------------------------------------------------------- */
 
     public void update()
     {

@@ -19,7 +19,16 @@ public class View extends JPanel {
         // Initializations
     }
 
-    public void update(Graphics g) //Maybe change to paintComponent()?
+    /*-------------------------------------------------
+     *
+     *  paintComponent
+     *
+     *  DESCRIPTION: INSERT DESCRIPTION 
+     *
+     *  REQUIREMENT:
+     *
+    ------------------------------------------------- */
+    public void paintComponent(Graphics g)
     {
         g.setColor(new Color(0, 0, 0)); //Black Background
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
