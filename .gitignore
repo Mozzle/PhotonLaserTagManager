@@ -1,2 +1,4 @@
 #ignore all Java class files
 *.class
+#ignore the temporary excel file
+~$PhotonManager_Requirments.xlsx
