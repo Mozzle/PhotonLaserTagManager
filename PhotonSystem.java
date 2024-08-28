@@ -17,7 +17,7 @@ public class PhotonSystem extends JFrame {
      *  REQUIREMENTS: 5, 
      * 
     ---------------------------------------------------------- */
-    
+
     public PhotonSystem()
     {
         model = new Model();
@@ -53,6 +53,8 @@ public class PhotonSystem extends JFrame {
             view.repaint();
             Toolkit.getDefaultToolkit().sync();
 
+
+            // This probably needs to change to a non-blocking timer
             try
 			{
 				Thread.sleep(12);
