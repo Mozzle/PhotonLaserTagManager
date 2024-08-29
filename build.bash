@@ -1,3 +1,3 @@
 cd /media/sf_PhotonLaserTagManager/
-javac PhotonSystem.java View.java Controller.java Model.java
+javac PhotonSystem.java View.java Controller.java Model.java SplashScreen.java
 java PhotonSystem

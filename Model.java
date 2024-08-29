@@ -1,6 +1,5 @@
 
 import java.util.ArrayList;
-
 import java.awt.image.BufferedImage;
 import java.lang.Math;
 
@@ -9,12 +8,15 @@ public class Model
 
     public enum System_State {  /* Main system state of the program */
         INITIALIZE,
-        WELCOME_SCREEN,
+        SPLASH_SCREEN,
         TEAM_INPUT_SCREEN,
-    
+        // ...
         MAX_SYS_STATES
     }
     private System_State system_State;
+
+    public ArrayList<Sprite> windowObjects; // This arrayList contains all elements that
+                                            //  will be drawn to the scrren
 
     /*-------------------------------------------------
      *
@@ -28,6 +30,11 @@ public class Model
     public Model()
     {
         system_State = System_State.INITIALIZE;
+        // Initialization
+        windowObjects = new ArrayList<Sprite>();
+
+        startSplashScreen();
+        system_State = System_State.SPLASH_SCREEN;
     }
 
     /*-------------------------------------------------
@@ -44,6 +51,26 @@ public class Model
     ------------------------------------------------- */
     public void update()
     {
+        for (int i = 0; i < getNumWindowObjects(); i++) {
+            windowObjects.get(i).update();
+        }
+    }
 
+    public int getNumWindowObjects() {
+		return windowObjects.size();
+	}
+
+    public Sprite getWindowObjectAt(int i) {
+		return windowObjects.get(i);
+	}
+
+    public void startSplashScreen() {
+        windowObjects.add(new SplashScreen(0, 0, 900, 450));
+    }
+
+    public void updateScreenSize(int screenW, int screenH) {
+        for (int i = 0; i < getNumWindowObjects(); i++) {
+            windowObjects.get(i).updateScreenSize(screenW, screenH);
+        }
     }
 }

@@ -1,5 +1,5 @@
 ::@echo off
-javac PhotonSystem.java View.java Controller.java Model.java
+javac PhotonSystem.java View.java Controller.java Model.java SplashScreen.java
 if %errorlevel% neq 0 (
 	echo There was an error; exiting now.	
 ) else (

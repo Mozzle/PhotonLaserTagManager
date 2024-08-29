@@ -51,6 +51,8 @@ public class PhotonSystem extends JFrame {
         while(true) //Main program superloop
         {
             controller.update();
+            view.setScreenSize(this.getWidth(), this.getHeight());
+            view.update();
             view.repaint();
             Toolkit.getDefaultToolkit().sync();
 
