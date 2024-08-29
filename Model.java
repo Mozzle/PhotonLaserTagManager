@@ -2,21 +2,34 @@
 import java.util.ArrayList;
 import java.awt.image.BufferedImage;
 import java.lang.Math;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Model
 {
+    //enums in Java are utterly useless, so here is my C-like enum:
+    public static final int INITIALIZE = 0;
+    public static final int SPLASH_SCREEN = 1;
+    public static final int PLAYER_ENTRY_SCREEN = 2;
+    //...
+    public static final int NUM_SCREENS = 3;
 
-    public enum System_State {  /* Main system state of the program */
-        INITIALIZE,
-        SPLASH_SCREEN,
-        TEAM_INPUT_SCREEN,
-        // ...
-        MAX_SYS_STATES
-    }
-    private System_State system_State;
+    public int system_State;
 
     public ArrayList<Sprite> windowObjects; // This arrayList contains all elements that
                                             //  will be drawn to the scrren
+
+    public Timer timer;
+    public TimerTask splashScreenTimeoutTask;
+
+    public class SplashScreenTimeout extends TimerTask
+    {
+        public void run()
+        {
+            windowObjects.remove(0);
+            system_State = PLAYER_ENTRY_SCREEN;
+        }
+    }
 
     /*-------------------------------------------------
      *
@@ -29,12 +42,16 @@ public class Model
     ------------------------------------------------- */
     public Model()
     {
-        system_State = System_State.INITIALIZE;
+        system_State = INITIALIZE;
         // Initialization
         windowObjects = new ArrayList<Sprite>();
 
+        timer = new Timer();
+        splashScreenTimeoutTask = new SplashScreenTimeout();
         startSplashScreen();
-        system_State = System_State.SPLASH_SCREEN;
+        system_State = SPLASH_SCREEN;
+        timer.schedule(splashScreenTimeoutTask, 3200);
+        
     }
 
     /*-------------------------------------------------
@@ -54,6 +71,17 @@ public class Model
         for (int i = 0; i < getNumWindowObjects(); i++) {
             windowObjects.get(i).update();
         }
+
+        switch(system_State) {
+            case SPLASH_SCREEN:
+
+                break;
+            case PLAYER_ENTRY_SCREEN:
+                break;
+            default:
+                break;
+        }
+
     }
 
     public int getNumWindowObjects() {

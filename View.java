@@ -35,7 +35,7 @@ public class View extends JPanel {
      *
      *      paintComponent()
      *
-     *  DESCRIPTION: INSERT DESCRIPTION 
+     *  DESCRIPTION: Draws the images to the screen
      *
      *  REQUIREMENTS:
      *
@@ -63,6 +63,16 @@ public class View extends JPanel {
         }
     }
 
+    /*-------------------------------------------------
+     *
+     *      loadImage()
+     *
+     *  DESCRIPTION: loads image for a Sprite object,
+     *  given a file link.
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
     static BufferedImage loadImage(String filename) {	//Static image loading 
 		BufferedImage img = null;
 		try {
@@ -75,7 +85,17 @@ public class View extends JPanel {
 		return img;
 	}
 
-    public void setScreenSize(int w, int h) { //PhotonSystem.java gives view.java the current window height for proper sizing action
+    /*-------------------------------------------------
+     *
+     *      setScreenSize()
+     *
+     *  DESCRIPTION: PhotonSystem.java gives view.java 
+     *  the current window height for proper sizing action
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
+    public void setScreenSize(int w, int h) { 
 		windowWidth = w;
         windowHeight = h;
 	}
@@ -85,7 +105,8 @@ public class View extends JPanel {
      *      update()
      * 
      *  DESCRIPTION: Currently used for communicating 
-     *  screen size data to model()
+     *  screen size data to model() and the sprites 
+     *  therein.
      * 
      *  REQUIREMENTS: 
      -------------------------------------------------*/
