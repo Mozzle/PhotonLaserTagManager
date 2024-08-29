@@ -31,8 +31,8 @@ public class Controller implements ActionListener, MouseListener, KeyListener
      * 
      *      update()
      * 
-     *  DESCRIPTION: May not be necessary to implement, since 
-     *  Controller uses interrupt functions like mousePressed()
+     *  DESCRIPTION: May be necessary to pass some parameter into
+     *  model.update() depending on some state of the controller.
      * 
      *  REQUIREMENTS: 
      * 
@@ -40,7 +40,7 @@ public class Controller implements ActionListener, MouseListener, KeyListener
 
     public void update()
     {
-        
+        model.update();
     }
 
     void setView(View v)
@@ -48,11 +48,31 @@ public class Controller implements ActionListener, MouseListener, KeyListener
     view = v;
 	}
 
+    /*-----------------------------------------------------------
+     * 
+     *      actionPerformed()
+     * 
+     *  DESCRIPTION: Implementation of actionListener function
+     * 
+     *  REQUIREMENTS: 
+     * 
+    ---------------------------------------------------------- */
     public void actionPerformed(ActionEvent e)
 	{
 		;
 	}
 
+    /*-----------------------------------------------------------
+     * 
+     *      mousePressed()
+     * 
+     *  DESCRIPTION: Implementation of mouseListener function,
+     *  this function is called by interrupt when the mouse is
+     *  first clicked down
+     * 
+     *  REQUIREMENTS: 
+     * 
+    ---------------------------------------------------------- */
     public void mousePressed(MouseEvent e)
 	{
 	/*	//If in Edit mode and adding walls and not adding any other sprites
@@ -74,23 +94,91 @@ public class Controller implements ActionListener, MouseListener, KeyListener
 		*/
 	}
 
+    /*-----------------------------------------------------------
+     * 
+     *      mouseReleased()
+     * 
+     *  DESCRIPTION: Implementation of mouseListener function,
+     *  this function is called by interrupt when a mouse click 
+     *  is released. This function should be used for most normal
+     *  mouse clicking events.
+     * 
+     *  REQUIREMENTS: 
+     * 
+    ---------------------------------------------------------- */
     public void mouseReleased(MouseEvent e) { 
-
+		//You can use e.getX() and e.getY() to get mouse position.
       }
 	public void mouseEntered(MouseEvent e) {    }
 	public void mouseExited(MouseEvent e) {    }
 	public void mouseClicked(MouseEvent e) {    }
 
+    /*-----------------------------------------------------------
+     * 
+     *      keyPressed()
+     * 
+     *  DESCRIPTION: Implementation of keyListener function,
+     *  this function is called by interrupt when a key is 
+     *  pressed down.
+     * 
+     *  REQUIREMENTS: 
+     * 
+    ---------------------------------------------------------- */
 	public void keyPressed(KeyEvent e)
 	{
 	}
-
+    
+    /*-----------------------------------------------------------
+     * 
+     *      keyReleased()
+     * 
+     *  DESCRIPTION: Implementation of keyListener function,
+     *  this function is called by interrupt when a key is 
+     *  released. Either this function or keyTyped() should be
+     *  used for most user typing events. Testing is required 
+     *  to determine which is better.
+     * 
+     *  REQUIREMENTS: 
+     * 
+    ---------------------------------------------------------- */
 	public void keyReleased(KeyEvent e)
 	{
+		switch(e.getKeyCode()) {
+			case KeyEvent.VK_F1:
+				
+				break;
+			case KeyEvent.VK_F2:
+
+				break;
+			case KeyEvent.VK_F3:
+				
+				break;
+			case KeyEvent.VK_F4:
+
+				break;
+		
+			default:
+				break;
+		}
 	}
 
+    /*-----------------------------------------------------------
+     * 
+     *      keyTyped()
+     * 
+     *  DESCRIPTION: Implementation of keyListener function,
+     *  this function is called by interrupt when a key is 
+     *  detected to have been typed Either this function or 
+     *  keyReleased() should be used for most user typing events.
+     *  Testing is required to determine which is better.
+     * 
+     *  REQUIREMENTS: 6,
+     * 
+    ---------------------------------------------------------- */
 	public void keyTyped(KeyEvent e)
 	{
+		//If model.getMode() == team input screen, send key typed
+		// to model to add text to a field.
 	}
 
 }

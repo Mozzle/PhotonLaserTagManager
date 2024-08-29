@@ -12,6 +12,16 @@ public class View extends JPanel {
     private Model model;
     // Variable declarations
 
+    /*-------------------------------------------------
+     *
+     *      View()
+     *
+     *  DESCRIPTION: View Class Initializer
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
+
     public View(Controller c, Model m)
     {
         c.setView(this);
@@ -21,11 +31,11 @@ public class View extends JPanel {
 
     /*-------------------------------------------------
      *
-     *  paintComponent
+     *      paintComponent()
      *
      *  DESCRIPTION: INSERT DESCRIPTION 
      *
-     *  REQUIREMENT:
+     *  REQUIREMENTS:
      *
     ------------------------------------------------- */
     public void paintComponent(Graphics g)
