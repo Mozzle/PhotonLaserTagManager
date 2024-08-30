@@ -56,6 +56,8 @@ public class PhotonSystem extends JFrame {
             view.repaint();
             Toolkit.getDefaultToolkit().sync();
 
+            
+
 
             // This probably needs to change to a non-blocking timer
             try

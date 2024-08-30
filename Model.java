@@ -1,9 +1,12 @@
 
 import java.util.ArrayList;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.lang.Math;
 import java.util.Timer;
 import java.util.TimerTask;
+import javax.swing.*;
+import java.awt.event.*;
 
 public class Model
 {
@@ -19,6 +22,8 @@ public class Model
     public ArrayList<Sprite> windowObjects; // This arrayList contains all elements that
                                             //  will be drawn to the scrren
 
+    public ArrayList<JTextField> textBoxes;
+
     public Timer timer;
     public TimerTask splashScreenTimeoutTask;
 
@@ -28,8 +33,12 @@ public class Model
         {
             windowObjects.remove(0);
             system_State = PLAYER_ENTRY_SCREEN;
+            textBoxes.add(new JTextField(20));
+            textBoxes.get(0).setBounds(50,150,200,30);
         }
     }
+
+
 
     /*-------------------------------------------------
      *
@@ -45,6 +54,7 @@ public class Model
         system_State = INITIALIZE;
         // Initialization
         windowObjects = new ArrayList<Sprite>();
+        textBoxes = new ArrayList<JTextField>();
 
         timer = new Timer();
         splashScreenTimeoutTask = new SplashScreenTimeout();
@@ -100,5 +110,17 @@ public class Model
         for (int i = 0; i < getNumWindowObjects(); i++) {
             windowObjects.get(i).updateScreenSize(screenW, screenH);
         }
+    }
+
+    public int getNumTextBoxes() {
+        return textBoxes.size();
+    }
+
+    public JTextField getTextBoxAt(int i) {
+        return textBoxes.get(i);
+    }
+
+    public int getSystemState() {
+        return system_State;
     }
 }

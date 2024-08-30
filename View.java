@@ -12,6 +12,7 @@ public class View extends JPanel {
 
     private Model model;
     private int windowHeight, windowWidth;
+    private boolean inPlayerEntryScreen;
     // Variable declarations
 
     /*-------------------------------------------------
@@ -28,6 +29,7 @@ public class View extends JPanel {
     {
         c.setView(this);
         model = m;
+        inPlayerEntryScreen = false;
         // Initializations
     }
 
@@ -60,6 +62,12 @@ public class View extends JPanel {
  		    	e.printStackTrace(System.err);
     	    	System.exit(1);
 		    }
+        }
+
+        if (model.getNumTextBoxes() != 0) {
+            for (int i = 0; i < model.getNumTextBoxes(); i++) {
+                this.add(model.getTextBoxAt(i));
+            }
         }
     }
 
@@ -112,5 +120,19 @@ public class View extends JPanel {
      -------------------------------------------------*/
     public void update() {
         model.updateScreenSize(windowWidth, windowHeight);
+        
+        if (model.getSystemState() == 2 && !inPlayerEntryScreen) { //PLAYER ENTRY SCREEN
+            inPlayerEntryScreen = true;
+            drawTextBoxes();
+            System.out.println("Printing");
+        }
+    }
+
+    public void drawTextBoxes() {
+        if (model.getNumTextBoxes() != 0) {
+            for (int i = 0; i < model.getNumTextBoxes(); i++) {
+                this.add(model.getTextBoxAt(i));
+            }
+        }
     }
 }
