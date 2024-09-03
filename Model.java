@@ -15,7 +15,7 @@ public class Model
     public static final int SPLASH_SCREEN = 1;
     public static final int PLAYER_ENTRY_SCREEN = 2;
     //...
-    public static final int NUM_SCREENS = 3;
+    public static final int NUM_SCREENS = 4;
 
     public int system_State;
 
@@ -30,6 +30,7 @@ public class Model
 
     public class SplashScreenTimeout extends TimerTask
     {
+        // Ran when the splash screen timer ends.
         public void run()
         {
             windowObjects.remove(0);
@@ -100,7 +101,14 @@ public class Model
             case PLAYER_ENTRY_SCREEN:
                 // Test thingy to get text from text fields.
                 //PlayerIDBoxes.get(0).update();
+                for (int i = 0; i < getNumPlayerIDBoxes(); i++) {
+                    PlayerIDBoxes.get(i).update();
+                }
+                for (int i = 0; i < getNumEquipmentIDBoxes(); i++) {
+                    EquipmentIDBoxes.get(i).update();
+                }
                 break;
+                
             default:
                 break;
         }
@@ -135,6 +143,10 @@ public class Model
 
     public JTextField getPlayerIDBoxAt(int i) {
         return PlayerIDBoxes.get(i).getTextBox();
+    }
+
+    public int getNumEquipmentIDBoxes() {
+        return EquipmentIDBoxes.size();
     }
 
     public JTextField getEquipmentIDBoxAt(int i) {

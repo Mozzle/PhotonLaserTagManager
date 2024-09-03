@@ -92,6 +92,7 @@ public class Controller implements ActionListener, MouseListener, KeyListener
 			model.addNewFruit(e.getX(), e.getY() + view.getScrollPos());
 		}
 		*/
+        
 	}
 
     /*-----------------------------------------------------------
@@ -145,7 +146,15 @@ public class Controller implements ActionListener, MouseListener, KeyListener
 	{
 		switch(e.getKeyCode()) {
 			case KeyEvent.VK_F1:
-				
+				if (model.getSystemState() == 2) {
+                    for (int i = 0; i < model.getNumPlayerIDBoxes(); i++) {
+                        model.getPlayerIDBoxAt(i).setText("");
+                    }
+                    for (int i = 0; i < model.getNumEquipmentIDBoxes(); i++) {
+                        model.getEquipmentIDBoxAt(i).setText("");
+                    }
+                    System.out.println("Hello?");
+                }
 				break;
 			case KeyEvent.VK_F2:
 
@@ -156,6 +165,12 @@ public class Controller implements ActionListener, MouseListener, KeyListener
 			case KeyEvent.VK_F4:
 
 				break;
+            case KeyEvent.VK_A:
+                System.out.println("Hello");
+                break;
+
+            case KeyEvent.VK_F5:
+                break;
 		
 			default:
 				break;
