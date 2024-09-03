@@ -11,7 +11,6 @@ public class NetUDP
     /// Define all ports to receive/send on
     public static final int RECEIVE_PORT = 7501;
     public static final int SEND_PORT = 7500;
-    public boolean receiveFlag;
     private final byte[] dataBuffer;
     private DatagramSocket receiveSocket;
 
@@ -33,7 +32,6 @@ public class NetUDP
     public NetUDP() {
         // Data buffer used to hold packet data, is directly linked to the model
         dataBuffer = new byte[1024];
-        receiveFlag = false;
 
         // Try/catch attempt to open a socket for receiving data
         try {
@@ -76,6 +74,7 @@ public class NetUDP
      * 
     ---------------------------------------------------------- */
     public boolean update() {
+        boolean receiveFlag = false;
         try {
             // Create a packet to store the data
             DatagramPacket packet = new DatagramPacket(dataBuffer, dataBuffer.length);
