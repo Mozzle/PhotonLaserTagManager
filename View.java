@@ -143,6 +143,15 @@ public class View extends JPanel {
         }
     }
 
+    /*--------------------------------------------------
+     * 
+     *      drawPlayerEntryScreen()
+     * 
+     *  DESCRIPTION: Creates and draws the Player Entry
+     *  Screen, and all Jpanels and elements therein.
+     * 
+     *  REQUIREMENTS: 0009,
+     -------------------------------------------------*/
     public void drawPlayerEntryScreen() {
         LayoutManager layout = new FlowLayout();
         JLabel tmpJLabel;
@@ -156,7 +165,7 @@ public class View extends JPanel {
         GreenTeamTextBoxPane.setPreferredSize(new Dimension(375, 700));
         GreenTeamTextBoxPane.setLayout(layout);
 
-
+        // Set up the 'Text Fields' panel that will be placed inside the RedTeamTextBoxPane
         JPanel TextFieldsR = new JPanel(new GridBagLayout());
         GridBagConstraints tFR = new GridBagConstraints();
         tFR.fill = GridBagConstraints.BOTH;
@@ -164,6 +173,7 @@ public class View extends JPanel {
         tFR.ipady = 4;
         TextFieldsR.setBackground(new Color(175, 31, 0));
 
+        // 'Red Team' label
         tmpJLabel = new JLabel("Red Team", SwingConstants.CENTER);
         tmpJLabel.setFont(new Font("Verdana", Font.BOLD, 22));
         tmpJLabel.setForeground(Color.WHITE);
@@ -172,7 +182,7 @@ public class View extends JPanel {
         tFR.gridwidth = 6;
         TextFieldsR.add(tmpJLabel, tFR);
 
-
+        // Set up the 'Text Fields' panel that will be placed inside the GreenTeamTextBoxPane
         JPanel TextFieldsG = new JPanel(new GridBagLayout());
         GridBagConstraints tFG = new GridBagConstraints();
         tFG.fill = GridBagConstraints.BOTH;
@@ -180,6 +190,7 @@ public class View extends JPanel {
         tFG.ipady = 4;
         TextFieldsG.setBackground(new Color(8, 120, 0));
 
+        // 'Green Team' label
         tmpJLabel = new JLabel("Green Team", SwingConstants.CENTER);
         tmpJLabel.setFont(new Font("Verdana", Font.BOLD, 22));
         tmpJLabel.setForeground(Color.WHITE);
@@ -188,6 +199,7 @@ public class View extends JPanel {
         tFG.gridwidth = 6;
         TextFieldsG.add(tmpJLabel, tFG);
 
+        //Draw "Playet ID", Red Team
         tmpJLabel = new JLabel("Player ID", SwingConstants.CENTER);
         tmpJLabel.setForeground(Color.WHITE);
         tFR.weightx = 0.5;
@@ -196,6 +208,7 @@ public class View extends JPanel {
         tFR.gridwidth = 2;
         TextFieldsR.add(tmpJLabel, tFR);
         
+        // Draw "Player ID", Green Team
         tmpJLabel = new JLabel("Player ID", SwingConstants.CENTER);
         tmpJLabel.setForeground(Color.WHITE);
         tFG.weightx = 0.5;
@@ -204,6 +217,7 @@ public class View extends JPanel {
         tFG.gridwidth = 2;
         TextFieldsG.add(tmpJLabel, tFG);
 
+        // Draw "Equipment ID", Red Team
         tmpJLabel = new JLabel("Equipment ID", SwingConstants.CENTER);
         tmpJLabel.setForeground(Color.WHITE);
         tFR.gridx = 4;
@@ -211,6 +225,7 @@ public class View extends JPanel {
         tFR.gridwidth = 2;
         TextFieldsR.add(tmpJLabel, tFR);
 
+        // Draw "Equipment ID", Green Team
         tmpJLabel = new JLabel("Equipment ID", SwingConstants.CENTER);
         tmpJLabel.setForeground(Color.WHITE);
         tFG.gridx = 4;
@@ -219,6 +234,7 @@ public class View extends JPanel {
         TextFieldsG.add(tmpJLabel, tFG);
 
         if (model.getNumPlayerIDBoxes() != 0) {
+            // Draw the Red Team Text Boxes
             for (int i = 0; i < 20; i++) {
                 tFR.weightx = 0.1;
                 tFR.gridx = 0;
@@ -244,6 +260,7 @@ public class View extends JPanel {
                 tFR.gridwidth = 2;
                 TextFieldsR.add(model.getEquipmentIDBoxAt(i), tFR);
             }
+            // Draw the Green Team Text Fields
             for (int i = 20; i < 40; i++) {
                 tFG.weightx = 0.1;
                 tFG.gridx = 0;

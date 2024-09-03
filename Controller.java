@@ -172,7 +172,7 @@ public class Controller implements ActionListener, MouseListener, KeyListener
      *  keyReleased() should be used for most user typing events.
      *  Testing is required to determine which is better.
      * 
-     *  REQUIREMENTS: 6,
+     *  REQUIREMENTS: 0006,
      * 
     ---------------------------------------------------------- */
 	public void keyTyped(KeyEvent e)

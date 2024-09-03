@@ -98,6 +98,8 @@ public class Model
 
                 break;
             case PLAYER_ENTRY_SCREEN:
+                // Test thingy to get text from text fields.
+                //PlayerIDBoxes.get(0).update();
                 break;
             default:
                 break;

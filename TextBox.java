@@ -22,7 +22,10 @@ public class TextBox {
 	}
 
 	public void update() {
-
+	// Heres how to get text
+	//	if (field.getText() != "") {
+	//		System.out.println(field.getText());
+	//	}
 	}
 
 	public void updateScreenSize(int screenW, int screenH) {

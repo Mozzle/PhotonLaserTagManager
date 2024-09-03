@@ -16,7 +16,7 @@ public class PhotonSystem extends JFrame {
      * 
      *  DESCRIPTION: Highest level program initializer
      * 
-     *  REQUIREMENTS: 5, 
+     *  REQUIREMENTS: 0005, 
      * 
     ---------------------------------------------------------- */
 
@@ -44,7 +44,7 @@ public class PhotonSystem extends JFrame {
      *  DESCRIPTION: The main program superloop. Executes for
      *  entire duration of program.
      * 
-     *  REQUIREMENTS: 4, 
+     *  REQUIREMENTS: 0004, 
      * 
     ---------------------------------------------------------- */
 
