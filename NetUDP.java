@@ -13,6 +13,7 @@ public class NetUDP
     public static final int SEND_PORT = 7500;
     private final byte[] dataBuffer;
     private DatagramSocket receiveSocket;
+    private DatagramSocket sendSocket;
 
     /// Temporary main method for testing
     public static void main(String[] args) {
@@ -26,7 +27,7 @@ public class NetUDP
      * 
      *  DESCRIPTION: NetUDP Constructor. 
      *  Initializes a buffer for any packets received and 
-     *  attempts to open a socket for receiving and sending data
+     *  attempts to open both sockets for receiving and sending data
      * 
     ---------------------------------------------------------- */
     public NetUDP() {
@@ -35,9 +36,24 @@ public class NetUDP
 
         // Try/catch attempt to open a socket for receiving data
         try {
-            // Create a socket to receive data
+            // Try to open a socket to receive data
             receiveSocket = new DatagramSocket(RECEIVE_PORT);
         } 
+        // Exception is typically thrown when the port is in use, or already open
+        catch (SocketException e) {
+            e.printStackTrace();
+        }
+        // We have no idea what threw the exception
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Try/catch attempt to open a socket for receiving data
+        try {
+            // Try to open a socket to send data
+            sendSocket = new DatagramSocket(SEND_PORT);
+        } 
+        // Exception is typically thrown when the port is in use, or already open
         catch (SocketException e) {
             e.printStackTrace();
         }
@@ -69,22 +85,26 @@ public class NetUDP
      *  to the model. This method also acts as a listener, handling
      *  any incoming packets and updating the model accordingly.
      * 
-     *  Returns true if a packet was received
-     *  Returns false if nothing was received
+     *  Returns true if a packet was received or sent
+     *  Returns false if nothing was received or sent
      * 
     ---------------------------------------------------------- */
     public boolean update() {
-        boolean receiveFlag = false;
-        try {
-            // Create a packet to store the data
-            DatagramPacket packet = new DatagramPacket(dataBuffer, dataBuffer.length);
 
+        boolean receiveFlag = false;
+        boolean sendFlag = false;
+
+        // Create a packet to store the data
+        DatagramPacket packet = new DatagramPacket(dataBuffer, dataBuffer.length);
+
+        // Try to receive any data
+        try {
             System.out.println("Waiting for data on port " + RECEIVE_PORT + "...");
 
             // Listen and receive any packets that come in on 7501
             receiveSocket.receive(packet);
 
-            // Convert the packet data to a string
+            // Convert the packet data to a string via the string constructor
             String stringPacket = new String(packet.getData(), 0, packet.getLength());
             System.out.println("\nReceived: " + stringPacket);
 
@@ -94,7 +114,16 @@ public class NetUDP
             e.printStackTrace();
         }
 
-        return receiveFlag;
+        // Try to send any data
+        try {
+            /// TODO: Implement sending method via UDP
+            sendFlag = true;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return (receiveFlag || sendFlag);
     }
 
     /*-----------------------------------------------------------
