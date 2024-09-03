@@ -1,6 +1,7 @@
 
 import javax.swing.JFrame;
-import java.awt.Toolkit;
+
+import java.awt.*;
 
 public class PhotonSystem extends JFrame {
     
@@ -56,7 +57,6 @@ public class PhotonSystem extends JFrame {
             view.repaint();
             Toolkit.getDefaultToolkit().sync();
 
-            
 
 
             // This probably needs to change to a non-blocking timer
