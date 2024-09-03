@@ -148,28 +148,19 @@ public class View extends JPanel {
         JLabel tmpJLabel;
 
         
-        RedTeamTextBoxPane.setVisible(true);
         RedTeamTextBoxPane.setBackground(new Color(207, 0, 0));
         RedTeamTextBoxPane.setPreferredSize(new Dimension(375, 700));
         RedTeamTextBoxPane.setLayout(layout);
 
-        GreenTeamTextBoxPane.setVisible(true);
         GreenTeamTextBoxPane.setBackground(new Color(10, 160, 0));
         GreenTeamTextBoxPane.setPreferredSize(new Dimension(375, 700));
         GreenTeamTextBoxPane.setLayout(layout);
 
-        
-        //RedTeamTextBoxPane.add(tmpJLabel);
-
-        tmpJLabel = new JLabel("Green Team", SwingConstants.CENTER);
-        tmpJLabel.setFont(new Font("Verdana", Font.BOLD, 22));
-        tmpJLabel.setForeground(Color.WHITE);
-        GreenTeamTextBoxPane.add(tmpJLabel);
 
         JPanel TextFieldsR = new JPanel(new GridBagLayout());
         GridBagConstraints tFR = new GridBagConstraints();
-        tFR.fill = GridBagConstraints.HORIZONTAL;
-        tFR.anchor = GridBagConstraints.PAGE_START;
+        tFR.fill = GridBagConstraints.BOTH;
+        tFR.anchor = GridBagConstraints.NORTH;
         tFR.ipady = 4;
         TextFieldsR.setBackground(new Color(175, 31, 0));
 
@@ -181,11 +172,25 @@ public class View extends JPanel {
         tFR.gridwidth = 6;
         TextFieldsR.add(tmpJLabel, tFR);
 
-        JPanel TextFieldsG = new JPanel(new GridLayout(21, 2, 5, 5));
+
+        JPanel TextFieldsG = new JPanel(new GridBagLayout());
+        GridBagConstraints tFG = new GridBagConstraints();
+        tFG.fill = GridBagConstraints.BOTH;
+        tFG.anchor = GridBagConstraints.NORTH;
+        tFG.ipady = 4;
         TextFieldsG.setBackground(new Color(8, 120, 0));
+
+        tmpJLabel = new JLabel("Green Team", SwingConstants.CENTER);
+        tmpJLabel.setFont(new Font("Verdana", Font.BOLD, 22));
+        tmpJLabel.setForeground(Color.WHITE);
+        tFG.gridx = 0;
+        tFG.gridy = 0;
+        tFG.gridwidth = 6;
+        TextFieldsG.add(tmpJLabel, tFG);
 
         tmpJLabel = new JLabel("Player ID", SwingConstants.CENTER);
         tmpJLabel.setForeground(Color.WHITE);
+        tFR.weightx = 0.5;
         tFR.gridx = 2;
         tFR.gridy = 1;
         tFR.gridwidth = 2;
@@ -193,7 +198,11 @@ public class View extends JPanel {
         
         tmpJLabel = new JLabel("Player ID", SwingConstants.CENTER);
         tmpJLabel.setForeground(Color.WHITE);
-        TextFieldsG.add(tmpJLabel);
+        tFG.weightx = 0.5;
+        tFG.gridx = 2;
+        tFG.gridy = 1;
+        tFG.gridwidth = 2;
+        TextFieldsG.add(tmpJLabel, tFG);
 
         tmpJLabel = new JLabel("Equipment ID", SwingConstants.CENTER);
         tmpJLabel.setForeground(Color.WHITE);
@@ -204,19 +213,27 @@ public class View extends JPanel {
 
         tmpJLabel = new JLabel("Equipment ID", SwingConstants.CENTER);
         tmpJLabel.setForeground(Color.WHITE);
-        TextFieldsG.add(tmpJLabel);
+        tFG.gridx = 4;
+        tFG.gridy = 1;
+        tFG.gridwidth = 2;
+        TextFieldsG.add(tmpJLabel, tFG);
 
         if (model.getNumPlayerIDBoxes() != 0) {
             for (int i = 0; i < 20; i++) {
+                tFR.weightx = 0.1;
                 tFR.gridx = 0;
                 tFR.gridy = i + 2;
                 tFR.gridwidth = 1;
                 TextFieldsR.add(new JLabel("           ", SwingConstants.LEFT), tFR);
+                tFR.weightx = 0.3;
                 tFR.gridx = 1;
                 tFR.gridy = i + 2;
                 tFR.gridwidth = 1;
-                TextFieldsR.add(new JLabel(String.valueOf(i), SwingConstants.CENTER), tFR);
+                tmpJLabel = new JLabel(String.valueOf(i), SwingConstants.CENTER);
+                tmpJLabel.setForeground(Color.WHITE);
+                TextFieldsR.add(tmpJLabel, tFR);
                 
+                tFR.weightx = 0.5;
                 tFR.gridx = 2;
                 tFR.gridy = i + 2;
                 tFR.gridwidth = 2;
@@ -228,14 +245,39 @@ public class View extends JPanel {
                 TextFieldsR.add(model.getEquipmentIDBoxAt(i), tFR);
             }
             for (int i = 20; i < 40; i++) {
-                TextFieldsG.add(model.getPlayerIDBoxAt(i), BorderLayout.CENTER);
-                TextFieldsG.add(model.getEquipmentIDBoxAt(i), BorderLayout.CENTER);
+                tFG.weightx = 0.1;
+                tFG.gridx = 0;
+                tFG.gridy = i + 2;
+                tFG.gridwidth = 1;
+                TextFieldsG.add(new JLabel("           ", SwingConstants.LEFT), tFG);
+                tFG.weightx = 0.3;
+                tFG.gridx = 1;
+                tFG.gridy = i + 2;
+                tFG.gridwidth = 1;
+                tmpJLabel = new JLabel(String.valueOf(i - 20), SwingConstants.CENTER);
+                tmpJLabel.setForeground(Color.WHITE);
+                TextFieldsG.add(tmpJLabel, tFG);
+                
+                tFG.weightx = 0.5;
+                tFG.gridx = 2;
+                tFG.gridy = i + 2;
+                tFG.gridwidth = 2;
+                TextFieldsG.add(model.getPlayerIDBoxAt(i), tFG);
+
+                tFG.gridx = 4;
+                tFG.gridy = i + 2;
+                tFG.gridwidth = 2;
+                TextFieldsG.add(model.getEquipmentIDBoxAt(i), tFG);
             }
-            RedTeamTextBoxPane.add(TextFieldsR, BorderLayout.SOUTH);
-            GreenTeamTextBoxPane.add(TextFieldsG, BorderLayout.CENTER);
+            TextFieldsR.setPreferredSize(new Dimension(350, 600));
+            TextFieldsG.setPreferredSize(new Dimension(350, 600));
+            RedTeamTextBoxPane.add(TextFieldsR, tFR);
+            GreenTeamTextBoxPane.add(TextFieldsG, tFG);
             this.add(RedTeamTextBoxPane, BorderLayout.WEST);
             this.add(GreenTeamTextBoxPane, BorderLayout.EAST);
         }
-        
+        RedTeamTextBoxPane.setVisible(true);
+        GreenTeamTextBoxPane.setVisible(true);
+
     }
 }
