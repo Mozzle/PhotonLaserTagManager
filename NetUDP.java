@@ -11,7 +11,8 @@ public class NetUDP
     /// Define all ports to receive/send on
     public static final int RECEIVE_PORT = 7501;
     public static final int SEND_PORT = 7500;
-    private final byte[] dataBuffer;
+    private final byte[] receiveBuffer;
+    private final byte[] sendBuffer;
     private DatagramSocket receiveSocket;
     private DatagramSocket sendSocket;
 
@@ -32,7 +33,8 @@ public class NetUDP
     ---------------------------------------------------------- */
     public NetUDP() {
         // Data buffer used to hold packet data, is directly linked to the model
-        dataBuffer = new byte[1024];
+        receiveBuffer = new byte[1024];
+        sendBuffer = new byte[1024];
 
         // Try/catch attempt to open a socket for receiving data
         try {
@@ -67,16 +69,17 @@ public class NetUDP
      * 
      *  transmitCode(int code)
      * 
-     *  DESCRIPTION: Transmits a code to all receivers
+     *  DESCRIPTION: Transmits a code to all receivers. Starts by
+     *  converting the code to a byte array, then the byte array
+     *  updates the private sendBuffer. When sendBuffer contains 
      * 
      *  Returns true if the code was successfully transmitted
      *  Returns false if the code was not transmitted, or failed
      * 
     ---------------------------------------------------------- */
     public boolean transmitCode(int code) {
-        return true;
+        return true; 
     }
-
     /*-----------------------------------------------------------
      * 
      *  update()
@@ -95,7 +98,7 @@ public class NetUDP
         boolean sendFlag = false;
 
         // Create a packet to store the data
-        DatagramPacket packet = new DatagramPacket(dataBuffer, dataBuffer.length);
+        DatagramPacket packet = new DatagramPacket(receiveBuffer, receiveBuffer.length);
 
         // Try to receive any data
         try {
@@ -135,9 +138,9 @@ public class NetUDP
      *  Returns the data buffer as an integer array
      * 
     ---------------------------------------------------------- */
-    public byte[] outputBuffer()
+    public void outputBuffer()
     {
-        return dataBuffer;
+
     }
 
 }
