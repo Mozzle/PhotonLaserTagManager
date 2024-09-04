@@ -1,6 +1,5 @@
 
 import java.util.ArrayList;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.lang.Math;
 import java.util.Timer;
@@ -22,12 +21,23 @@ public class Model
     public ArrayList<Sprite> windowObjects; // This arrayList contains all elements that
                                             //  will be drawn to the scrren
 
-    public ArrayList<TextBox> PlayerIDBoxes;
-    public ArrayList<TextBox> EquipmentIDBoxes;
+    public ArrayList<TextBox> PlayerIDBoxes;    // For player entry screen
+    public ArrayList<TextBox> EquipmentIDBoxes; // For player entry screen
 
     public Timer timer;
     public TimerTask splashScreenTimeoutTask;
 
+    /*-----------------------------------------------------
+     * 
+     *      SplashScreenTimeout
+     * 
+     *  DESCRIPTION: This class is used as a callback for
+     *  a timer that controls how long the splash screen
+     *  is displayed on screen. When the timer ends,
+     *  the Player Entry Screen is initialized, then it is
+     *  drawn in the View.update() function.
+     * 
+     ----------------------------------------------------*/
     public class SplashScreenTimeout extends TimerTask
     {
         // Ran when the splash screen timer ends.
@@ -35,12 +45,12 @@ public class Model
         {
             windowObjects.remove(0);
             for (int i = 0; i < 20; i++) {
-                PlayerIDBoxes.add(new TextBox("", 12, 50, (80 + (35 * i)), 100));
-                EquipmentIDBoxes.add(new TextBox("", 8, 50, (80 + (35 * i)), 100));
+                PlayerIDBoxes.add(new TextBox("", 12, Model.this, TextBox.NUMERIC_TEXT_FIELD_TYPE));
+                EquipmentIDBoxes.add(new TextBox("", 8, Model.this,TextBox.NUMERIC_TEXT_FIELD_TYPE));
             }
             for (int i = 0; i < 20; i++) {
-                PlayerIDBoxes.add(new TextBox("", 12, 50, (80 + (35 * i)), 100));
-                EquipmentIDBoxes.add(new TextBox("", 8, 50, (80 + (35 * i)), 100));
+                PlayerIDBoxes.add(new TextBox("", 12, Model.this,TextBox.NUMERIC_TEXT_FIELD_TYPE));
+                EquipmentIDBoxes.add(new TextBox("", 8, Model.this,TextBox.NUMERIC_TEXT_FIELD_TYPE));
             }
             system_State = PLAYER_ENTRY_SCREEN;
         }
@@ -99,16 +109,9 @@ public class Model
 
                 break;
             case PLAYER_ENTRY_SCREEN:
-                // Test thingy to get text from text fields.
-                //PlayerIDBoxes.get(0).update();
-                for (int i = 0; i < getNumPlayerIDBoxes(); i++) {
-                    PlayerIDBoxes.get(i).update();
-                }
-                for (int i = 0; i < getNumEquipmentIDBoxes(); i++) {
-                    EquipmentIDBoxes.get(i).update();
-                }
+
                 break;
-                
+
             default:
                 break;
         }
@@ -157,4 +160,18 @@ public class Model
     public int getSystemState() {
         return system_State;
     }
+
+    public void clearTextBoxes() {
+        if (getSystemState() == PLAYER_ENTRY_SCREEN) {
+            for (int i = 0; i < getNumPlayerIDBoxes(); i++) {
+                getPlayerIDBoxAt(i).setText("");
+            }
+            for (int i = 0; i < getNumEquipmentIDBoxes(); i++) {
+                getEquipmentIDBoxAt(i).setText("");
+            }
+            System.out.println("Hello?");
+        }
+    }
+    
+    
 }

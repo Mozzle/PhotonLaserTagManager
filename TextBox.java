@@ -2,60 +2,85 @@ import javax.swing.*;
 import java.awt.event.*;
 
 public class TextBox {
+	/*------------------------------
+		Enums
+	------------------------------*/
+	public static final int NUMERIC_TEXT_FIELD_TYPE = 0;
+    public static final int ALPHA_NUMERIC_TEXT_FIELD_TYPE = 1;
+
 
 	public JTextField field; //JTextField object
+	Model m;
 
-	int originalX, originalY; // the original x/y placement of the textfield. Used for dynamic
-	// response to window adjustment.
-	int originalW;
-
-	public TextBox(String hintText, int cols, int x, int y, int w) {
-		//this.originalX = x;
-		//this.originalY = y;
-		//this.originalW = w;
+	public TextBox(String hintText, int cols, Model m, int TextFieldType) {
+		/*-----------------------------------------------------------------------
+		 We have an upward reaching architecture here. This class is both 
+		 controlled by Model, AND can call functions in Model
+		------------------------------------------------------------------------*/
+		this.m = m;
 		field = new JTextField(hintText, cols);
-	/*	field.addKeyListener(new KeyAdapter() {
-			public void keyPressed(KeyEvent ke) {
-			   if (ke.getKeyChar() < '0' && ke.getKeyChar() >= ' ') {
-				  	field.setEditable(false);
-				  	//label.setText("");
-			   } else if (ke.getKeyChar() >= ':' && ke.getKeyChar() <= '~') {
-					field.setEditable(false);
-			   } else {
-				  	field.setEditable(true);
-				  	//label.setText("* Enter only numeric digits(0-9)");
-			   }
 
-			   if (ke.getKeyChar() == KeyEvent.VK_TAB) {
-				// Check database against this field
-			   }
-			}
-		 }); */
-		//field.setBounds(x,y,w,30);
+		/*-----------------------------------------------------------------------
+		Text fields have to have a keyListener that is seperate from the main
+		Controller class, Have not yet decided how I will handle keys that should
+		be able to be pressed in any context (e.g. F1-F5)
+		------------------------------------------------------------------------*/
+		if (TextFieldType == NUMERIC_TEXT_FIELD_TYPE) {
+			field.addKeyListener(new KeyAdapter() {
+				public void keyPressed(KeyEvent ke) {
+
+					switch(ke.getKeyCode()) {
+						case KeyEvent.VK_TAB:
+						// Check database against this field
+							break;
+						case KeyEvent.VK_F1:
+							if (m.getSystemState() == Model.PLAYER_ENTRY_SCREEN) {
+								m.clearTextBoxes();
+							}
+							break;
+						default:
+							break;
+					   }
+				   
+					/*-----------------------------------------------------------------------
+					 This code prevents non-numeric characters from being input. 
+					 TODO: make a parameter that gets passed in that will tell the class
+					 what kind of text box we are, and subsequently 
+					-----------------------------------------------------------------------*/
+				   	if (ke.getKeyChar() < '0' && ke.getKeyChar() >= ' ') {
+						field.setEditable(false);
+				   	} else if (ke.getKeyChar() >= ':' && ke.getKeyChar() <= '~') {
+						field.setEditable(false);
+				   	} else {
+					  	field.setEditable(true);
+				   	}
+				
+				}
+			 }); 
+		}
+		else if (TextFieldType == ALPHA_NUMERIC_TEXT_FIELD_TYPE) {
+			/*
+			field.addKeyListener(new KeyAdapter() {
+				//TODO: Implement Me!
+			});
+			*/
+		}
 	}
 
 	public JTextField getTextBox() {
 		return this.field;
 	}
 
+	public String getTextFromField() {
+		return field.getText();
+	}
+
 	public void update() {
-	// Heres how to get text
-	//	if (field.getText() != "") {
-	//		System.out.println(field.getText());
-	//	}
-		if (field.getText().length() > 0) {
-			char lastChar = field.getText().charAt(field.getText().length() - 1);
-			//System.out.println(lastChar <= '/');
-			if ( lastChar <= '/' || lastChar >= ':') {
-				field.setText(field.getText().substring(0, field.getText().length() - 1));
-				field.setCaretPosition(field.getText().length());
-			}
-		}
+
 	}
 
 	public void updateScreenSize(int screenW, int screenH) {
-		//field.setLocation((int)((float)(originalX / 1000.0f) * screenW), originalY);
-		//field.setSize(originalW, 30);
+
 	}
 
 }

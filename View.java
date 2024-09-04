@@ -126,18 +126,16 @@ public class View extends JPanel {
      * 
      *      update()
      * 
-     *  DESCRIPTION: Currently used for communicating 
-     *  screen size data to model() and the sprites 
-     *  therein.
+     *  DESCRIPTION: This function is used to update
+     *  model and is the entry point for changing from
+     *  the splash screen to the player entry screen.
      * 
      *  REQUIREMENTS: 
      -------------------------------------------------*/
     public void update() {
-        //RedTeamTextBoxPane.setSize((int)(windowWidth * 0.2), (int)(windowHeight * 0.8));
-        //GreenTeamTextBoxPane.setSize((int)(windowWidth * 0.2), (int)(windowHeight * 0.8));
         model.updateScreenSize(windowWidth, windowHeight);
         
-        if (model.getSystemState() == 2 && !inPlayerEntryScreen) { //PLAYER ENTRY SCREEN
+        if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN && !inPlayerEntryScreen) { //PLAYER ENTRY SCREEN
             inPlayerEntryScreen = true;
             this.drawPlayerEntryScreen();
         }
