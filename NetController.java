@@ -53,31 +53,15 @@ public class NetController
      *  NetController()
      * 
      *  DESCRIPTION: NetController Constructor. 
-     *  Initializes a buffer for any packets received and 
-     *  attempts to open both sockets for receiving and sending data
+     *  Sets listening flag and initializes output array
      * 
     ---------------------------------------------------------- */
     public NetController() {
-        // Send data buffer used to hold packet contents
-        sendBuffer = new byte[1024];
         // Output data array, holds 10 messages at a time.
         receivedData = new String[MAX_MESSAGES];
 
         // Set listener flag to false
         isListening = false;
-
-        // Try/catch attempt to open a socket for sending data
-        try {
-            sendSocket = new DatagramSocket(SEND_PORT);
-        } 
-        // Exception is typically thrown when the port is in use, or already open
-        catch (SocketException e) {
-            e.printStackTrace();
-        }
-        // We have no idea what threw the exception
-        catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     /*-----------------------------------------------------------
@@ -95,10 +79,29 @@ public class NetController
     public boolean transmit(String msg) {
 
         returnFlag = true;
+
+        // Send data buffer used to hold packet contents
+        sendBuffer = new byte[1024];
+
+        // Try/catch attempt to open a socket for sending data
+        try {
+            sendSocket = new DatagramSocket(SEND_PORT);
+        } 
+        // Exception is typically thrown when the port is in use, or already open
+        catch (SocketException e) {
+            e.printStackTrace();
+            returnFlag = false;
+        }
+        // We have no idea what threw the exception
+        catch (Exception e) {
+            e.printStackTrace();
+            returnFlag = false;
+        }
+
         // Convert the message to a byte array
         sendBuffer = msg.getBytes();
 
-        // Try to send any data
+        // Try to send our data
         try {
             // Create an InetAddress object to store our address, and use it to create a packet to send
             InetAddress address = InetAddress.getByName(SEND_ADDRESS);
@@ -106,9 +109,9 @@ public class NetController
 
             // Send the packet
             sendSocket.send(sendPacket);
-
             System.out.println("Sent: " + new String(sendPacket.getData()));
 
+            // Close the socket since we are done with it
             sendSocket.close();
         }
         catch (Exception e) {
