@@ -6,15 +6,23 @@ import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.*;
 import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Font;
 
 public class Model
 {
-    //enums in Java are utterly useless, so here is my C-like enum:
+    //enums in Java are utterly useless, so here is my C-like enums:
+
+    // System_States
     public static final int INITIALIZE = 0;
     public static final int SPLASH_SCREEN = 1;
     public static final int PLAYER_ENTRY_SCREEN = 2;
-    //...
-    public static final int NUM_SCREENS = 4;
+    public static final int COUNTDOWN_SCREEN = 3;
+    public static final int PLAY_ACTION_SCREEN = 4;
+    public static final int NUM_SCREENS = 5;
+
+    // Max players per team
+    public static final int NUM_MAX_PLAYERS_PER_TEAM = 15;
 
     public int system_State;
 
@@ -26,6 +34,10 @@ public class Model
 
     public Timer timer;
     public TimerTask splashScreenTimeoutTask;
+
+    public JLabel toolTip;
+    public boolean newToolTip;               // Flag for View class to indicate if Model has
+                                                // a screen element that needs updated
 
     /*-----------------------------------------------------
      * 
@@ -44,11 +56,11 @@ public class Model
         public void run()
         {
             windowObjects.remove(0);
-            for (int i = 0; i < 20; i++) {
+            for (int i = 0; i < NUM_MAX_PLAYERS_PER_TEAM; i++) {
                 PlayerIDBoxes.add(new TextBox("", 12, Model.this, TextBox.NUMERIC_TEXT_FIELD_TYPE));
                 EquipmentIDBoxes.add(new TextBox("", 8, Model.this,TextBox.NUMERIC_TEXT_FIELD_TYPE));
             }
-            for (int i = 0; i < 20; i++) {
+            for (int i = 0; i < NUM_MAX_PLAYERS_PER_TEAM; i++) {
                 PlayerIDBoxes.add(new TextBox("", 12, Model.this,TextBox.NUMERIC_TEXT_FIELD_TYPE));
                 EquipmentIDBoxes.add(new TextBox("", 8, Model.this,TextBox.NUMERIC_TEXT_FIELD_TYPE));
             }
@@ -83,6 +95,7 @@ public class Model
         startSplashScreen();
         system_State = SPLASH_SCREEN;
         timer.schedule(splashScreenTimeoutTask, 3200);
+        newToolTip = false;
         
     }
 
@@ -118,13 +131,45 @@ public class Model
 
     }
 
+    /*-------------------------------------------------
+     *
+     *      getNumWindowObjects()
+     *
+     *  DESCRIPTION: Returns size of windowObjects
+     *  ArrayList
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
+
     public int getNumWindowObjects() {
 		return windowObjects.size();
 	}
 
+    /*-------------------------------------------------
+     *
+     *      getWindowObjectAt()
+     *
+     *  DESCRIPTION: Returns the windowObject Sprite at
+     *  index i
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
     public Sprite getWindowObjectAt(int i) {
 		return windowObjects.get(i);
 	}
+
+    /*-------------------------------------------------
+     *
+     *      startSplashScreen()
+     *
+     *  DESCRIPTION: Creates the splash screen, called
+     *  at program initialization
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
 
     public void startSplashScreen() {
         windowObjects.add(new SplashScreen(0, 0, 900, 450));
@@ -140,26 +185,90 @@ public class Model
         }
     }
 
+    /*-------------------------------------------------
+     *
+     *      getNumPlayerIDBoxes()
+     *
+     *  DESCRIPTION: Returnes size of PlayerIDBoxes
+     *  TextField ArrayList
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
+
     public int getNumPlayerIDBoxes() {
         return PlayerIDBoxes.size();
     }
+
+    /*-------------------------------------------------
+     *
+     *      getPlayerIDBoxAt()
+     *
+     *  DESCRIPTION: Returns the PlayerIDBox TextField
+     *  at index i
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
 
     public JTextField getPlayerIDBoxAt(int i) {
         return PlayerIDBoxes.get(i).getTextBox();
     }
 
+    /*-------------------------------------------------
+     *
+     *      getNumEquipmentIDBoxes()
+     *
+     *  DESCRIPTION: Returns the size of the
+     *  EquipmentIDBoxes ArrayList
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
+
     public int getNumEquipmentIDBoxes() {
         return EquipmentIDBoxes.size();
     }
+
+    /*-------------------------------------------------
+     *
+     *      getEquipmentIDBoxAt()
+     *
+     *  DESCRIPTION: Returns the EquipmentIDBox TextField
+     *  at index i
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
 
     public JTextField getEquipmentIDBoxAt(int i) {
         return EquipmentIDBoxes.get(i).getTextBox();
     }
 
+    /*-------------------------------------------------
+     *
+     *      getSystemState()
+     *
+     *  DESCRIPTION: Returns the system_State enum value
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
 
     public int getSystemState() {
         return system_State;
     }
+
+    /*-------------------------------------------------
+     *
+     *      clearTextBoxes()
+     *
+     *  DESCRIPTION: If we're in the player entry screen,
+     *  clear out all of the text boxes
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
 
     public void clearTextBoxes() {
         if (getSystemState() == PLAYER_ENTRY_SCREEN) {
@@ -169,8 +278,19 @@ public class Model
             for (int i = 0; i < getNumEquipmentIDBoxes(); i++) {
                 getEquipmentIDBoxAt(i).setText("");
             }
-            System.out.println("Hello?");
         }
+    }
+
+    public boolean toolTip(String tipText) {
+        boolean success = true;
+        toolTip = new JLabel(tipText, SwingConstants.CENTER);
+        toolTip.setBackground(new Color(104, 110, 58));
+        toolTip.setForeground(Color.WHITE);
+        toolTip.setFont(new Font("Verdana", Font.BOLD, 22));
+        newToolTip = true;
+        System.out.println("In Model");
+
+        return success;
     }
     
     

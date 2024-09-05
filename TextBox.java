@@ -47,10 +47,11 @@ public class TextBox {
 					 TODO: make a parameter that gets passed in that will tell the class
 					 what kind of text box we are, and subsequently 
 					-----------------------------------------------------------------------*/
-				   	if (ke.getKeyChar() < '0' && ke.getKeyChar() >= ' ') {
+				   	if ( ( ke.getKeyChar() < '0' && ke.getKeyChar() >= ' ' )
+					|| ( ke.getKeyChar() >= ':' && ke.getKeyChar() <= '~' ) ) {
 						field.setEditable(false);
-				   	} else if (ke.getKeyChar() >= ':' && ke.getKeyChar() <= '~') {
-						field.setEditable(false);
+						m.toolTip("ID's should only be numeric (0-9)");
+						System.out.println("In TextBox");
 				   	} else {
 					  	field.setEditable(true);
 				   	}

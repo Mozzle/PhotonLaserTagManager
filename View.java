@@ -10,10 +10,15 @@ import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.KeyboardFocusManager;
 import java.awt.LayoutManager;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
+import javax.management.AttributeList;
+
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.io.File;
 import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
@@ -21,6 +26,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.ArrayList;
 
 public class View extends JPanel {
 
@@ -28,7 +36,12 @@ public class View extends JPanel {
     private int windowHeight, windowWidth;
     private boolean inPlayerEntryScreen;
     public JPanel RedTeamTextBoxPane, GreenTeamTextBoxPane;
-    public JLabel RedTeamPlayerIDLabel;
+    public JLabel toolTipLabel;
+    public ArrayList<JLabel> rowSelectionLabel;
+    public Timer timer;
+    public int toolTipCounter;
+    public int lastSelectedRow;
+
     // Variable declarations
 
     /*-------------------------------------------------
@@ -50,6 +63,10 @@ public class View extends JPanel {
         RedTeamTextBoxPane.setVisible(false);
         GreenTeamTextBoxPane = new JPanel();
         GreenTeamTextBoxPane.setVisible(false);
+        timer = new Timer();
+        toolTipCounter = 0;
+        rowSelectionLabel = new ArrayList<JLabel>();
+        lastSelectedRow = 0;
         // Initializations
     }
 
@@ -139,6 +156,49 @@ public class View extends JPanel {
             inPlayerEntryScreen = true;
             this.drawPlayerEntryScreen();
         }
+        
+        // If model has a new tooltip for us to add
+        if (model.newToolTip == true) {
+            model.newToolTip = false;
+            toolTipCounter++;
+            toolTipLabel = model.toolTip;
+            toolTipLabel.setBounds(10, (580 + toolTipCounter * 30), 1000, 30);
+            this.add(toolTipLabel, BorderLayout.SOUTH);
+            toolTipLabel.setVisible(true);
+            timer.schedule(new toolTipTimeout(), 3000);
+            System.out.println("In View");
+        }
+
+        if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN
+        && KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner() != null) {
+            int selectedY = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getY();
+
+            if (lastSelectedRow != ((int)((selectedY - 121)/24))) {
+                lastSelectedRow = ((int)((selectedY - 121)/24));
+            
+                try {
+
+                    for (int i = 0; i < rowSelectionLabel.size(); i++) {
+                        rowSelectionLabel.get(i).setText("           ");
+                    }
+
+                    if (KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getParent() != null) {
+                        if (KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getParent().getName() == "RedTextFields") {
+                            rowSelectionLabel.get(lastSelectedRow).setText("  >>>>");
+                        }
+                        else if (KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getParent().getName() == "GreenTextFields") {
+                            rowSelectionLabel.get(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).setText("  >>>>");
+                        }
+                    }
+                }
+                catch (Exception e) {
+                    // getFocusOwner() is not reliable, so we need to pass and do nothing if it 
+                    // returns null
+                }
+            }
+            //rowSelectionLabel.get((int)((selectedY - 121)/24))
+            //tmp.setText("    >>>>   ");
+        }
     }
 
     /*--------------------------------------------------
@@ -156,15 +216,16 @@ public class View extends JPanel {
 
         
         RedTeamTextBoxPane.setBackground(new Color(207, 0, 0));
-        RedTeamTextBoxPane.setPreferredSize(new Dimension(375, 700));
+        RedTeamTextBoxPane.setPreferredSize(new Dimension(375, 600));
         RedTeamTextBoxPane.setLayout(layout);
 
         GreenTeamTextBoxPane.setBackground(new Color(10, 160, 0));
-        GreenTeamTextBoxPane.setPreferredSize(new Dimension(375, 700));
+        GreenTeamTextBoxPane.setPreferredSize(new Dimension(375, 600));
         GreenTeamTextBoxPane.setLayout(layout);
 
         // Set up the 'Text Fields' panel that will be placed inside the RedTeamTextBoxPane
         JPanel TextFieldsR = new JPanel(new GridBagLayout());
+        TextFieldsR.setName("RedTextFields");
         GridBagConstraints tFR = new GridBagConstraints();
         tFR.fill = GridBagConstraints.BOTH;
         tFR.anchor = GridBagConstraints.NORTH;
@@ -182,6 +243,7 @@ public class View extends JPanel {
 
         // Set up the 'Text Fields' panel that will be placed inside the GreenTeamTextBoxPane
         JPanel TextFieldsG = new JPanel(new GridBagLayout());
+        TextFieldsG.setName("GreenTextFields");
         GridBagConstraints tFG = new GridBagConstraints();
         tFG.fill = GridBagConstraints.BOTH;
         tFG.anchor = GridBagConstraints.NORTH;
@@ -233,12 +295,14 @@ public class View extends JPanel {
 
         if (model.getNumPlayerIDBoxes() != 0) {
             // Draw the Red Team Text Boxes
-            for (int i = 0; i < 20; i++) {
+            for (int i = 0; i < Model.NUM_MAX_PLAYERS_PER_TEAM; i++) {
                 tFR.weightx = 0.1;
                 tFR.gridx = 0;
                 tFR.gridy = i + 2;
                 tFR.gridwidth = 1;
-                TextFieldsR.add(new JLabel("           ", SwingConstants.LEFT), tFR);
+                rowSelectionLabel.add(new JLabel("           ", SwingConstants.LEFT));
+                rowSelectionLabel.get(i).setForeground(Color.WHITE);
+                TextFieldsR.add(rowSelectionLabel.get(i), tFR);
                 tFR.weightx = 0.3;
                 tFR.gridx = 1;
                 tFR.gridy = i + 2;
@@ -259,17 +323,19 @@ public class View extends JPanel {
                 TextFieldsR.add(model.getEquipmentIDBoxAt(i), tFR);
             }
             // Draw the Green Team Text Fields
-            for (int i = 20; i < 40; i++) {
+            for (int i = Model.NUM_MAX_PLAYERS_PER_TEAM; i < (Model.NUM_MAX_PLAYERS_PER_TEAM * 2); i++) {
                 tFG.weightx = 0.1;
                 tFG.gridx = 0;
                 tFG.gridy = i + 2;
                 tFG.gridwidth = 1;
-                TextFieldsG.add(new JLabel("           ", SwingConstants.LEFT), tFG);
+                rowSelectionLabel.add(new JLabel("           ", SwingConstants.LEFT));
+                rowSelectionLabel.get(i).setForeground(Color.WHITE);
+                TextFieldsG.add(rowSelectionLabel.get(i), tFG);
                 tFG.weightx = 0.3;
                 tFG.gridx = 1;
                 tFG.gridy = i + 2;
                 tFG.gridwidth = 1;
-                tmpJLabel = new JLabel(String.valueOf(i - 20), SwingConstants.CENTER);
+                tmpJLabel = new JLabel(String.valueOf(i - Model.NUM_MAX_PLAYERS_PER_TEAM), SwingConstants.CENTER);
                 tmpJLabel.setForeground(Color.WHITE);
                 TextFieldsG.add(tmpJLabel, tFG);
                 
@@ -284,8 +350,8 @@ public class View extends JPanel {
                 tFG.gridwidth = 2;
                 TextFieldsG.add(model.getEquipmentIDBoxAt(i), tFG);
             }
-            TextFieldsR.setPreferredSize(new Dimension(350, 600));
-            TextFieldsG.setPreferredSize(new Dimension(350, 600));
+            TextFieldsR.setPreferredSize(new Dimension(350, 550));
+            TextFieldsG.setPreferredSize(new Dimension(350, 550));
             RedTeamTextBoxPane.add(TextFieldsR, tFR);
             GreenTeamTextBoxPane.add(TextFieldsG, tFG);
             this.add(RedTeamTextBoxPane, BorderLayout.WEST);
@@ -294,5 +360,16 @@ public class View extends JPanel {
         RedTeamTextBoxPane.setVisible(true);
         GreenTeamTextBoxPane.setVisible(true);
 
+    }
+
+    public class toolTipTimeout extends TimerTask
+    {
+        public void run()
+        {
+            toolTipLabel.setVisible(false);
+            View.this.remove(View.this.getComponentCount() - 1);
+            toolTipCounter--;
+            System.out.println("In View timeout");
+        }
     }
 }
