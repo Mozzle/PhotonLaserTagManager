@@ -39,7 +39,7 @@ public class View extends JPanel {
 
     private Model model;
     private int windowHeight, windowWidth;
-    private boolean inPlayerEntryScreen;
+    private boolean inPlayerEntryScreen, inCountDownScreen;
     public JPanel RedTeamTextBoxPane, GreenTeamTextBoxPane, PlayerEntryPanes;
     public JLabel toolTipLabel;
     public ArrayList<JLabel> rowSelectionLabel;
@@ -66,6 +66,7 @@ public class View extends JPanel {
         c.setView(this);
         model = m;
         inPlayerEntryScreen = false;
+        inCountDownScreen = false;
         RedTeamTextBoxPane = new JPanel();
         RedTeamTextBoxPane.setVisible(false);
         GreenTeamTextBoxPane = new JPanel();
@@ -163,6 +164,13 @@ public class View extends JPanel {
         if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN && !inPlayerEntryScreen) { // PLAYER ENTRY SCREEN
             inPlayerEntryScreen = true;
             this.drawPlayerEntryScreen();
+        }
+
+        if(model.getSystemState()==Model.COUNTDOWN_SCREEN && !inCountDownScreen){
+            inPlayerEntryScreen = false;
+            inCountDownScreen=true; 
+            this.PlayerEntryScreenDeleter(); 
+            this.drawCountDownScreen();
         }
         
         /*-----------------------------------------------------
@@ -487,6 +495,11 @@ public class View extends JPanel {
 
     }
 
+    //Draws countdown screen: unfinished
+    public void drawCountDownScreen(){
+
+    }
+
     public class toolTipTimeout extends TimerTask
     {
         public void run()
@@ -501,5 +514,12 @@ public class View extends JPanel {
                 toolTipCounter--;
             }
         }
+    }
+
+    public void PlayerEntryScreenDeleter(){
+        for(int i=0; i<this.getComponentCount(); i++){
+            this.remove(i);
+        }
+        
     }
 }

@@ -55,7 +55,9 @@ public class Model
         // Ran when the splash screen timer ends.
         public void run()
         {
+            //removes the splashscreen picture
             windowObjects.remove(0);
+            //creates the tables for the player entry screen
             for (int i = 0; i < NUM_MAX_PLAYERS_PER_TEAM; i++) {
                 PlayerIDBoxes.add(new TextBox("", 12, Model.this, TextBox.NUMERIC_TEXT_FIELD_TYPE));
                 EquipmentIDBoxes.add(new TextBox("", 8, Model.this,TextBox.NUMERIC_TEXT_FIELD_TYPE));
@@ -69,6 +71,26 @@ public class Model
     }
 
 
+     /*-----------------------------------------------------
+     * 
+     *      PlayerEntryScreenDeleter
+     * 
+     *  DESCRIPTION: This class is used as a deleter for
+     *  the Player Entry screen table.
+     * 
+     ----------------------------------------------------*/
+
+    // Ran when F% is pushed.
+    public void PlayerEntryScreenDeleter()
+    {
+        //creates the tables for the player entry screen
+        for (int i = 0; i < getNumPlayerIDBoxes(); i++) {
+            PlayerIDBoxes.remove(i);
+            EquipmentIDBoxes.remove(i);
+        }
+        system_State = COUNTDOWN_SCREEN;
+    }
+    
 
     /*-------------------------------------------------
      *
@@ -119,10 +141,12 @@ public class Model
 
         switch(system_State) {
             case SPLASH_SCREEN:
-
                 break;
-            case PLAYER_ENTRY_SCREEN:
 
+            case PLAYER_ENTRY_SCREEN:
+                break;
+
+            case COUNTDOWN_SCREEN:
                 break;
 
             default:

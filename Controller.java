@@ -1,4 +1,7 @@
 import java.awt.event.MouseListener;
+
+
+
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionListener;
 import java.awt.RenderingHints.Key;
@@ -161,6 +164,9 @@ public class Controller implements ActionListener, MouseListener, KeyListener
 				break;
 
             case KeyEvent.VK_F5:
+            if (model.getSystemState() == Model.COUNTDOWN_SCREEN) {
+                model.PlayerEntryScreenDeleter();
+                }
                 break;
 		
 			default:
