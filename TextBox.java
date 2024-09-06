@@ -38,6 +38,11 @@ public class TextBox {
 								m.clearTextBoxes();
 							}
 							break;
+						case KeyEvent.VK_F5:
+							if (m.getSystemState() == Model.COUNTDOWN_SCREEN) {
+								m.PlayerEntryScreenDeleter();
+								}
+							break;
 						default:
 							break;
 					   }
