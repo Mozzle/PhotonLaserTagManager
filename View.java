@@ -517,7 +517,7 @@ public class View extends JPanel {
     }
 
     public void PlayerEntryScreenDeleter(){
-        for(int i=0; i<this.getComponentCount(); i++){
+        for(int i=this.getComponentCount() - 1; i>= 0 ; i--){
             this.remove(i);
         }
         

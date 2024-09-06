@@ -41,7 +41,7 @@ public class TextBox {
 							}
 							break;
 						case KeyEvent.VK_F5:
-							if (m.getSystemState() == Model.COUNTDOWN_SCREEN) {
+							if (m.getSystemState() == Model.PLAYER_ENTRY_SCREEN) {
 								m.PlayerEntryScreenDeleter();
 								}
 							break;

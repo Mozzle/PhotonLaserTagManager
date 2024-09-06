@@ -164,7 +164,7 @@ public class Controller implements ActionListener, MouseListener, KeyListener
 				break;
 
             case KeyEvent.VK_F5:
-            if (model.getSystemState() == Model.COUNTDOWN_SCREEN) {
+            if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN) {
                 model.PlayerEntryScreenDeleter();
                 }
                 break;
