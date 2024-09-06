@@ -316,6 +316,10 @@ public class Model
 
         return success;
     }
+
+    public void startGameButtonHit() {
+        //Do a bunch of stuff!
+    }
     
     
 }
