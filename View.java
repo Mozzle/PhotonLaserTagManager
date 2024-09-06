@@ -3,8 +3,10 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
+import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
 
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -13,6 +15,8 @@ import java.awt.GridLayout;
 import java.awt.KeyboardFocusManager;
 import java.awt.LayoutManager;
 import java.awt.Point;
+import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import javax.management.AttributeList;
@@ -23,6 +27,7 @@ import java.io.File;
 import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -35,12 +40,14 @@ public class View extends JPanel {
     private Model model;
     private int windowHeight, windowWidth;
     private boolean inPlayerEntryScreen;
-    public JPanel RedTeamTextBoxPane, GreenTeamTextBoxPane;
+    public JPanel RedTeamTextBoxPane, GreenTeamTextBoxPane, PlayerEntryPanes;
     public JLabel toolTipLabel;
     public ArrayList<JLabel> rowSelectionLabel;
     public Timer timer;
     public int toolTipCounter;
     public int lastSelectedRow;
+    public String lastSelectedTeam;
+    JButton ClearScreenButton, StartGameButton;
 
     // Variable declarations
 
@@ -67,6 +74,7 @@ public class View extends JPanel {
         toolTipCounter = 0;
         rowSelectionLabel = new ArrayList<JLabel>();
         lastSelectedRow = 0;
+        lastSelectedTeam = "";
         // Initializations
     }
 
@@ -81,14 +89,14 @@ public class View extends JPanel {
     ------------------------------------------------- */
     public void paintComponent(Graphics g)
     {
-        g.setColor(new Color(0, 0, 0)); //Black Background
+        g.setColor(new Color(0, 0, 0)); // Black Background
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
         if (model.getNumWindowObjects() != 0) {
             try
 		    {
-		    	for(int i = 0; i < model.getNumWindowObjects(); i++) //Iterate through all sprites, drawing them on the screen
-		    	{											   //And accounting for the scroll position
+		    	for(int i = 0; i < model.getNumWindowObjects(); i++) // Iterate through all sprites, drawing them on the screen
+		    	{											   // And accounting for the scroll position
 		    		Sprite sprite = model.getWindowObjectAt(i);
 		    		g.drawImage(sprite.getImage(), sprite.getX(), sprite.getY(), sprite.getW(), sprite.getH(), null);
 		    	}
@@ -112,7 +120,7 @@ public class View extends JPanel {
      *  REQUIREMENTS:
      *
     ------------------------------------------------- */
-    static BufferedImage loadImage(String filename) {	//Static image loading 
+    static BufferedImage loadImage(String filename) {	// Static image loading 
 		BufferedImage img = null;
 		try {
 		img = ImageIO.read(new File(filename));
@@ -152,52 +160,71 @@ public class View extends JPanel {
     public void update() {
         model.updateScreenSize(windowWidth, windowHeight);
         
-        if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN && !inPlayerEntryScreen) { //PLAYER ENTRY SCREEN
+        if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN && !inPlayerEntryScreen) { // PLAYER ENTRY SCREEN
             inPlayerEntryScreen = true;
             this.drawPlayerEntryScreen();
         }
         
-        // If model has a new tooltip for us to add
+        /*-----------------------------------------------------
+        If model has a new tooltip for us to add, add it
+        -----------------------------------------------------*/
         if (model.newToolTip == true) {
             model.newToolTip = false;
             toolTipCounter++;
             toolTipLabel = model.toolTip;
             toolTipLabel.setBounds(10, (580 + toolTipCounter * 30), 1000, 30);
-            this.add(toolTipLabel, BorderLayout.SOUTH);
+            PlayerEntryPanes.add(toolTipLabel, BorderLayout.SOUTH);
             toolTipLabel.setVisible(true);
             timer.schedule(new toolTipTimeout(), 3000);
             System.out.println("In View");
         }
 
-        if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN
+        /*-----------------------------------------------------
+        Update the '>>>>' row selection arrows
+        -----------------------------------------------------*/
+        if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN 
         && KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner() != null) {
-            int selectedY = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getY();
-
-            if (lastSelectedRow != ((int)((selectedY - 121)/24))) {
-                lastSelectedRow = ((int)((selectedY - 121)/24));
             
-                try {
+            try {
+                KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().setBackground(Color.LIGHT_GRAY);
 
-                    for (int i = 0; i < rowSelectionLabel.size(); i++) {
+                int selectedY = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getY();
+
+                if (lastSelectedRow != ((int)((selectedY - 121)/24))
+                || (lastSelectedTeam != KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getParent().getName())) { // If we have selected a different Row
+
+                    lastSelectedRow = ((int)((selectedY - 121)/24));
+                    lastSelectedTeam = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getParent().getName();
+            
+                
+                    for (int i = 0; i < rowSelectionLabel.size(); i++) {    // Clear out all other rows
                         rowSelectionLabel.get(i).setText("           ");
                     }
+                    for (int i = 0; i < model.getNumPlayerIDBoxes(); i++) {
+                        model.getPlayerIDBoxAt(i).setBackground(Color.WHITE);
+                    }
+                    for (int i = 0; i < model.getNumEquipmentIDBoxes(); i++) {
+                        model.getEquipmentIDBoxAt(i).setBackground(Color.WHITE);
+                    }
+                    ClearScreenButton.setBackground(new Color(0, 66, 32));
+                    StartGameButton.setBackground(new Color(0, 66, 32));
 
                     if (KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getParent() != null) {
-                        if (KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getParent().getName() == "RedTextFields") {
+                        if (lastSelectedTeam == "RedTextFields") {
+                            rowSelectionLabel.get(lastSelectedRow).setBackground(Color.BLACK);
                             rowSelectionLabel.get(lastSelectedRow).setText("  >>>>");
                         }
-                        else if (KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getParent().getName() == "GreenTextFields") {
+                        else if (lastSelectedTeam == "GreenTextFields") {
                             rowSelectionLabel.get(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).setText("  >>>>");
                         }
                     }
                 }
-                catch (Exception e) {
-                    // getFocusOwner() is not reliable, so we need to pass and do nothing if it 
-                    // returns null
-                }
+                
             }
-            //rowSelectionLabel.get((int)((selectedY - 121)/24))
-            //tmp.setText("    >>>>   ");
+            catch (Exception e) {
+                // getFocusOwner() is not reliable, so we need to pass and do nothing if it 
+                // returns null
+            }
         }
     }
 
@@ -213,6 +240,58 @@ public class View extends JPanel {
     public void drawPlayerEntryScreen() {
         LayoutManager layout = new FlowLayout();
         JLabel tmpJLabel;
+        this.setLayout(new BorderLayout());
+
+
+        /*-------------
+         * Buttons
+        --------------*/
+        JPanel Buttons = new JPanel();
+        Buttons.setLayout(new BoxLayout(Buttons, BoxLayout.X_AXIS));
+        Buttons.setBackground(Color.BLACK);
+        Buttons.setOpaque(false);
+
+        JPanel ButtonsCenter = new JPanel();
+        ButtonsCenter.setBackground(Color.BLACK);
+        ButtonsCenter.setLayout(new FlowLayout(FlowLayout.CENTER));
+
+        ClearScreenButton = new JButton("(F1) - Clear Screen");
+        ClearScreenButton.setPreferredSize(new Dimension(160, 60));
+        ClearScreenButton.setMaximumSize(new Dimension(160, 60));
+        ClearScreenButton.setBackground(new Color(0, 66, 32));
+        ClearScreenButton.setForeground(Color.WHITE);
+        ClearScreenButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e){  
+            model.clearTextBoxes();
+        }  
+        }); 
+        ButtonsCenter.add(ClearScreenButton);
+
+        StartGameButton = new JButton("(F5) - Start Game");
+        StartGameButton.setPreferredSize(new Dimension(160, 60));
+        StartGameButton.setMaximumSize(new Dimension(160, 60));
+        StartGameButton.setBackground(new Color(0, 66, 32));
+        StartGameButton.setForeground(Color.WHITE);
+        StartGameButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){  
+                model.startGameButtonHit();
+            }  
+        }); 
+        ButtonsCenter.add(StartGameButton);
+        ButtonsCenter.setOpaque(false);
+
+        Buttons.add(ButtonsCenter);
+        this.add(Buttons, BorderLayout.SOUTH);
+        Buttons.setVisible(true);
+
+
+        /*------------------------------------
+         * Main Container for Text Entry Box
+         * Panes
+        -------------------------------------*/
+        PlayerEntryPanes = new JPanel();
+        PlayerEntryPanes.setBackground(new Color (0, 0, 0, 255));
+        PlayerEntryPanes.setPreferredSize(new Dimension(900, 900));
 
         
         RedTeamTextBoxPane.setBackground(new Color(207, 0, 0));
@@ -354,8 +433,12 @@ public class View extends JPanel {
             TextFieldsG.setPreferredSize(new Dimension(350, 550));
             RedTeamTextBoxPane.add(TextFieldsR, tFR);
             GreenTeamTextBoxPane.add(TextFieldsG, tFG);
-            this.add(RedTeamTextBoxPane, BorderLayout.WEST);
-            this.add(GreenTeamTextBoxPane, BorderLayout.EAST);
+            PlayerEntryPanes.add(RedTeamTextBoxPane);
+            PlayerEntryPanes.add(GreenTeamTextBoxPane);
+            //this.add(RedTeamTextBoxPane, BorderLayout.CENTER);
+            //this.add(GreenTeamTextBoxPane, BorderLayout.CENTER);
+            this.add(PlayerEntryPanes, BorderLayout.NORTH);
+
         }
         RedTeamTextBoxPane.setVisible(true);
         GreenTeamTextBoxPane.setVisible(true);
@@ -367,9 +450,14 @@ public class View extends JPanel {
         public void run()
         {
             toolTipLabel.setVisible(false);
-            View.this.remove(View.this.getComponentCount() - 1);
-            toolTipCounter--;
-            System.out.println("In View timeout");
+
+            int tempIndex = View.this.PlayerEntryPanes.getComponentCount() - 1;
+            //Ensuring this index is >=2 prevents us from somehow deleting the player
+            //Entry panels
+            if (tempIndex >=2) {
+                View.this.PlayerEntryPanes.remove(tempIndex);
+                toolTipCounter--;
+            }
         }
     }
 }

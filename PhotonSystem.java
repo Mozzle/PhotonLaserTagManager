@@ -30,7 +30,7 @@ public class PhotonSystem extends JFrame {
 		this.addKeyListener(controller);
 
         this.setTitle("Photon Manager");
-		this.setSize(1000, 1000);
+		this.setSize(1000, 800);
 		this.setFocusable(true);
 		this.getContentPane().add(view);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

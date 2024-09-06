@@ -1,4 +1,6 @@
 import javax.swing.*;
+
+import java.awt.Color;
 import java.awt.event.*;
 
 public class TextBox {
@@ -38,16 +40,14 @@ public class TextBox {
 								m.clearTextBoxes();
 							}
 							break;
+						case KeyEvent.VK_F5:
+							//TODO: Implement me!
+							break;
 						default:
 							break;
 					   }
-				   
-					/*-----------------------------------------------------------------------
-					 This code prevents non-numeric characters from being input. 
-					 TODO: make a parameter that gets passed in that will tell the class
-					 what kind of text box we are, and subsequently 
-					-----------------------------------------------------------------------*/
-				   	if ( ( ke.getKeyChar() < '0' && ke.getKeyChar() >= ' ' )
+				
+					if ( ( ke.getKeyChar() < '0' && ke.getKeyChar() >= ' ' )
 					|| ( ke.getKeyChar() >= ':' && ke.getKeyChar() <= '~' ) ) {
 						field.setEditable(false);
 						m.toolTip("ID's should only be numeric (0-9)");
