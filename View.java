@@ -7,6 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -38,7 +39,7 @@ import java.util.ArrayList;
 public class View extends JPanel {
 
     private Model model;
-    private int windowHeight, windowWidth;
+    private int windowHeight, windowWidth, PlayerEntryPanePadding;
     private boolean inPlayerEntryScreen, inCountDownScreen;
     public JPanel RedTeamTextBoxPane, GreenTeamTextBoxPane, PlayerEntryPanes;
     public JLabel toolTipLabel;
@@ -46,7 +47,7 @@ public class View extends JPanel {
     public Timer timer;
     public int toolTipCounter;
     public int lastSelectedRow;
-    public String lastSelectedTeam;
+    public char lastSelectedTeam;
     JButton ClearScreenButton, StartGameButton;
 
     // Variable declarations
@@ -75,7 +76,8 @@ public class View extends JPanel {
         toolTipCounter = 0;
         rowSelectionLabel = new ArrayList<JLabel>();
         lastSelectedRow = 0;
-        lastSelectedTeam = "";
+        lastSelectedTeam = ' ';
+        PlayerEntryPanePadding = 0;
         // Initializations
     }
 
@@ -161,12 +163,21 @@ public class View extends JPanel {
     public void update() {
         model.updateScreenSize(windowWidth, windowHeight);
         
-        if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN && !inPlayerEntryScreen) { // PLAYER ENTRY SCREEN
+        if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN) { // PLAYER ENTRY SCREEN
+             
+            if (!inPlayerEntryScreen) { // If first time in Player Entry Screen
             inPlayerEntryScreen = true;
             this.drawPlayerEntryScreen();
+            }
+            
+            // Adjust padding on the outsides of the red and green panes
+            if (PlayerEntryPanePadding != (int)((windowWidth - 776)/ 2)) {
+                PlayerEntryPanePadding = (int)((windowWidth - 776)/ 2);
+                PlayerEntryPanes.setBorder(new EmptyBorder(0, PlayerEntryPanePadding, 0, PlayerEntryPanePadding));
+            }
+            
         }
-
-        if(model.getSystemState()==Model.COUNTDOWN_SCREEN && !inCountDownScreen){
+        if(model.getSystemState()==Model.COUNTDOWN_SCREEN && !inCountDownScreen){ // COUNTDOWN SCREEN
             inPlayerEntryScreen = false;
             inCountDownScreen=true; 
             this.PlayerEntryScreenDeleter(); 
@@ -181,10 +192,10 @@ public class View extends JPanel {
             toolTipCounter++;
             toolTipLabel = model.toolTip;
             toolTipLabel.setBounds(10, (580 + toolTipCounter * 30), 1000, 30);
+            toolTipLabel.setBorder(new EmptyBorder(0, 100, 0, 100));
             PlayerEntryPanes.add(toolTipLabel, BorderLayout.SOUTH);
             toolTipLabel.setVisible(true);
             timer.schedule(new toolTipTimeout(), 3000);
-            System.out.println("In View");
         }
 
         /*-----------------------------------------------------
@@ -195,15 +206,14 @@ public class View extends JPanel {
             
             try {
                 KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().setBackground(Color.LIGHT_GRAY);
+                String selectedRow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getName();
 
-                int selectedY = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getY();
+                if (lastSelectedRow != Integer.valueOf(selectedRow.substring(1))
+                || (lastSelectedTeam != selectedRow.charAt(0))) { // If we have selected a different Row
 
-                if (lastSelectedRow != ((int)((selectedY - 121)/24))
-                || (lastSelectedTeam != KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getParent().getName())) { // If we have selected a different Row
-
-                    lastSelectedRow = ((int)((selectedY - 121)/24));
-                    lastSelectedTeam = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getParent().getName();
-            
+                    lastSelectedRow = Integer.valueOf(selectedRow.substring(1));
+                    lastSelectedTeam = selectedRow.charAt(0);
+                    System.out.println(lastSelectedRow + " " + lastSelectedTeam);
                 
                     for (int i = 0; i < rowSelectionLabel.size(); i++) {    // Clear out all other rows
                         rowSelectionLabel.get(i).setText("           ");
@@ -218,11 +228,11 @@ public class View extends JPanel {
                     StartGameButton.setBackground(new Color(0, 66, 32));
 
                     if (KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getParent() != null) {
-                        if (lastSelectedTeam == "RedTextFields") {
+                        if (lastSelectedTeam == 'R') {
                             rowSelectionLabel.get(lastSelectedRow).setBackground(Color.BLACK);
                             rowSelectionLabel.get(lastSelectedRow).setText("  >>>>");
                         }
-                        else if (lastSelectedTeam == "GreenTextFields") {
+                        else if (lastSelectedTeam == 'G') {
                             rowSelectionLabel.get(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).setText("  >>>>");
                         }
                     }
@@ -342,14 +352,16 @@ public class View extends JPanel {
         PlayerEntryPanes = new JPanel();
         PlayerEntryPanes.setBackground(new Color (0, 0, 0, 255));
         PlayerEntryPanes.setPreferredSize(new Dimension(900, 900));
-
+        PlayerEntryPanes.setBorder(new EmptyBorder(0, 100, 0, 100));
         
         RedTeamTextBoxPane.setBackground(new Color(207, 0, 0));
         RedTeamTextBoxPane.setPreferredSize(new Dimension(375, 600));
+        //RedTeamTextBoxPane.setBorder(new EmptyBorder(0, -100, 0, 0));
         RedTeamTextBoxPane.setLayout(layout);
 
         GreenTeamTextBoxPane.setBackground(new Color(10, 160, 0));
         GreenTeamTextBoxPane.setPreferredSize(new Dimension(375, 600));
+        //GreenTeamTextBoxPane.setBorder(new EmptyBorder(0, 0, 0, -100));
         GreenTeamTextBoxPane.setLayout(layout);
 
         // Set up the 'Text Fields' panel that will be placed inside the RedTeamTextBoxPane

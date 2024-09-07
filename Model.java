@@ -59,12 +59,12 @@ public class Model
             windowObjects.remove(0);
             //creates the tables for the player entry screen
             for (int i = 0; i < NUM_MAX_PLAYERS_PER_TEAM; i++) {
-                PlayerIDBoxes.add(new TextBox("", 12, Model.this, TextBox.NUMERIC_TEXT_FIELD_TYPE));
-                EquipmentIDBoxes.add(new TextBox("", 8, Model.this,TextBox.NUMERIC_TEXT_FIELD_TYPE));
+                PlayerIDBoxes.add(new TextBox("R"+i, 12, Model.this, TextBox.NUMERIC_TEXT_FIELD_TYPE));
+                EquipmentIDBoxes.add(new TextBox("R"+i, 8, Model.this,TextBox.NUMERIC_TEXT_FIELD_TYPE));
             }
             for (int i = 0; i < NUM_MAX_PLAYERS_PER_TEAM; i++) {
-                PlayerIDBoxes.add(new TextBox("", 12, Model.this,TextBox.NUMERIC_TEXT_FIELD_TYPE));
-                EquipmentIDBoxes.add(new TextBox("", 8, Model.this,TextBox.NUMERIC_TEXT_FIELD_TYPE));
+                PlayerIDBoxes.add(new TextBox("G"+i, 12, Model.this,TextBox.NUMERIC_TEXT_FIELD_TYPE));
+                EquipmentIDBoxes.add(new TextBox("G"+i, 8, Model.this,TextBox.NUMERIC_TEXT_FIELD_TYPE));
             }
             system_State = PLAYER_ENTRY_SCREEN;
         }

@@ -14,13 +14,14 @@ public class TextBox {
 	public JTextField field; //JTextField object
 	Model m;
 
-	public TextBox(String hintText, int cols, Model m, int TextFieldType) {
+	public TextBox(String name, int cols, Model m, int TextFieldType) {
 		/*-----------------------------------------------------------------------
 		 We have an upward reaching architecture here. This class is both 
 		 controlled by Model, AND can call functions in Model
 		------------------------------------------------------------------------*/
 		this.m = m;
-		field = new JTextField(hintText, cols);
+		field = new JTextField("", cols);
+		field.setName(name);
 
 		/*-----------------------------------------------------------------------
 		Text fields have to have a keyListener that is seperate from the main
