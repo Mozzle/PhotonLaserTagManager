@@ -54,7 +54,6 @@ public class TextBox {
 					|| ( ke.getKeyChar() >= ':' && ke.getKeyChar() <= '~' ) ) {
 						field.setEditable(false);
 						m.toolTip("ID's should only be numeric (0-9)");
-						System.out.println("In TextBox");
 				   	} else {
 					  	field.setEditable(true);
 				   	}

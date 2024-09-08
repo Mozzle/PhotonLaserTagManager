@@ -312,7 +312,6 @@ public class Model
         toolTip.setForeground(Color.WHITE);
         toolTip.setFont(new Font("Verdana", Font.BOLD, 22));
         newToolTip = true;
-        System.out.println("In Model");
 
         return success;
     }

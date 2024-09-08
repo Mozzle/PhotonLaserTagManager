@@ -213,7 +213,6 @@ public class View extends JPanel {
 
                     lastSelectedRow = Integer.valueOf(selectedRow.substring(1));
                     lastSelectedTeam = selectedRow.charAt(0);
-                    System.out.println(lastSelectedRow + " " + lastSelectedTeam);
                 
                     for (int i = 0; i < rowSelectionLabel.size(); i++) {    // Clear out all other rows
                         rowSelectionLabel.get(i).setText("           ");
@@ -333,8 +332,8 @@ public class View extends JPanel {
         StartGameButton.setBackground(new Color(0, 66, 32));
         StartGameButton.setForeground(Color.WHITE);
         StartGameButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e){  
-                model.startGameButtonHit();
+            public void actionPerformed(ActionEvent e){
+                model.PlayerEntryScreenDeleter();
             }  
         }); 
         ButtonsCenter.add(StartGameButton);
