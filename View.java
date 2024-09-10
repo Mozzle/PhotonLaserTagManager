@@ -16,7 +16,7 @@ import java.awt.GridLayout;
 import java.awt.KeyboardFocusManager;
 import java.awt.LayoutManager;
 import java.awt.Point;
-import java.awt.event.ActionListener;
+import java.awt.Component;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
@@ -48,7 +48,8 @@ public class View extends JPanel {
     public int toolTipCounter;
     public int lastSelectedRow;
     public char lastSelectedTeam;
-    JButton ClearScreenButton, StartGameButton;
+    public JButton ClearScreenButton, StartGameButton;
+    public Component currentFocus;
 
     // Variable declarations
 
@@ -76,7 +77,7 @@ public class View extends JPanel {
         toolTipCounter = 0;
         rowSelectionLabel = new ArrayList<JLabel>();
         lastSelectedRow = 0;
-        lastSelectedTeam = ' ';
+        lastSelectedTeam = 'R';
         PlayerEntryPanePadding = 0;
         // Initializations
     }
@@ -207,9 +208,40 @@ public class View extends JPanel {
             try {
                 KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().setBackground(Color.LIGHT_GRAY);
                 String selectedRow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getName();
-
-                if (lastSelectedRow != Integer.valueOf(selectedRow.substring(1))
-                || (lastSelectedTeam != selectedRow.charAt(0))) { // If we have selected a different Row
+            
+                //This is super gross and needs to be cleaned up
+                if ((selectedRow.length() == 2 || selectedRow.length() == 3) && (lastSelectedRow != Integer.valueOf(selectedRow.substring(1))
+                || (lastSelectedTeam != selectedRow.charAt(0)))) { // If we have selected a different Row
+                    
+                    // Focus has changed, so we should check the ID of the previously selected row against the 
+                    // database.
+                    if (lastSelectedRow <= model.getNumPlayerIDBoxes()) {
+                        try {
+                            int idToCheck = -1;
+                            if (lastSelectedTeam == 'R') {
+                                idToCheck = Integer.valueOf(model.PlayerIDBoxes.get(lastSelectedRow).getTextFromField());
+                            }
+                            else if (lastSelectedTeam == 'G') {
+                                idToCheck = Integer.valueOf(model.PlayerIDBoxes.get(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextFromField());
+                            }
+                            
+                            // Query database for the entered ID.
+                            String codename = model.database.searchDB(Database.PARAM_ID, idToCheck, "");
+                            // If ID exists in database
+                            if (codename != "") {
+                                //Make a tooltip to say player has been added successfully
+                                model.toolTip(codename + " added successfully!");
+                            }
+                            else {
+                                System.out.println("Popup");
+                                //TODO: MAKE POPUP SCREEN HERE TO GET USER DATA FOR A NEW CODENAME
+                            }
+                        }
+                        catch (Exception e) {
+                            //do nothing
+                        }
+                    }
+                    
 
                     lastSelectedRow = Integer.valueOf(selectedRow.substring(1));
                     lastSelectedTeam = selectedRow.charAt(0);
@@ -239,8 +271,8 @@ public class View extends JPanel {
                 
             }
             catch (Exception e) {
-                // getFocusOwner() is not reliable, so we need to pass and do nothing if it 
-                // returns null
+                e.printStackTrace();
+                System.err.println(e.getClass().getName()+": "+e.getMessage());
             }
         }
     }
