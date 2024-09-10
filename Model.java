@@ -5,6 +5,8 @@ import java.lang.Math;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.*;
+import javax.xml.crypto.Data;
+
 import java.awt.event.*;
 import java.awt.Color;
 import java.awt.Font;
@@ -24,6 +26,7 @@ public class Model
     // Max players per team
     public static final int NUM_MAX_PLAYERS_PER_TEAM = 15;
 
+    Database database;
     public int system_State;
 
     public ArrayList<Sprite> windowObjects; // This arrayList contains all elements that
@@ -67,6 +70,13 @@ public class Model
                 EquipmentIDBoxes.add(new TextBox("G"+i, 8, Model.this,TextBox.NUMERIC_TEXT_FIELD_TYPE));
             }
             system_State = PLAYER_ENTRY_SCREEN;
+
+            /*  DATABASE TEST CODE
+            System.out.println(database.getNumRows());
+            database.insertDB(Database.PARAM_ID_AND_CODENAME, 2, "Gerald");
+            System.out.println(database.searchDB(Database.PARAM_ID, 2, ""));
+            database.deleteDBRow(Database.PARAM_ID, 2, "");
+            */
         }
     }
 
@@ -102,7 +112,8 @@ public class Model
      *
     ------------------------------------------------- */
     public Model()
-    {
+    {   
+        database = new Database();
         system_State = INITIALIZE;
         // Initialization
         windowObjects = new ArrayList<Sprite>();
@@ -207,6 +218,7 @@ public class Model
         for (int i = 0; i < getNumPlayerIDBoxes(); i++) {
             PlayerIDBoxes.get(i).updateScreenSize(screenW, screenH);
         }
+
     }
 
     /*-------------------------------------------------
