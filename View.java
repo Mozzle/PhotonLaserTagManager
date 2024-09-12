@@ -2,6 +2,8 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JTextField;
@@ -51,6 +53,7 @@ public class View extends JPanel {
     public JButton ClearScreenButton, StartGameButton;
     public Component currentFocus;
 
+
     // Variable declarations
 
     /*-------------------------------------------------
@@ -76,7 +79,7 @@ public class View extends JPanel {
         timer = new Timer();
         toolTipCounter = 0;
         rowSelectionLabel = new ArrayList<JLabel>();
-        lastSelectedRow = 0;
+        lastSelectedRow = 99;
         lastSelectedTeam = 'R';
         PlayerEntryPanePadding = 0;
         // Initializations
@@ -196,7 +199,7 @@ public class View extends JPanel {
             toolTipLabel.setBorder(new EmptyBorder(0, 100, 0, 100));
             PlayerEntryPanes.add(toolTipLabel, BorderLayout.SOUTH);
             toolTipLabel.setVisible(true);
-            timer.schedule(new toolTipTimeout(), 3000);
+            timer.schedule(new toolTipTimeout(),4500);
         }
 
         /*-----------------------------------------------------
@@ -205,9 +208,12 @@ public class View extends JPanel {
         if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN 
         && KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner() != null) {
             
+
             try {
-                KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().setBackground(Color.LIGHT_GRAY);
-                String selectedRow = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getName();
+                Component LastFocusedComponent = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+
+                LastFocusedComponent.setBackground(Color.LIGHT_GRAY);
+                String selectedRow = LastFocusedComponent.getName();
             
                 //This is super gross and needs to be cleaned up
                 if ((selectedRow.length() == 2 || selectedRow.length() == 3) && (lastSelectedRow != Integer.valueOf(selectedRow.substring(1))
@@ -218,27 +224,56 @@ public class View extends JPanel {
                     if (lastSelectedRow <= model.getNumPlayerIDBoxes()) {
                         try {
                             int idToCheck = -1;
+                            int indexToCompare = -1;
                             if (lastSelectedTeam == 'R') {
                                 idToCheck = Integer.valueOf(model.PlayerIDBoxes.get(lastSelectedRow).getTextFromField());
+                                indexToCompare = lastSelectedRow;
                             }
                             else if (lastSelectedTeam == 'G') {
                                 idToCheck = Integer.valueOf(model.PlayerIDBoxes.get(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextFromField());
+                                indexToCompare = lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM;
                             }
                             
                             // Query database for the entered ID.
                             String codename = model.database.searchDB(Database.PARAM_ID, idToCheck, "");
+        
                             // If ID exists in database
                             if (codename != "") {
-                                //Make a tooltip to say player has been added successfully
-                                model.toolTip(codename + " added successfully!");
+                                boolean notADuplicate = true;
+                                for (int i = 0; i < (Model.NUM_MAX_PLAYERS_PER_TEAM * 2); i++) {
+
+                                    if (String.valueOf(idToCheck).equals(model.PlayerIDBoxes.get(i).getTextFromField()) && (i != indexToCompare)) {
+                                        model.toolTip(codename + " (ID: " + idToCheck + ") is already in this game!");
+                                        notADuplicate = false;
+                                    }
+                                }
+
+                                if (notADuplicate) {
+                                    //Make a tooltip to say player has been added successfully
+                                    model.toolTip(codename + " added successfully!");
+                                }
                             }
+                            // If ID does not exist in the database
                             else {
-                                System.out.println("Popup");
-                                //TODO: MAKE POPUP SCREEN HERE TO GET USER DATA FOR A NEW CODENAME
+
+                                //Get the input ID number from the previously selected field and put it in a 'NEW PLAYER ENTRY' popup window
+                                String popupInputID = "";
+                                JTextField NewPlayerIDField = new JTextField();
+                                if (lastSelectedTeam == 'R') {
+                                    popupInputID = model.PlayerIDBoxes.get(lastSelectedRow).getTextFromField();
+                                    NewPlayerIDField = model.PlayerIDBoxes.get(lastSelectedRow).getTextBox();
+                                }
+                                else if (lastSelectedTeam == 'G') {
+                                    popupInputID = model.PlayerIDBoxes.get(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextFromField();
+                                    NewPlayerIDField = model.PlayerIDBoxes.get(lastSelectedRow  + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextBox();
+                                }
+                                // Create the New Player Entry Popup screen
+                                NewPlayerPopupScreen(popupInputID, NewPlayerIDField);
+
                             }
                         }
                         catch (Exception e) {
-                            //do nothing
+                           // Do nothing
                         }
                     }
                     
@@ -258,7 +293,7 @@ public class View extends JPanel {
                     ClearScreenButton.setBackground(new Color(0, 66, 32));
                     StartGameButton.setBackground(new Color(0, 66, 32));
 
-                    if (KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner().getParent() != null) {
+                    if (LastFocusedComponent.getParent() != null) {
                         if (lastSelectedTeam == 'R') {
                             rowSelectionLabel.get(lastSelectedRow).setBackground(Color.BLACK);
                             rowSelectionLabel.get(lastSelectedRow).setText("  >>>>");
@@ -564,5 +599,90 @@ public class View extends JPanel {
             this.remove(i);
         }
         
+    }
+
+    public void NewPlayerPopupScreen(String idInput, JTextField IDBox) {
+        //Textfields on popup window
+        model.setNewPlayerPopup(true);
+        JTextField NewPlayerName = new JTextField(10);
+
+        JTextField NewPlayerID = new JTextField(5);
+        NewPlayerID.setText(idInput);
+
+        // Input sanitation for New Player ID Textfield
+        NewPlayerID.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent ke) {
+                if ( ( ke.getKeyChar() < '0' && ke.getKeyChar() >= ' ' )
+                || ( ke.getKeyChar() >= ':' && ke.getKeyChar() <= '~' ) ) {
+                      NewPlayerID.setEditable(false);
+                   } else {
+                      NewPlayerID.setEditable(true);
+                   }
+            }
+         }); 
+
+        String hintLine1 = "Unknown Player ID entered, would";
+        String hintLine2 = "you like to create a new Player?";
+
+        // Flag to mark the popup window ready to close
+        boolean closePopupFlag = false;
+        
+        while (!closePopupFlag) {
+
+            // making the popup window and adding elements to it
+            JPanel NewPlayerPopup = new JPanel();
+            NewPlayerPopup.setPreferredSize(new Dimension(250, 125));
+            NewPlayerPopup.add(new JLabel(hintLine1));
+            NewPlayerPopup.add(Box.createVerticalStrut(15));
+            NewPlayerPopup.add(new JLabel(hintLine2));
+            NewPlayerPopup.add(Box.createVerticalStrut(15));
+            NewPlayerPopup.add(Box.createVerticalStrut(35));
+            NewPlayerPopup.add(new JLabel("New Player ID                  "));
+            NewPlayerPopup.add(NewPlayerID, BorderLayout.EAST);
+            NewPlayerPopup.add(Box.createVerticalStrut(15));
+            NewPlayerPopup.add(new JLabel("New Player Name"));
+            NewPlayerPopup.add(NewPlayerName,BorderLayout.EAST);
+
+            //Create the dialog popup with the ok/cancel buttons and wait for the window to be closed
+            int result = JOptionPane.showConfirmDialog(null, NewPlayerPopup, "New Player Entry", JOptionPane.OK_CANCEL_OPTION);
+            // If the user clicked the "OK" button
+            if (result == JOptionPane.OK_OPTION) {
+                //Check if the entered ID exists in the database
+                String searchResult = model.database.searchDB(Database.PARAM_ID, Integer.valueOf(NewPlayerID.getText()), "");
+
+                // If the entered ID doesn't exist in the DB, add the new player to the DB. 
+                if (searchResult == "" && Integer.valueOf(NewPlayerID.getText()) > 0 && NewPlayerID.getText().length() >= 1 && NewPlayerName.getText().length() >= 1) {
+                    model.database.insertDB(Database.PARAM_ID_AND_CODENAME, Integer.valueOf(NewPlayerID.getText()), NewPlayerName.getText());
+                    IDBox.setText(NewPlayerID.getText());
+                    model.toolTip(NewPlayerName.getText() + " added successfully!");
+                    closePopupFlag = true;
+                }
+                // If the entered Player ID is not a new ID
+                else if (searchResult != "") {
+                    hintLine1 = "The Player ID you entered already";
+                    hintLine2 = "exists, please try again";
+                }
+                else if (NewPlayerID.getText().length() < 1) {
+                    hintLine1 = "A Player ID must be entered.";
+                    hintLine2 = " ";
+                }
+                else if (NewPlayerName.getText().length() < 1) {
+                    hintLine1 = "A Player Name must be entered.";
+                    hintLine2 = " ";
+                }
+                else {
+                    hintLine1 = "You did something really weird,";
+                    hintLine2 = "something went wrong.";
+                }
+            
+            // If the user hit cancel or close on the window
+            }
+            else if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) {
+                IDBox.setText("");
+                closePopupFlag = true;
+            }
+        }
+
+        model.setNewPlayerPopup(false);
     }
 }
