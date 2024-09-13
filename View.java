@@ -41,13 +41,14 @@ import java.util.ArrayList;
 public class View extends JPanel {
 
     private Model model;
+    public NetController netController;
     private int windowHeight, windowWidth, PlayerEntryPanePadding;
     private boolean inPlayerEntryScreen, inCountDownScreen;
     public JPanel RedTeamTextBoxPane, GreenTeamTextBoxPane, PlayerEntryPanes;
     public JLabel toolTipLabel;
     public ArrayList<JLabel> rowSelectionLabel;
     public Timer timer;
-    public int toolTipCounter;
+    public int toolTipCounter, prevToolTipCounter;
     public int lastSelectedRow;
     public char lastSelectedTeam;
     public JButton ClearScreenButton, StartGameButton;
@@ -66,10 +67,11 @@ public class View extends JPanel {
      *
     ------------------------------------------------- */
 
-    public View(Controller c, Model m)
+    public View(Controller c, Model m, NetController n)
     {
         c.setView(this);
         model = m;
+        netController = n;
         inPlayerEntryScreen = false;
         inCountDownScreen = false;
         RedTeamTextBoxPane = new JPanel();
@@ -78,6 +80,7 @@ public class View extends JPanel {
         GreenTeamTextBoxPane.setVisible(false);
         timer = new Timer();
         toolTipCounter = 0;
+        prevToolTipCounter = 0;
         rowSelectionLabel = new ArrayList<JLabel>();
         lastSelectedRow = 99;
         lastSelectedTeam = 'R';
@@ -192,6 +195,7 @@ public class View extends JPanel {
         If model has a new tooltip for us to add, add it
         -----------------------------------------------------*/
         if (model.newToolTip == true) {
+            
             model.newToolTip = false;
             toolTipCounter++;
             toolTipLabel = model.toolTip;
@@ -200,6 +204,13 @@ public class View extends JPanel {
             PlayerEntryPanes.add(toolTipLabel, BorderLayout.SOUTH);
             toolTipLabel.setVisible(true);
             timer.schedule(new toolTipTimeout(),4500);
+        }
+
+        if (prevToolTipCounter != toolTipCounter) {
+            for (int i = 2; i < PlayerEntryPanes.getComponentCount(); i++) {
+                PlayerEntryPanes.getComponent(i).setBounds(10, (580 + i * 30), 1000, 30);
+            }
+            prevToolTipCounter = toolTipCounter;
         }
 
         /*-----------------------------------------------------
@@ -270,6 +281,27 @@ public class View extends JPanel {
                                 // Create the New Player Entry Popup screen
                                 NewPlayerPopupScreen(popupInputID, NewPlayerIDField);
 
+                            }
+
+                            String EquipmentIdToSend = model.EquipmentIDBoxes.get(indexToCompare).getTextFromField();
+                            //If Equipment ID field is not empty and is not the game start/end code
+                            if (!EquipmentIdToSend.equals("") && !EquipmentIdToSend.equals("202") && !EquipmentIdToSend.equals("221")) {
+                                //TODO!: Check all other Equipment ID fields for this equipment ID, make sure that that equipment ID doesn't already exist in the game
+                                //before sending out the UDP.
+                                //Make this ^ a function in model and do some real modular programming, silly
+                                netController.transmit(model.EquipmentIDBoxes.get(indexToCompare).getTextFromField());
+                            }
+                            // Send tooltip saying that the equipment ID is invalid.
+                            else {
+                                String tmpTeam = "";
+                                if (indexToCompare < Model.NUM_MAX_PLAYERS_PER_TEAM) {
+                                    tmpTeam = "Red";
+                                }
+                                else {
+                                    tmpTeam = "Green";
+                                }
+                                // "Invalid Equipment ID for Red team Player 5"
+                                model.toolTip("Invalid Equipment ID for " + tmpTeam + " Team Player " + (indexToCompare % Model.NUM_MAX_PLAYERS_PER_TEAM));
                             }
                         }
                         catch (Exception e) {
@@ -578,21 +610,40 @@ public class View extends JPanel {
 
     }
 
+    /*--------------------------------------------------
+     * 
+     *      toolTipTimeout.run()
+     * 
+     *  DESCRIPTION: Timer Task that executes when a 
+     *  tool tip has timed out on the screen. Deletes 
+     *  the tool Tip
+     * 
+     *  REQUIREMENTS: 
+     * 
+     --------------------------------------------------*/
+
     public class toolTipTimeout extends TimerTask
     {
         public void run()
         {
-            toolTipLabel.setVisible(false);
-
-            int tempIndex = View.this.PlayerEntryPanes.getComponentCount() - 1;
-            //Ensuring this index is >=2 prevents us from somehow deleting the player
-            //Entry panels
-            if (tempIndex >=2) {
-                View.this.PlayerEntryPanes.remove(tempIndex);
+            if (toolTipCounter > 0) {
+                View.this.PlayerEntryPanes.remove(View.this.PlayerEntryPanes.getComponentCount() - toolTipCounter);
                 toolTipCounter--;
             }
         }
     }
+
+    /*--------------------------------------------------
+     * 
+     *      PlayerEntryScreenDeleter()
+     * 
+     *  DESCRIPTION: Deletes the player entry screen.
+     *  Used for transitioning into the Countdown 
+     *  screen.
+     * 
+     *  REQUIREMENTS: 
+     * 
+     --------------------------------------------------*/
 
     public void PlayerEntryScreenDeleter(){
         for(int i=this.getComponentCount() - 1; i>= 0 ; i--){
