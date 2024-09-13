@@ -119,7 +119,6 @@ public class Database {
         if (param == PARAM_ID_AND_CODENAME) {
             try {
                 Statement statement = connection.createStatement();
-                //ResultSet resultSet = statement.executeQuery("INSERT INTO players(id, codename) VALUES (" + id + ", '" + codename +"');");
                 statement.executeUpdate("INSERT INTO players(id, codename) VALUES (" + id + ", '" + codename +"');");
             }
             catch (Exception e) {
@@ -148,7 +147,6 @@ public class Database {
         if (param == PARAM_ID) {
             try {
                 Statement statement = connection.createStatement();
-                //ResultSet resultSet = statement.executeQuery("DELETE FROM players WHERE players.id = " + id + ";");
                 statement.executeUpdate("DELETE FROM players WHERE players.id = " + id + ";");
             }
             catch (Exception e) {
@@ -160,7 +158,6 @@ public class Database {
         else if (param == PARAM_CODENAME) {
             try {
                 Statement statement = connection.createStatement();
-                //ResultSet resultSet = statement.executeQuery("DELETE FROM players WHERE players.codename = '" + codename + "';");
                 statement.executeUpdate("DELETE FROM players WHERE players.codename = '" + codename + "';");
             }
             catch (Exception e) {

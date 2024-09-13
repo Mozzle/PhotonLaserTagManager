@@ -1,7 +1,4 @@
 import java.awt.event.MouseListener;
-
-
-
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionListener;
 import java.awt.RenderingHints.Key;
@@ -17,13 +14,12 @@ public class Controller implements ActionListener, MouseListener, KeyListener
 
     /*-----------------------------------------------------------
      * 
-     *      Controller()
+     *  Controller()
      * 
      *  DESCRIPTION: Controller class initializer
      * 
-     *  REQUIREMENTS: 
-     * 
     ---------------------------------------------------------- */
+
     public Controller(Model m)
     {
         // Initialization
@@ -32,12 +28,10 @@ public class Controller implements ActionListener, MouseListener, KeyListener
 
     /*-----------------------------------------------------------
      * 
-     *      update()
+     *  update()
      * 
      *  DESCRIPTION: May be necessary to pass some parameter into
      *  model.update() depending on some state of the controller.
-     * 
-     *  REQUIREMENTS: 
      * 
     ---------------------------------------------------------- */
 
@@ -46,28 +40,35 @@ public class Controller implements ActionListener, MouseListener, KeyListener
         model.update();
     }
 
+    /*-----------------------------------------------------------
+     * 
+     *  setView(View v)
+     * 
+     *  DESCRIPTION: Set's the models reference to the view.
+     * 
+    ---------------------------------------------------------- */
+
     void setView(View v)
 	{
-    view = v;
+        view = v;
 	}
 
     /*-----------------------------------------------------------
      * 
-     *      actionPerformed()
+     *  actionPerformed()
      * 
-     *  DESCRIPTION: Implementation of actionListener function
-     * 
-     *  REQUIREMENTS: 
+     *  DESCRIPTION: Implementation of actionListener function.
+     *  Executes logic specific to the type of action passed in.
      * 
     ---------------------------------------------------------- */
     public void actionPerformed(ActionEvent e)
 	{
-		;
+
 	}
 
     /*-----------------------------------------------------------
      * 
-     *      mousePressed()
+     *  mousePressed()
      * 
      *  DESCRIPTION: Implementation of mouseListener function,
      *  this function is called by interrupt when the mouse is
@@ -78,63 +79,43 @@ public class Controller implements ActionListener, MouseListener, KeyListener
     ---------------------------------------------------------- */
     public void mousePressed(MouseEvent e)
 	{
-	/*	//If in Edit mode and adding walls and not adding any other sprites
-		if (model.getEditModeState() && model.getAddRemoveWallsState() && !model.getAddGhostState() && !model.getAddPelletState() && !model.getAddFruitState()) {			//If in editmode and add wall mode
-			model.setNewWallOrigin(e.getX(), e.getY() + view.getScrollPos());		//make first corner
-		} // If in edit mode and removing walls and not adding any other sprites
-		else if (model.getEditModeState() && !model.getAddRemoveWallsState() && !model.getAddGhostState() && !model.getAddPelletState() && !model.getAddFruitState()) {	//if in edit mode and remove wall mode
-			model.removeWallOnClick(e.getX(), e.getY() + view.getScrollPos());				//remove wall if clicking on one
-		} // If in edit mode and adding ghosts
-		else if (model.getEditModeState() && model.getAddGhostState()) {
-			model.addNewGhost(e.getX(), e.getY() + view.getScrollPos());
-		} // If in edit mode and adding pellets
-		else if (model.getEditModeState() && model.getAddPelletState()) {
-			model.addNewPellet(e.getX(), e.getY() + view.getScrollPos());
-		} // If in edit mode and adding fruit
-		else if (model.getEditModeState() && model.getAddFruitState()) {
-			model.addNewFruit(e.getX(), e.getY() + view.getScrollPos());
-		}
-		*/
-        
+
 	}
 
     /*-----------------------------------------------------------
      * 
-     *      mouseReleased()
+     *  mouseReleased(), mouseEntered(), mouseExited(), mouseClicked()
      * 
      *  DESCRIPTION: Implementation of mouseListener function,
      *  this function is called by interrupt when a mouse click 
      *  is released. This function should be used for most normal
      *  mouse clicking events.
      * 
-     *  REQUIREMENTS: 
-     * 
     ---------------------------------------------------------- */
-    public void mouseReleased(MouseEvent e) { 
-		//You can use e.getX() and e.getY() to get mouse position.
-      }
-	public void mouseEntered(MouseEvent e) {    }
-	public void mouseExited(MouseEvent e) {    }
-	public void mouseClicked(MouseEvent e) {    }
+
+    // Use e.getX() and e.getY() to get mouse coordinates
+    public void mouseReleased(MouseEvent e) {}
+	public void mouseEntered(MouseEvent e) {}
+	public void mouseExited(MouseEvent e) {}
+	public void mouseClicked(MouseEvent e) {}
 
     /*-----------------------------------------------------------
      * 
-     *      keyPressed()
+     *  keyPressed()
      * 
      *  DESCRIPTION: Implementation of keyListener function,
      *  this function is called by interrupt when a key is 
-     *  pressed down.
-     * 
-     *  REQUIREMENTS: 
+     *  pressed down. 
      * 
     ---------------------------------------------------------- */
+
 	public void keyPressed(KeyEvent e)
 	{
 	}
     
     /*-----------------------------------------------------------
      * 
-     *      keyReleased()
+     *  keyReleased()
      * 
      *  DESCRIPTION: Implementation of keyListener function,
      *  this function is called by interrupt when a key is 
@@ -142,33 +123,42 @@ public class Controller implements ActionListener, MouseListener, KeyListener
      *  used for most user typing events. Testing is required 
      *  to determine which is better.
      * 
-     *  REQUIREMENTS: 
-     * 
     ---------------------------------------------------------- */
 	public void keyReleased(KeyEvent e)
 	{
 		switch(e.getKeyCode()) {
+            
+            /// TODO: Ensure for case F1, when the text boxes are cleared any updates needed
+            /// are made accordingly with the DB. If the DB is not needed to be updated 
+            /// on clearing, then ignore this and remove this comment please.
+
+            // Case F1 -- Clear all player entries
 			case KeyEvent.VK_F1:
-				if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN) {
+				if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN
+                 && model.getNewPlayerPopupStatus() == false)
                     model.clearTextBoxes();
-                }
 				break;
+
+            // Case F2 -- No logic
 			case KeyEvent.VK_F2:
-
 				break;
+
+            // Case F3 -- No logic
 			case KeyEvent.VK_F3:
-				
 				break;
+
+            // Case F4 -- No logic
 			case KeyEvent.VK_F4:
-
 				break;
 
+            // Case F5 -- Start the game
             case KeyEvent.VK_F5:
-            if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN) {
+            if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN
+             && model.getNewPlayerPopupStatus() == false)
                 model.PlayerEntryScreenDeleter();
-                }
                 break;
-		
+
+            // Default case -- Do nothing
 			default:
 				break;
 		}
@@ -176,7 +166,7 @@ public class Controller implements ActionListener, MouseListener, KeyListener
 
     /*-----------------------------------------------------------
      * 
-     *      keyTyped()
+     *  keyTyped()
      * 
      *  DESCRIPTION: Implementation of keyListener function,
      *  this function is called by interrupt when a key is 
@@ -189,7 +179,7 @@ public class Controller implements ActionListener, MouseListener, KeyListener
     ---------------------------------------------------------- */
 	public void keyTyped(KeyEvent e)
 	{
-		//If model.getMode() == team input screen, send key typed
+		// If model.getMode() == team input screen, send key typed
 		// to model to add text to a field.
 	}
 

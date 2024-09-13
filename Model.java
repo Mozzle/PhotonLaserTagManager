@@ -40,7 +40,11 @@ public class Model
 
     public JLabel toolTip;
     public boolean newToolTip;               // Flag for View class to indicate if Model has
-                                                // a screen element that needs updated
+                                             // a screen element that needs updated
+
+    public boolean PlayerEntryScreenNewPlayerPopup;     // Flag to disable F1, F5 commands while
+                                                        // New Player Popup screen is active
+
 
     /*-----------------------------------------------------
      * 
@@ -129,6 +133,7 @@ public class Model
         system_State = SPLASH_SCREEN;
         timer.schedule(splashScreenTimeoutTask, 3200);
         newToolTip = false;
+        PlayerEntryScreenNewPlayerPopup = false;
         
     }
 
@@ -332,5 +337,12 @@ public class Model
         //Do a bunch of stuff!
     }
     
+    public void setNewPlayerPopup(boolean isTrue) {
+        PlayerEntryScreenNewPlayerPopup = isTrue;
+    }
+
+    public boolean getNewPlayerPopupStatus() {
+        return PlayerEntryScreenNewPlayerPopup;
+    }
     
 }

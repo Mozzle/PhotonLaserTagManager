@@ -37,12 +37,14 @@ public class TextBox {
 						// Check database against this field
 							break;
 						case KeyEvent.VK_F1:
-							if (m.getSystemState() == Model.PLAYER_ENTRY_SCREEN) {
+							if (m.getSystemState() == Model.PLAYER_ENTRY_SCREEN 
+							&& m.getNewPlayerPopupStatus() == false) {
 								m.clearTextBoxes();
 							}
 							break;
 						case KeyEvent.VK_F5:
-							if (m.getSystemState() == Model.PLAYER_ENTRY_SCREEN) {
+							if (m.getSystemState() == Model.PLAYER_ENTRY_SCREEN
+							&& m.getNewPlayerPopupStatus() == false) {
 								m.PlayerEntryScreenDeleter();
 								}
 							break;
