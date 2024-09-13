@@ -16,7 +16,6 @@ import java.awt.GridLayout;
 import java.awt.KeyboardFocusManager;
 import java.awt.LayoutManager;
 import java.awt.Point;
-import java.awt.event.ActionListener;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
@@ -35,6 +34,7 @@ import java.awt.Font;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.ArrayList;
+import javax.swing.ImageIcon;
 
 public class View extends JPanel {
 
@@ -508,7 +508,18 @@ public class View extends JPanel {
 
     //Draws countdown screen: unfinished
     public void drawCountDownScreen(){
+        //LayoutManager layout = new FlowLayout();
+        //JLabel tmpJLabel;
+       // ImageIcon Icon; 
+        //JFrame frame = new JFrame("CountDown");
 
+        this.setLayout(new BorderLayout());
+
+        ImageIcon imgIcon = new ImageIcon(this.getClass().getResource("CountDown.gif"));
+        JLabel label = new JLabel(imgIcon);
+        label.setBounds(30, 43, 256, 256); // Adjust these values to suit your layout
+        add(label);
+        setVisible(true);
     }
 
     public class toolTipTimeout extends TimerTask
