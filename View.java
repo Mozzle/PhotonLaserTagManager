@@ -178,8 +178,8 @@ public class View extends JPanel {
             }
             
             // Adjust padding on the outsides of the red and green panes
-            if (PlayerEntryPanePadding != (int)((windowWidth - 776)/ 2)) {
-                PlayerEntryPanePadding = (int)((windowWidth - 776)/ 2);
+            if (PlayerEntryPanePadding != (int)((windowWidth - 772)/ 2)) {
+                PlayerEntryPanePadding = (int)((windowWidth - 772)/ 2);
                 PlayerEntryPanes.setBorder(new EmptyBorder(0, PlayerEntryPanePadding, 0, PlayerEntryPanePadding));
             }
             
@@ -199,7 +199,7 @@ public class View extends JPanel {
             model.newToolTip = false;
             toolTipCounter++;
             toolTipLabel = model.toolTip;
-            toolTipLabel.setBounds(10, (580 + toolTipCounter * 30), 1000, 30);
+            toolTipLabel.setBounds((int)((windowWidth - toolTipLabel.getWidth()) / 2), (580 + toolTipCounter * 30), 1000, 30);
             toolTipLabel.setBorder(new EmptyBorder(0, 100, 0, 100));
             PlayerEntryPanes.add(toolTipLabel, BorderLayout.SOUTH);
             toolTipLabel.setVisible(true);
@@ -208,7 +208,7 @@ public class View extends JPanel {
 
         if (prevToolTipCounter != toolTipCounter) {
             for (int i = 2; i < PlayerEntryPanes.getComponentCount(); i++) {
-                PlayerEntryPanes.getComponent(i).setBounds(10, (580 + i * 30), 1000, 30);
+                PlayerEntryPanes.getComponent(i).setBounds((int)((windowWidth - toolTipLabel.getWidth()) / 2), (580 + i * 30), 1000, 30);
             }
             prevToolTipCounter = toolTipCounter;
         }
@@ -219,7 +219,6 @@ public class View extends JPanel {
         if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN 
         && KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner() != null) {
             
-
             try {
                 Component LastFocusedComponent = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
 
@@ -289,7 +288,15 @@ public class View extends JPanel {
                                 //TODO!: Check all other Equipment ID fields for this equipment ID, make sure that that equipment ID doesn't already exist in the game
                                 //before sending out the UDP.
                                 //Make this ^ a function in model and do some real modular programming, silly
-                                netController.transmit(model.EquipmentIDBoxes.get(indexToCompare).getTextFromField());
+                                boolean tmpDuplicateFlag = model.checkEquipmentIDFieldsForDupicates(indexToCompare);
+
+                                if (tmpDuplicateFlag) {
+                                    model.toolTip("This Equipment ID is already in use in this game!");
+                                }
+                                else {
+                                    netController.transmit(model.EquipmentIDBoxes.get(indexToCompare).getTextFromField());
+                                }
+                                
                             }
                             // Send tooltip saying that the equipment ID is invalid.
                             else {
@@ -414,8 +421,8 @@ public class View extends JPanel {
         ButtonsCenter.setLayout(new FlowLayout(FlowLayout.CENTER));
 
         ClearScreenButton = new JButton("(F1) - Clear Screen");
-        ClearScreenButton.setPreferredSize(new Dimension(160, 60));
-        ClearScreenButton.setMaximumSize(new Dimension(160, 60));
+        ClearScreenButton.setPreferredSize(new Dimension(175, 60));
+        ClearScreenButton.setMaximumSize(new Dimension(175, 60));
         ClearScreenButton.setBackground(new Color(0, 66, 32));
         ClearScreenButton.setForeground(Color.WHITE);
         ClearScreenButton.addActionListener(new ActionListener() {
@@ -426,8 +433,8 @@ public class View extends JPanel {
         ButtonsCenter.add(ClearScreenButton);
 
         StartGameButton = new JButton("(F5) - Start Game");
-        StartGameButton.setPreferredSize(new Dimension(160, 60));
-        StartGameButton.setMaximumSize(new Dimension(160, 60));
+        StartGameButton.setPreferredSize(new Dimension(175, 60));
+        StartGameButton.setMaximumSize(new Dimension(175, 60));
         StartGameButton.setBackground(new Color(0, 66, 32));
         StartGameButton.setForeground(Color.WHITE);
         StartGameButton.addActionListener(new ActionListener() {

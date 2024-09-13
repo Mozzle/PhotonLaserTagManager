@@ -135,8 +135,10 @@ public class Controller implements ActionListener, MouseListener, KeyListener
             // Case F1 -- Clear all player entries
 			case KeyEvent.VK_F1:
 				if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN
-                 && model.getNewPlayerPopupStatus() == false)
+                 && model.getNewPlayerPopupStatus() == false) {
                     model.clearTextBoxes();
+                 }
+                    
 				break;
 
             // Case F2 -- No logic
@@ -154,9 +156,13 @@ public class Controller implements ActionListener, MouseListener, KeyListener
             // Case F5 -- Start the game
             case KeyEvent.VK_F5:
             if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN
-             && model.getNewPlayerPopupStatus() == false)
-                model.PlayerEntryScreenDeleter();
-                break;
+             && model.getNewPlayerPopupStatus() == false) {
+
+                if (model.checkStartGameConditions()) {
+                    model.PlayerEntryScreenDeleter();
+                }
+             }
+             break;
 
             // Default case -- Do nothing
 			default:

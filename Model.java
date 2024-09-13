@@ -94,7 +94,7 @@ public class Model
      * 
      ----------------------------------------------------*/
 
-    // Ran when F% is pushed.
+    // Ran when F5 is pushed.
     public void PlayerEntryScreenDeleter()
     {
         //creates the tables for the player entry screen
@@ -333,9 +333,140 @@ public class Model
         return success;
     }
 
-    public void startGameButtonHit() {
-        //Do a bunch of stuff!
-    }
+    /*-------------------------------------------------
+     *
+     *      checkStartGameConditions()
+     *
+     *  DESCRIPTION: Checks a series of conditions in 
+     *  the player entry screen to determine if we are
+     *  able to start the game. If so, we will
+     *  transition to the countdown screen. Otherwise,
+     *  tooltips will appear telling the user what is
+     *  preventing the game from starting.
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
+
+    public boolean checkStartGameConditions() {
+        // Conditions:
+        // At least 1 player on each team
+        // No duplicate Player IDs
+        // No duplicate Equipment IDs
+        // Every non-empty player field has a corresponding filled equipment ID field
+        // Every non-empty Equipment field has a corresponding filled player ID field
+        // All non-empty Player ID's are valid
+        // All non-empty Equipment IDs are valid
+        
+        boolean gameConditionsMet = true;
+
+        int tmpRedTeamCnt = 0;
+        int tmpGreenTeamCnt = 0;
+
+        // For all the fields
+        for (int i = 0; i < Model.NUM_MAX_PLAYERS_PER_TEAM * 2; i++) {
+
+            // If Player ID field is not empty
+            if ( !PlayerIDBoxes.get(i).getTextFromField().equals("") ) {
+
+                // AND Equipment field IS Empty or IS invalid
+                if ( EquipmentIDBoxes.get(i).getTextFromField().equals("") 
+                || ( EquipmentIDBoxes.get(i).getTextFromField().equals("202") )
+                || ( EquipmentIDBoxes.get(i).getTextFromField().equals("221") ) ) {
+                    gameConditionsMet = false;
+                    if (i < Model.NUM_MAX_PLAYERS_PER_TEAM) {
+                        toolTip("Invalid Equipment ID for Red Team Player " + i + "!");
+                    }
+                    else {
+                        toolTip("Invalid Equipment ID for Green Team Player " + (i - Model.NUM_MAX_PLAYERS_PER_TEAM) + "!");
+                    }
+                }
+
+                //Search the database for this Player ID
+                String tmpString = database.searchDB(Database.PARAM_ID, Integer.valueOf(PlayerIDBoxes.get(i).getTextFromField()), "");
+
+                // If the database query Does NOT find the Player ID:
+                if (tmpString.equals("")) {
+                    PlayerIDBoxes.get(i).getTextBox().requestFocus();
+                    gameConditionsMet = false;
+                    toolTip("Consider making a new Player for this ID");
+                    if (i < Model.NUM_MAX_PLAYERS_PER_TEAM) {
+                        toolTip("Invalid Player ID for Red Team Player " + i + "!");
+                    }
+                    else {
+                        toolTip("Invalid Player ID for Green Team Player " + (i - Model.NUM_MAX_PLAYERS_PER_TEAM) + "!");
+                    }
+                }
+
+                //Increment Team Counters
+                if (i < Model.NUM_MAX_PLAYERS_PER_TEAM) {
+                    tmpRedTeamCnt++;
+                }
+                else {
+                    tmpGreenTeamCnt++;
+                }
+
+            }
+
+            // If equipment ID is NOT Empty
+            if ( !EquipmentIDBoxes.get(i).getTextFromField().equals("") ) {
+
+                // And Player ID field IS empty
+                if ( PlayerIDBoxes.get(i).getTextFromField().equals("") ) {
+                    gameConditionsMet = false;
+                    if (i < Model.NUM_MAX_PLAYERS_PER_TEAM) {
+                        toolTip("Invalid Player ID for Red Team Player " + i + "!");
+                    }
+                    else {
+                        toolTip("Invalid Player ID for Green Team Player " + (i - Model.NUM_MAX_PLAYERS_PER_TEAM) + "!");
+                    }
+                }
+            
+            }
+        }
+
+        // If no players on one of the teams
+        if (tmpRedTeamCnt == 0 || tmpGreenTeamCnt == 0) {
+            gameConditionsMet = false;
+            if (tmpRedTeamCnt == 0) {
+                toolTip("Red Team must have at least 1 player!");
+            }
+            else {
+                toolTip("Green Team must have at least 1 player!");
+            }
+        }
+
+        // For every text field
+        for (int i = 0; i < (Model.NUM_MAX_PLAYERS_PER_TEAM * 2); i++) {
+
+            //Get IDs
+            String tmpPlayerID = PlayerIDBoxes.get(i).getTextFromField();
+            String tmpEquipmentId = EquipmentIDBoxes.get(i).getTextFromField();
+
+            // If the field is not empty
+            if (!tmpPlayerID.equals("") || !tmpEquipmentId.equals("")) {
+
+                // Compare to the text of every other field to check for duplicate IDs
+                for (int j = 0; j < (Model.NUM_MAX_PLAYERS_PER_TEAM * 2); j++) {
+                    // Make sure the text field isn't comparing to itself
+                    if (i != j) {
+                        // If a Player ID duplicate is found
+                        if (tmpPlayerID.equals(PlayerIDBoxes.get(j).getTextFromField())) {
+                            gameConditionsMet = false;
+                            toolTip("Player ID " + tmpPlayerID + " is used more than once in this game!");
+                        }
+                         // If an Equipment ID duplicate is found
+                        if (tmpEquipmentId.equals(EquipmentIDBoxes.get(j).getTextFromField())) {
+                            gameConditionsMet = false;
+                            toolTip("Equipment ID " + tmpEquipmentId + " is used more than once in this game!");
+                        }
+                    }
+                }
+            }
+        }
+        // Return whether or not the conditions for the game to start have been met
+        return gameConditionsMet;
+    } 
     
     public void setNewPlayerPopup(boolean isTrue) {
         PlayerEntryScreenNewPlayerPopup = isTrue;
@@ -343,6 +474,56 @@ public class Model
 
     public boolean getNewPlayerPopupStatus() {
         return PlayerEntryScreenNewPlayerPopup;
+    }
+
+
+    /*-------------------------------------------------
+     *
+     *      checkEquipmentIDFieldsForDupicates()
+     *
+     *  DESCRIPTION: If given parameter of '-1', compare
+     *  all non-blank Equipment ID's against one another
+     *  to check for duplicates. Otherwise, parameter is
+     *  an index of a single Equipment ID box to compare
+     *  against all other Equip. ID boxes for duplicates.
+     *  Returns false if no duplicates found, true if 
+     *  duplicates found.
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
+
+    public boolean checkEquipmentIDFieldsForDupicates(int indexToCompare) {
+        boolean result = false;
+
+        if (indexToCompare == -1) {
+            // Check all equipment IDs against all other IDs
+        }
+        // Else check that the equipment ID at indexToCompare is unique. assumes that given equipment ID box
+        // is not blank.
+        else {
+            for (int i = 0; (i < Model.NUM_MAX_PLAYERS_PER_TEAM * 2); i++) {
+                if ( EquipmentIDBoxes.get(i).getTextFromField().equals(EquipmentIDBoxes.get(indexToCompare).getTextFromField() )
+                && ( i != indexToCompare)) {
+                    result = true;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public int getTextBoxIndexFromName(String name) {
+        char team = name.charAt(0);
+        int index = -1;
+        if (team == 'R') {
+            index = Integer.valueOf(name.substring(1));
+        }
+        else if (team == 'G') {
+            index = Integer.valueOf(name.substring(1)) + Model.NUM_MAX_PLAYERS_PER_TEAM;
+        }
+
+        return index;
     }
     
 }

@@ -64,7 +64,9 @@ public class Database {
      *  EXAMPLE: searchDB(Database.PARAM_ID, 3, "")
      *  Searches for ID # 3 in the ID column of the table,
      *  and returns the corresponding codename
+     * 
      -----------------------------------------------------*/
+
     public String searchDB(int searchParam, int id, String codename) {
         String returnVal = "";
 
@@ -112,6 +114,7 @@ public class Database {
      *  an ID and/or codename. 
      *  EXAMPLE:
      * insertDB(Database.PARAM_ID_AND_CODENAME, 7, "Sparky")
+     * 
      -----------------------------------------------------*/
     public boolean insertDB(int param, int id, String codename) {
         boolean returnVal = true;
@@ -140,6 +143,7 @@ public class Database {
      *  either the ID or the codename of the row.
      *  EXAMPLE:
      *  deleteDBRow(Database.PARAM_ID, 7, "");
+     * 
      -----------------------------------------------------*/
     public boolean deleteDBRow(int param, int id, String codename) {
         boolean returnVal = true;
