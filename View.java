@@ -582,7 +582,7 @@ public class View extends JPanel {
        // ImageIcon Icon; 
         //JFrame frame = new JFrame("CountDown");
 
-        this.setLayout(new BorderLayout());
+        //this.setLayout(new BorderLayout());
 
         ImageIcon imgIcon = new ImageIcon(this.getClass().getResource("CountDown.gif"));
         JLabel label = new JLabel(imgIcon);
