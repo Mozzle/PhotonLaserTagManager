@@ -39,6 +39,7 @@ public class Model
     public TimerTask splashScreenTimeoutTask;
 
     public JLabel toolTip;
+    public int toolTip_ms;                   // On-screen time for the tool tip in ms
     public boolean newToolTip;               // Flag for View class to indicate if Model has
                                              // a screen element that needs updated
 
@@ -84,8 +85,78 @@ public class Model
         }
     }
 
+    /*-------------------------------------------------
+     *
+     *      Model()
+     *
+     *  DESCRIPTION: Model Class Initializer
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
+    public Model()
+    {   
+        database = new Database();
 
-     /*-----------------------------------------------------
+        system_State = INITIALIZE;
+        // Initialization
+        windowObjects = new ArrayList<Sprite>();
+        PlayerIDBoxes = new ArrayList<TextBox>();
+        EquipmentIDBoxes = new ArrayList<TextBox>();
+
+        // Start a timer, go to the splash screen, wait for 3.2 seconds,
+        // then go to SplashScreenTimeout.run() to go to the player entry
+        // screen
+        timer = new Timer();
+        splashScreenTimeoutTask = new SplashScreenTimeout();
+        startSplashScreen();
+        system_State = SPLASH_SCREEN;
+        timer.schedule(splashScreenTimeoutTask, 3200);
+        newToolTip = false;
+        PlayerEntryScreenNewPlayerPopup = false;
+        
+        // If we are not connected to the database, make a tooltip to warn the user.
+        if (database.getdbConnectionStatus() == false) {
+            this.toolTip("No database connection! Game will not work!",10000);
+        }
+
+    }
+
+    /*-------------------------------------------------
+     *
+     *      update()
+     *
+     *  DESCRIPTION: Updates all data for the program,
+     *  outside of graphical elements. May be necessary
+     *  to have a parameter passed into this function
+     *  from where it is called in Controller
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
+    public void update()
+    {
+        for (int i = 0; i < getNumWindowObjects(); i++) {
+            windowObjects.get(i).update();
+        }
+
+        switch(system_State) {
+            case SPLASH_SCREEN:
+                break;
+
+            case PLAYER_ENTRY_SCREEN:
+                break;
+
+            case COUNTDOWN_SCREEN:
+                break;
+
+            default:
+                break;
+        }
+
+    }
+
+    /*-----------------------------------------------------
      * 
      *  PlayerEntryScreenDeleter
      * 
@@ -122,71 +193,6 @@ public class Model
          system_State = PLAY_ACTION_SCREEN;
      }
     
-
-    /*-------------------------------------------------
-     *
-     *      Model()
-     *
-     *  DESCRIPTION: Model Class Initializer
-     *
-     *  REQUIREMENTS:
-     *
-    ------------------------------------------------- */
-    public Model()
-    {   
-        database = new Database();
-        system_State = INITIALIZE;
-        // Initialization
-        windowObjects = new ArrayList<Sprite>();
-        PlayerIDBoxes = new ArrayList<TextBox>();
-        EquipmentIDBoxes = new ArrayList<TextBox>();
-
-        // Start a timer, go to the splash screen, wait for 3.2 seconds,
-        // then go to SplashScreenTimeout.run() to go to the player entry
-        // screen
-        timer = new Timer();
-        splashScreenTimeoutTask = new SplashScreenTimeout();
-        startSplashScreen();
-        system_State = SPLASH_SCREEN;
-        timer.schedule(splashScreenTimeoutTask, 3200);
-        newToolTip = false;
-        PlayerEntryScreenNewPlayerPopup = false;
-        
-    }
-
-    /*-------------------------------------------------
-     *
-     *      update()
-     *
-     *  DESCRIPTION: Updates all data for the program,
-     *  outside of graphical elements. May be necessary
-     *  to have a parameter passed into this function
-     *  from where it is called in Controller
-     *
-     *  REQUIREMENTS:
-     *
-    ------------------------------------------------- */
-    public void update()
-    {
-        for (int i = 0; i < getNumWindowObjects(); i++) {
-            windowObjects.get(i).update();
-        }
-
-        switch(system_State) {
-            case SPLASH_SCREEN:
-                break;
-
-            case PLAYER_ENTRY_SCREEN:
-                break;
-
-            case COUNTDOWN_SCREEN:
-                break;
-
-            default:
-                break;
-        }
-
-    }
 
     /*-------------------------------------------------
      *
@@ -339,8 +345,13 @@ public class Model
         }
     }
 
-    public boolean toolTip(String tipText) {
+    public boolean toolTip(String tipText, int ms) {
         boolean success = true;
+        if (ms > 0) {
+            toolTip_ms = ms;
+        } else {
+            toolTip_ms = 4500;
+        }
         toolTip = new JLabel(tipText, SwingConstants.CENTER);
         toolTip.setBackground(new Color(104, 110, 58));
         toolTip.setForeground(Color.WHITE);
@@ -374,7 +385,7 @@ public class Model
         // Every non-empty Equipment field has a corresponding filled player ID field
         // All non-empty Player ID's are valid
         // All non-empty Equipment IDs are valid
-        
+
         boolean gameConditionsMet = true;
 
         int tmpRedTeamCnt = 0;
@@ -392,10 +403,10 @@ public class Model
                 || ( EquipmentIDBoxes.get(i).getTextFromField().equals("221") ) ) {
                     gameConditionsMet = false;
                     if (i < Model.NUM_MAX_PLAYERS_PER_TEAM) {
-                        toolTip("Invalid Equipment ID for Red Team Player " + i + "!");
+                        toolTip("Invalid Equipment ID for Red Team Player " + i + "!", 4500);
                     }
                     else {
-                        toolTip("Invalid Equipment ID for Green Team Player " + (i - Model.NUM_MAX_PLAYERS_PER_TEAM) + "!");
+                        toolTip("Invalid Equipment ID for Green Team Player " + (i - Model.NUM_MAX_PLAYERS_PER_TEAM) + "!", 4500);
                     }
                 }
 
@@ -406,12 +417,12 @@ public class Model
                 if (tmpString.equals("")) {
                     PlayerIDBoxes.get(i).getTextBox().requestFocus();
                     gameConditionsMet = false;
-                    toolTip("Consider making a new Player for this ID");
+                    toolTip("Consider making a new Player for this ID",4500);
                     if (i < Model.NUM_MAX_PLAYERS_PER_TEAM) {
-                        toolTip("Invalid Player ID for Red Team Player " + i + "!");
+                        toolTip("Invalid Player ID for Red Team Player " + i + "!",4500);
                     }
                     else {
-                        toolTip("Invalid Player ID for Green Team Player " + (i - Model.NUM_MAX_PLAYERS_PER_TEAM) + "!");
+                        toolTip("Invalid Player ID for Green Team Player " + (i - Model.NUM_MAX_PLAYERS_PER_TEAM) + "!",4500);
                     }
                 }
 
@@ -432,10 +443,10 @@ public class Model
                 if ( PlayerIDBoxes.get(i).getTextFromField().equals("") ) {
                     gameConditionsMet = false;
                     if (i < Model.NUM_MAX_PLAYERS_PER_TEAM) {
-                        toolTip("Invalid Player ID for Red Team Player " + i + "!");
+                        toolTip("Invalid Player ID for Red Team Player " + i + "!",4500);
                     }
                     else {
-                        toolTip("Invalid Player ID for Green Team Player " + (i - Model.NUM_MAX_PLAYERS_PER_TEAM) + "!");
+                        toolTip("Invalid Player ID for Green Team Player " + (i - Model.NUM_MAX_PLAYERS_PER_TEAM) + "!",4500);
                     }
                 }
             
@@ -446,10 +457,10 @@ public class Model
         if (tmpRedTeamCnt == 0 || tmpGreenTeamCnt == 0) {
             gameConditionsMet = false;
             if (tmpRedTeamCnt == 0) {
-                toolTip("Red Team must have at least 1 player!");
+                toolTip("Red Team must have at least 1 player!",4500);
             }
             else {
-                toolTip("Green Team must have at least 1 player!");
+                toolTip("Green Team must have at least 1 player!",4500);
             }
         }
 
@@ -470,12 +481,12 @@ public class Model
                         // If a Player ID duplicate is found
                         if (tmpPlayerID.equals(PlayerIDBoxes.get(j).getTextFromField())) {
                             gameConditionsMet = false;
-                            toolTip("Player ID " + tmpPlayerID + " is used more than once in this game!");
+                            toolTip("Player ID " + tmpPlayerID + " is used more than once in this game!",4500);
                         }
                          // If an Equipment ID duplicate is found
                         if (tmpEquipmentId.equals(EquipmentIDBoxes.get(j).getTextFromField())) {
                             gameConditionsMet = false;
-                            toolTip("Equipment ID " + tmpEquipmentId + " is used more than once in this game!");
+                            toolTip("Equipment ID " + tmpEquipmentId + " is used more than once in this game!",4500);
                         }
                     }
                 }

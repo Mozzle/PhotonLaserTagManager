@@ -171,7 +171,7 @@ public class View extends JPanel {
      * 
      *  DESCRIPTION: This function is used to update
      *  model and is the entry point for changing from
-     *  the splash screen to the player entry screen.
+     *  the one screen to another.
      * 
      *  REQUIREMENTS: 
      -------------------------------------------------*/
@@ -193,6 +193,21 @@ public class View extends JPanel {
                 PlayerEntryPanePadding = (int)((windowWidth - 780)/ 2);
                 PlayerEntryPanes.setBorder(new EmptyBorder(0, PlayerEntryPanePadding, 0, PlayerEntryPanePadding));
             }
+
+            /*-----------------------------------------------------
+            If model has a new tooltip for us to add, add it
+            and update any existing tooltips
+            -----------------------------------------------------*/
+            handleToolTipDrawing();
+
+            /*-----------------------------------------------------
+            Update the '>>>>' row selection arrows
+            -----------------------------------------------------*/
+
+            // Check if a text field has a current focus, if so handle it
+            if (KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner() != null) {
+                handleSystemFocus();
+            }
             
         }
 
@@ -206,41 +221,12 @@ public class View extends JPanel {
 
         // Block that handles the GAME SCREEN
         if (model.getSystemState() == Model.PLAY_ACTION_SCREEN && !inGameScreen) {
+            inCountDownScreen = false;
             inGameScreen = true;
             // TODO: Link a method here that handles all the sprites and objects
             // for the game screen. Or implement it here directly.
         }
         
-        /*-----------------------------------------------------
-        If model has a new tooltip for us to add, add it
-        -----------------------------------------------------*/
-        if (model.newToolTip == true) {
-            
-            model.newToolTip = false;
-            toolTipCounter++;
-            toolTipLabel = model.toolTip;
-            toolTipLabel.setBounds((int)((windowWidth - toolTipLabel.getWidth()) / 2), (580 + toolTipCounter * 30), 1000, 30);
-            toolTipLabel.setBorder(new EmptyBorder(0, 100, 0, 100));
-            PlayerEntryPanes.add(toolTipLabel, BorderLayout.SOUTH);
-            toolTipLabel.setVisible(true);
-            timer.schedule(new toolTipTimeout(),4500);
-        }
-
-        if (prevToolTipCounter != toolTipCounter) {
-            for (int i = 2; i < PlayerEntryPanes.getComponentCount(); i++) {
-                PlayerEntryPanes.getComponent(i).setBounds((int)((windowWidth - toolTipLabel.getWidth()) / 2), (580 + i * 30), 1000, 30);
-            }
-            prevToolTipCounter = toolTipCounter;
-        }
-
-        /*-----------------------------------------------------
-        Update the '>>>>' row selection arrows
-        -----------------------------------------------------*/
-
-        // Check if a text field has a current focus, if so handle it
-        if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN 
-        && KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner() != null)
-            handleSystemFocus();
     }
 
     /*--------------------------------------------------
@@ -295,14 +281,14 @@ public class View extends JPanel {
                             for (int i = 0; i < (Model.NUM_MAX_PLAYERS_PER_TEAM * 2); i++) {
                                 // Ensure that the ID doesn't exist in another textbox locally
                                 if (String.valueOf(idToCheck).equals(model.PlayerIDBoxes.get(i).getTextFromField()) && (i != indexToCompare)) {
-                                    model.toolTip(codename + " (ID: " + idToCheck + ") is already in this game!");
+                                    model.toolTip(codename + " (ID: " + idToCheck + ") is already in this game!", 4500);
                                     notADuplicate = false;
                                 }
                             }
 
                             // Make a tooltip to say player has been added successfully
                             if (notADuplicate)
-                                model.toolTip(codename + " added successfully!");
+                                model.toolTip(codename + " added successfully!", 4500);
                         }
                         // If ID does not exist in the database, add it
                         else {
@@ -334,7 +320,7 @@ public class View extends JPanel {
                             boolean tmpDuplicateFlag = model.checkEquipmentIDFieldsForDupicates(indexToCompare);
 
                             if (tmpDuplicateFlag) {
-                                model.toolTip("This Equipment ID is already in use in this game!");
+                                model.toolTip("This Equipment ID is already in use in this game!", 4500);
                             }
                             else {
                                 netController.transmit(model.EquipmentIDBoxes.get(indexToCompare).getTextFromField());
@@ -352,7 +338,7 @@ public class View extends JPanel {
                                 tmpTeam = "Green";
                             }
                             // "Invalid Equipment ID for Red team Player 5"
-                            model.toolTip("Invalid Equipment ID for " + tmpTeam + " Team Player " + (indexToCompare % Model.NUM_MAX_PLAYERS_PER_TEAM));
+                            model.toolTip("Invalid Equipment ID for " + tmpTeam + " Team Player " + (indexToCompare % Model.NUM_MAX_PLAYERS_PER_TEAM), 4500);
                         }
                     }
                     catch (Exception e) {
@@ -470,7 +456,9 @@ public class View extends JPanel {
         ClearScreenButton.setForeground(Color.WHITE);
         ClearScreenButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e){  
-            model.clearTextBoxes();
+            if (model.getNewPlayerPopupStatus() == false) {
+				model.clearTextBoxes();
+			}
         }  
         }); 
         ButtonsCenter.add(ClearScreenButton);
@@ -482,7 +470,11 @@ public class View extends JPanel {
         StartGameButton.setForeground(Color.WHITE);
         StartGameButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
-                model.PlayerEntryScreenDeleter();
+                if (model.getNewPlayerPopupStatus() == false) {
+				    if (model.checkStartGameConditions()) {
+				    	model.PlayerEntryScreenDeleter();
+				    }
+				}
             }  
         }); 
         ButtonsCenter.add(StartGameButton);
@@ -754,7 +746,7 @@ public class View extends JPanel {
                 if (searchResult == "" && Integer.valueOf(NewPlayerID.getText()) > 0 && NewPlayerID.getText().length() >= 1 && NewPlayerName.getText().length() >= 1) {
                     model.database.insertDB(Database.PARAM_ID_AND_CODENAME, Integer.valueOf(NewPlayerID.getText()), NewPlayerName.getText());
                     IDBox.setText(NewPlayerID.getText());
-                    model.toolTip(NewPlayerName.getText() + " added successfully!");
+                    model.toolTip(NewPlayerName.getText() + " added successfully!", 4500);
                     closePopupFlag = true;
                 }
                 // If the entered Player ID is not a new ID
@@ -785,4 +777,37 @@ public class View extends JPanel {
 
         model.setNewPlayerPopup(false);
     }
+
+    /*--------------------------------------------------
+     * 
+     *  handleToolTipDrawing()
+     * 
+     *  DESCRIPTION: Handles the updating and display of 
+     *  tool tips
+     * 
+     *  REQUIREMENTS: 
+     * 
+     --------------------------------------------------*/
+    void handleToolTipDrawing() {
+        if (model.newToolTip == true) {
+
+            model.newToolTip = false;
+            toolTipCounter++;
+            toolTipLabel = model.toolTip;
+            toolTipLabel.setBounds((int)((windowWidth - toolTipLabel.getWidth()) / 2), (580 + toolTipCounter * 30), 1000, 30);
+            toolTipLabel.setBorder(new EmptyBorder(0, 100, 0, 100));
+            PlayerEntryPanes.add(toolTipLabel, BorderLayout.SOUTH);
+            toolTipLabel.setVisible(true);
+            timer.schedule(new toolTipTimeout(),model.toolTip_ms);
+        }
+
+        // If a tool tip has timed out and been deleted, update the position of all the tool tips
+        if (prevToolTipCounter != toolTipCounter) {
+            for (int i = 2; i < PlayerEntryPanes.getComponentCount(); i++) {
+                PlayerEntryPanes.getComponent(i).setBounds((int)((windowWidth - toolTipLabel.getWidth()) / 2), (580 + i * 30), 1000, 30);
+            }
+            prevToolTipCounter = toolTipCounter;
+        }
+    }
 }
+

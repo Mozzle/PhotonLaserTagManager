@@ -71,7 +71,7 @@ public class TextBox {
 					if ( ( ke.getKeyChar() < '0' && ke.getKeyChar() >= ' ' )
 					|| ( ke.getKeyChar() >= ':' && ke.getKeyChar() <= '~' ) ) {
 						field.setEditable(false);
-						m.toolTip("ID's should only be numeric (0-9)");
+						m.toolTip("ID's should only be numeric (0-9)", 4500);
 				   	} else {
 					  	field.setEditable(true);
 				   	}

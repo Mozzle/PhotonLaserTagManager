@@ -12,6 +12,8 @@ public class Database {
 
     String jdbcUrl;
     Connection connection;
+    // DB Connection status
+    boolean dbStatus;
 
     public Database() {
         jdbcUrl = "jdbc:postgresql://localhost:5432/photon";
@@ -20,10 +22,12 @@ public class Database {
             Class.forName("org.postgresql.Driver");
             connection = DriverManager.getConnection(jdbcUrl, "student", "student");
             System.out.println("Connected to DB");
+            dbStatus = true;
         }
         catch (Exception e) {
-         e.printStackTrace();
-         System.err.println(e.getClass().getName()+": "+e.getMessage());
+            e.printStackTrace();
+            System.err.println(e.getClass().getName()+": "+e.getMessage());
+            dbStatus= false;
         }
         
         /*
@@ -199,6 +203,23 @@ public class Database {
         }
         return returnVal;
     }
+
+    /*-----------------------------------------------------
+     * 
+     *      getdbConnectionStatus()
+     * 
+     *  REQUIREMENTS:
+     * 
+     *  DESCRIPTION: Returns whether or not the DB connection
+     *  was initialized properly
+     * 
+     -----------------------------------------------------*/
+
+     boolean getdbConnectionStatus() {
+        return dbStatus;
+     }
 }
+
+
 
 
