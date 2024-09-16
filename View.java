@@ -187,8 +187,10 @@ public class View extends JPanel {
             }
             
             // Adjust padding on the outsides of the red and green panes
-            if (PlayerEntryPanePadding != (int)((windowWidth - 772)/ 2)) {
-                PlayerEntryPanePadding = (int)((windowWidth - 772)/ 2);
+            // This ensures that both the red team and green team panes will be horizontally
+            // aligned with one another no matter the window sizing.
+            if (PlayerEntryPanePadding != (int)((windowWidth - 780)/ 2)) {
+                PlayerEntryPanePadding = (int)((windowWidth - 780)/ 2);
                 PlayerEntryPanes.setBorder(new EmptyBorder(0, PlayerEntryPanePadding, 0, PlayerEntryPanePadding));
             }
             
