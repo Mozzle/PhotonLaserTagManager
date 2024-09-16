@@ -117,6 +117,8 @@ public class Model
 
      public void CountDownScreenDeleter() 
      {
+        // TODO: Implement this function after the countdown screen
+        // is completed. Ensure it transitions to the play action screen
          system_State = PLAY_ACTION_SCREEN;
      }
     

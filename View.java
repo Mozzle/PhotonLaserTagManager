@@ -234,140 +234,163 @@ public class View extends JPanel {
         /*-----------------------------------------------------
         Update the '>>>>' row selection arrows
         -----------------------------------------------------*/
+
+        // Check if a text field has a current focus, if so handle it
         if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN 
-        && KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner() != null) {
-            
-            try {
-                Component LastFocusedComponent = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+        && KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner() != null)
+            handleSystemFocus();
+    }
 
-                LastFocusedComponent.setBackground(Color.LIGHT_GRAY);
-                String selectedRow = LastFocusedComponent.getName();
+    /*--------------------------------------------------
+     * 
+     *  handleSystemFocus()
+     * 
+     *  DESCRIPTION: Cleaner method to handle when an
+     *  object is given focus in the view.
+     * 
+     -------------------------------------------------*/
+
+     public void handleSystemFocus() {
+        // Attempt to retrieve a reference to the current focused component
+        try {
             
-                //This is super gross and needs to be cleaned up
-                if ((selectedRow.length() == 2 || selectedRow.length() == 3) && (lastSelectedRow != Integer.valueOf(selectedRow.substring(1))
-                || (lastSelectedTeam != selectedRow.charAt(0)))) { // If we have selected a different Row
-                    
-                    // Focus has changed, so we should check the ID of the previously selected row against the 
-                    // database.
-                    if (lastSelectedRow <= model.getNumPlayerIDBoxes()) {
-                        try {
-                            int idToCheck = -1;
-                            int indexToCompare = -1;
-                            if (lastSelectedTeam == 'R') {
-                                idToCheck = Integer.valueOf(model.PlayerIDBoxes.get(lastSelectedRow).getTextFromField());
-                                indexToCompare = lastSelectedRow;
-                            }
-                            else if (lastSelectedTeam == 'G') {
-                                idToCheck = Integer.valueOf(model.PlayerIDBoxes.get(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextFromField());
-                                indexToCompare = lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM;
-                            }
-                            
-                            // Query database for the entered ID.
-                            String codename = model.database.searchDB(Database.PARAM_ID, idToCheck, "");
+            // Create a reference to the last object that has been focused
+            Component LastFocusedComponent = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+            // Create an indication to the user that this row is selected
+            LastFocusedComponent.setBackground(Color.LIGHT_GRAY);
+            String selectedRow = LastFocusedComponent.getName();
         
-                            // If ID exists in database
-                            if (codename != "") {
-                                boolean notADuplicate = true;
-                                for (int i = 0; i < (Model.NUM_MAX_PLAYERS_PER_TEAM * 2); i++) {
-
-                                    if (String.valueOf(idToCheck).equals(model.PlayerIDBoxes.get(i).getTextFromField()) && (i != indexToCompare)) {
-                                        model.toolTip(codename + " (ID: " + idToCheck + ") is already in this game!");
-                                        notADuplicate = false;
-                                    }
-                                }
-
-                                if (notADuplicate) {
-                                    //Make a tooltip to say player has been added successfully
-                                    model.toolTip(codename + " added successfully!");
-                                }
-                            }
-                            // If ID does not exist in the database
-                            else {
-
-                                //Get the input ID number from the previously selected field and put it in a 'NEW PLAYER ENTRY' popup window
-                                String popupInputID = "";
-                                JTextField NewPlayerIDField = new JTextField();
-                                if (lastSelectedTeam == 'R') {
-                                    popupInputID = model.PlayerIDBoxes.get(lastSelectedRow).getTextFromField();
-                                    NewPlayerIDField = model.PlayerIDBoxes.get(lastSelectedRow).getTextBox();
-                                }
-                                else if (lastSelectedTeam == 'G') {
-                                    popupInputID = model.PlayerIDBoxes.get(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextFromField();
-                                    NewPlayerIDField = model.PlayerIDBoxes.get(lastSelectedRow  + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextBox();
-                                }
-                                // Create the New Player Entry Popup screen
-                                NewPlayerPopupScreen(popupInputID, NewPlayerIDField);
-
-                            }
-
-                            String EquipmentIdToSend = model.EquipmentIDBoxes.get(indexToCompare).getTextFromField();
-                            //If Equipment ID field is not empty and is not the game start/end code
-                            if (!EquipmentIdToSend.equals("") && !EquipmentIdToSend.equals("202") && !EquipmentIdToSend.equals("221")) {
-                                //TODO!: Check all other Equipment ID fields for this equipment ID, make sure that that equipment ID doesn't already exist in the game
-                                //before sending out the UDP.
-                                //Make this ^ a function in model and do some real modular programming, silly
-                                boolean tmpDuplicateFlag = model.checkEquipmentIDFieldsForDupicates(indexToCompare);
-
-                                if (tmpDuplicateFlag) {
-                                    model.toolTip("This Equipment ID is already in use in this game!");
-                                }
-                                else {
-                                    netController.transmit(model.EquipmentIDBoxes.get(indexToCompare).getTextFromField());
-                                }
-                                
-                            }
-                            // Send tooltip saying that the equipment ID is invalid.
-                            else {
-                                String tmpTeam = "";
-                                if (indexToCompare < Model.NUM_MAX_PLAYERS_PER_TEAM) {
-                                    tmpTeam = "Red";
-                                }
-                                else {
-                                    tmpTeam = "Green";
-                                }
-                                // "Invalid Equipment ID for Red team Player 5"
-                                model.toolTip("Invalid Equipment ID for " + tmpTeam + " Team Player " + (indexToCompare % Model.NUM_MAX_PLAYERS_PER_TEAM));
-                            }
-                        }
-                        catch (Exception e) {
-                           // Do nothing
-                        }
-                    }
-                    
-
-                    lastSelectedRow = Integer.valueOf(selectedRow.substring(1));
-                    lastSelectedTeam = selectedRow.charAt(0);
+            // Check that the selected row is different from the last selected row
+            if ((selectedRow.length() == 2 || selectedRow.length() == 3) && (lastSelectedRow != Integer.valueOf(selectedRow.substring(1))
+            || (lastSelectedTeam != selectedRow.charAt(0)))) {
                 
-                    for (int i = 0; i < rowSelectionLabel.size(); i++) {    // Clear out all other rows
-                        rowSelectionLabel.get(i).setText("           ");
-                    }
-                    for (int i = 0; i < model.getNumPlayerIDBoxes(); i++) {
-                        model.getPlayerIDBoxAt(i).setBackground(Color.WHITE);
-                    }
-                    for (int i = 0; i < model.getNumEquipmentIDBoxes(); i++) {
-                        model.getEquipmentIDBoxAt(i).setBackground(Color.WHITE);
-                    }
-                    ClearScreenButton.setBackground(new Color(0, 66, 32));
-                    StartGameButton.setBackground(new Color(0, 66, 32));
+                // If we have selected a different row, then focus has changed.
+                // Check the ID of the previously selected row against the database.
+                if (lastSelectedRow <= model.getNumPlayerIDBoxes()) {
 
-                    if (LastFocusedComponent.getParent() != null) {
+                    // Wrap this in a try/catch block to prevent errors from crashing the program
+                    try {
+                        // Declare temporary variables to hold ID and index
+                        int idToCheck = -1;
+                        int indexToCompare = -1;
+
+                        // Grab the ID and Database Index based on the selected team
                         if (lastSelectedTeam == 'R') {
-                            rowSelectionLabel.get(lastSelectedRow).setBackground(Color.BLACK);
-                            rowSelectionLabel.get(lastSelectedRow).setText("  >>>>");
+                            idToCheck = Integer.valueOf(model.PlayerIDBoxes.get(lastSelectedRow).getTextFromField());
+                            indexToCompare = lastSelectedRow;
                         }
                         else if (lastSelectedTeam == 'G') {
-                            rowSelectionLabel.get(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).setText("  >>>>");
+                            idToCheck = Integer.valueOf(model.PlayerIDBoxes.get(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextFromField());
+                            indexToCompare = lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM;
                         }
+                        
+                        // Query database for the entered ID.
+                        String codename = model.database.searchDB(Database.PARAM_ID, idToCheck, "");
+    
+                        // If our ID already exists, return a tooltip to the user
+                        if (codename != "") {
+                            boolean notADuplicate = true;
+                            for (int i = 0; i < (Model.NUM_MAX_PLAYERS_PER_TEAM * 2); i++) {
+                                // Ensure that the ID doesn't exist in another textbox locally
+                                if (String.valueOf(idToCheck).equals(model.PlayerIDBoxes.get(i).getTextFromField()) && (i != indexToCompare)) {
+                                    model.toolTip(codename + " (ID: " + idToCheck + ") is already in this game!");
+                                    notADuplicate = false;
+                                }
+                            }
+
+                            // Make a tooltip to say player has been added successfully
+                            if (notADuplicate)
+                                model.toolTip(codename + " added successfully!");
+                        }
+                        // If ID does not exist in the database, add it
+                        else {
+
+                            // Create a popup window to prompt the user to add a new player
+                            String popupInputID = "";
+                            JTextField NewPlayerIDField = new JTextField();
+
+                            // Grab the ID based on the selected team
+                            if (lastSelectedTeam == 'R') {
+                                popupInputID = model.PlayerIDBoxes.get(lastSelectedRow).getTextFromField();
+                                NewPlayerIDField = model.PlayerIDBoxes.get(lastSelectedRow).getTextBox();
+                            }
+                            else if (lastSelectedTeam == 'G') {
+                                popupInputID = model.PlayerIDBoxes.get(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextFromField();
+                                NewPlayerIDField = model.PlayerIDBoxes.get(lastSelectedRow  + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextBox();
+                            }
+
+                            // Create the New Player Entry Popup screen
+                            NewPlayerPopupScreen(popupInputID, NewPlayerIDField);
+                        }
+
+                        String EquipmentIdToSend = model.EquipmentIDBoxes.get(indexToCompare).getTextFromField();
+                        //If Equipment ID field is not empty and is not the game start/end code
+                        if (!EquipmentIdToSend.equals("") && !EquipmentIdToSend.equals("202") && !EquipmentIdToSend.equals("221")) {
+                            //TODO!: Check all other Equipment ID fields for this equipment ID, make sure that that equipment ID doesn't already exist in the game
+                            //before sending out the UDP.
+                            //Make this ^ a function in model and do some real modular programming, silly
+                            boolean tmpDuplicateFlag = model.checkEquipmentIDFieldsForDupicates(indexToCompare);
+
+                            if (tmpDuplicateFlag) {
+                                model.toolTip("This Equipment ID is already in use in this game!");
+                            }
+                            else {
+                                netController.transmit(model.EquipmentIDBoxes.get(indexToCompare).getTextFromField());
+                            }
+                            
+                        }
+
+                        // Send tooltip saying that the equipment ID is invalid.
+                        else {
+                            String tmpTeam = "";
+                            if (indexToCompare < Model.NUM_MAX_PLAYERS_PER_TEAM) {
+                                tmpTeam = "Red";
+                            }
+                            else {
+                                tmpTeam = "Green";
+                            }
+                            // "Invalid Equipment ID for Red team Player 5"
+                            model.toolTip("Invalid Equipment ID for " + tmpTeam + " Team Player " + (indexToCompare % Model.NUM_MAX_PLAYERS_PER_TEAM));
+                        }
+                    }
+                    catch (Exception e) {
+                       // Do nothing
                     }
                 }
                 
+
+                lastSelectedRow = Integer.valueOf(selectedRow.substring(1));
+                lastSelectedTeam = selectedRow.charAt(0);
+            
+                for (int i = 0; i < rowSelectionLabel.size(); i++) {    // Clear out all other rows
+                    rowSelectionLabel.get(i).setText("           ");
+                }
+                for (int i = 0; i < model.getNumPlayerIDBoxes(); i++) {
+                    model.getPlayerIDBoxAt(i).setBackground(Color.WHITE);
+                }
+                for (int i = 0; i < model.getNumEquipmentIDBoxes(); i++) {
+                    model.getEquipmentIDBoxAt(i).setBackground(Color.WHITE);
+                }
+                ClearScreenButton.setBackground(new Color(0, 66, 32));
+                StartGameButton.setBackground(new Color(0, 66, 32));
+
+                if (LastFocusedComponent.getParent() != null) {
+                    if (lastSelectedTeam == 'R') {
+                        rowSelectionLabel.get(lastSelectedRow).setBackground(Color.BLACK);
+                        rowSelectionLabel.get(lastSelectedRow).setText("  >>>>");
+                    }
+                    else if (lastSelectedTeam == 'G') {
+                        rowSelectionLabel.get(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).setText("  >>>>");
+                    }
+                }
             }
-            catch (Exception e) {
-                e.printStackTrace();
-                System.err.println(e.getClass().getName()+": "+e.getMessage());
-            }
+            
         }
-    }
+        catch (Exception e) {
+            e.printStackTrace();
+            System.err.println(e.getClass().getName()+": "+e.getMessage());
+        }
+     }
 
     /*--------------------------------------------------
      * 
@@ -676,11 +699,12 @@ public class View extends JPanel {
     }
 
     public void NewPlayerPopupScreen(String idInput, JTextField IDBox) {
-        //Textfields on popup window
+
+        // Text fields on popup window
         model.setNewPlayerPopup(true);
         JTextField NewPlayerName = new JTextField(10);
-
         JTextField NewPlayerID = new JTextField(5);
+
         NewPlayerID.setText(idInput);
 
         // Input sanitation for New Player ID Textfield
