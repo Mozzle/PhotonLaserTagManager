@@ -45,9 +45,25 @@ public class TextBox {
 						case KeyEvent.VK_F5:
 							if (m.getSystemState() == Model.PLAYER_ENTRY_SCREEN
 							&& m.getNewPlayerPopupStatus() == false) {
-								m.PlayerEntryScreenDeleter();
-								}
+		   
+						   		if (m.checkStartGameConditions()) {
+							   		m.PlayerEntryScreenDeleter();
+						   		}
+							}
 							break;
+						case KeyEvent.VK_ENTER:
+							
+							try {
+								int i = m.getTextBoxIndexFromName(field.getName());
+
+								if (i >= 0 && i < (Model.NUM_MAX_PLAYERS_PER_TEAM * 2)) {
+									m.PlayerIDBoxes.get(i + 1).getTextBox().requestFocus();
+								}
+
+							}
+							catch (Exception e) {
+								//Do nothing
+							}
 						default:
 							break;
 					   }

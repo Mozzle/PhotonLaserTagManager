@@ -9,6 +9,7 @@ public class PhotonSystem extends JFrame {
     private Model model;
     private Controller controller;
     private View view;
+    private NetController netController;
 
     /*-----------------------------------------------------------
      * 
@@ -24,7 +25,8 @@ public class PhotonSystem extends JFrame {
     {
         model = new Model();
         controller = new Controller(model);
-        view = new View(controller, model);
+        netController = new NetController();
+        view = new View(controller, model, netController);
         view.addMouseListener(controller);
         view.addMouseListener(controller);
 		this.addKeyListener(controller);
@@ -35,6 +37,7 @@ public class PhotonSystem extends JFrame {
 		this.getContentPane().add(view);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setVisible(true);
+        netController.startListener();
     }
 
     /*-----------------------------------------------------------
@@ -56,8 +59,6 @@ public class PhotonSystem extends JFrame {
             view.update();
             view.repaint();
             Toolkit.getDefaultToolkit().sync();
-
-
 
             // This probably needs to change to a non-blocking timer
             try
