@@ -43,7 +43,7 @@ public class View extends JPanel {
     private Model model;
     public NetController netController;
     private int windowHeight, windowWidth, PlayerEntryPanePadding;
-    private boolean inPlayerEntryScreen, inCountDownScreen;
+    private boolean inPlayerEntryScreen, inCountDownScreen, inGameScreen;
     public JPanel RedTeamTextBoxPane, GreenTeamTextBoxPane, PlayerEntryPanes;
     public JLabel toolTipLabel;
     public ArrayList<JLabel> rowSelectionLabel;
@@ -59,7 +59,7 @@ public class View extends JPanel {
 
     /*-------------------------------------------------
      *
-     *      View()
+     *  View()
      *
      *  DESCRIPTION: View Class Initializer
      *
@@ -69,15 +69,23 @@ public class View extends JPanel {
 
     public View(Controller c, Model m, NetController n)
     {
+        // Set references to the controller and model
         c.setView(this);
         model = m;
         netController = n;
+
+        // Initialize current UI state, or flags
         inPlayerEntryScreen = false;
         inCountDownScreen = false;
+        inGameScreen = false;
+
+        // Create the red and green team panes, set them to visible
         RedTeamTextBoxPane = new JPanel();
         RedTeamTextBoxPane.setVisible(false);
         GreenTeamTextBoxPane = new JPanel();
         GreenTeamTextBoxPane.setVisible(false);
+
+        // Create the timer for the tooltips
         timer = new Timer();
         toolTipCounter = 0;
         prevToolTipCounter = 0;
@@ -85,12 +93,11 @@ public class View extends JPanel {
         lastSelectedRow = 99;
         lastSelectedTeam = 'R';
         PlayerEntryPanePadding = 0;
-        // Initializations
     }
 
     /*-------------------------------------------------
      *
-     *      paintComponent()
+     *  paintComponent()
      *
      *  DESCRIPTION: Draws the images to the screen
      *
@@ -99,7 +106,8 @@ public class View extends JPanel {
     ------------------------------------------------- */
     public void paintComponent(Graphics g)
     {
-        g.setColor(new Color(0, 0, 0)); // Black Background
+        // Set background color to black
+        g.setColor(new Color(0, 0, 0));
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
         if (model.getNumWindowObjects() != 0) {
@@ -122,7 +130,7 @@ public class View extends JPanel {
 
     /*-------------------------------------------------
      *
-     *      loadImage()
+     *  loadImage()
      *
      *  DESCRIPTION: loads image for a Sprite object,
      *  given a file link.
@@ -144,7 +152,7 @@ public class View extends JPanel {
 
     /*-------------------------------------------------
      *
-     *      setScreenSize()
+     *  setScreenSize()
      *
      *  DESCRIPTION: PhotonSystem.java gives view.java 
      *  the current window height for proper sizing action
@@ -159,7 +167,7 @@ public class View extends JPanel {
 
     /*--------------------------------------------------
      * 
-     *      update()
+     *  update()
      * 
      *  DESCRIPTION: This function is used to update
      *  model and is the entry point for changing from
@@ -170,7 +178,8 @@ public class View extends JPanel {
     public void update() {
         model.updateScreenSize(windowWidth, windowHeight);
         
-        if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN) { // PLAYER ENTRY SCREEN
+        // Block that handles the PLAYER ENTRY SCREEN
+        if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN) {
              
             if (!inPlayerEntryScreen) { // If first time in Player Entry Screen
             inPlayerEntryScreen = true;
@@ -184,11 +193,20 @@ public class View extends JPanel {
             }
             
         }
-        if(model.getSystemState()==Model.COUNTDOWN_SCREEN && !inCountDownScreen){ // COUNTDOWN SCREEN
+
+        // Block that handles the COUNTDOWN SCREEN
+        if (model.getSystemState() == Model.COUNTDOWN_SCREEN && !inCountDownScreen) {
             inPlayerEntryScreen = false;
             inCountDownScreen=true; 
             this.PlayerEntryScreenDeleter(); 
             this.drawCountDownScreen();
+        }
+
+        // Block that handles the GAME SCREEN
+        if (model.getSystemState() == Model.PLAY_ACTION_SCREEN && !inGameScreen) {
+            inGameScreen = true;
+            // TODO: Link a method here that handles all the sprites and objects
+            // for the game screen. Or implement it here directly.
         }
         
         /*-----------------------------------------------------
@@ -353,7 +371,7 @@ public class View extends JPanel {
 
     /*--------------------------------------------------
      * 
-     *      drawPlayerEntryScreen()
+     *  drawPlayerEntryScreen()
      * 
      *  DESCRIPTION: Creates and draws the Player Entry
      *  Screen, and all Jpanels and elements therein.
@@ -619,7 +637,7 @@ public class View extends JPanel {
 
     /*--------------------------------------------------
      * 
-     *      toolTipTimeout.run()
+     *  toolTipTimeout.run()
      * 
      *  DESCRIPTION: Timer Task that executes when a 
      *  tool tip has timed out on the screen. Deletes 
@@ -642,7 +660,7 @@ public class View extends JPanel {
 
     /*--------------------------------------------------
      * 
-     *      PlayerEntryScreenDeleter()
+     *  PlayerEntryScreenDeleter()
      * 
      *  DESCRIPTION: Deletes the player entry screen.
      *  Used for transitioning into the Countdown 
@@ -653,10 +671,8 @@ public class View extends JPanel {
      --------------------------------------------------*/
 
     public void PlayerEntryScreenDeleter(){
-        for(int i=this.getComponentCount() - 1; i>= 0 ; i--){
-            this.remove(i);
-        }
-        
+        for(int i=this.getComponentCount() - 1; i>= 0 ; i--)
+            this.remove(i);        
     }
 
     public void NewPlayerPopupScreen(String idInput, JTextField IDBox) {

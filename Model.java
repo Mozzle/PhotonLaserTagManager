@@ -87,14 +87,14 @@ public class Model
 
      /*-----------------------------------------------------
      * 
-     *      PlayerEntryScreenDeleter
+     *  PlayerEntryScreenDeleter
      * 
      *  DESCRIPTION: This class is used as a deleter for
      *  the Player Entry screen table.
      * 
      ----------------------------------------------------*/
 
-    // Ran when F5 is pushed.
+    // Runs when F5 is pushed.
     public void PlayerEntryScreenDeleter()
     {
         //creates the tables for the player entry screen
@@ -104,6 +104,21 @@ public class Model
         }
         system_State = COUNTDOWN_SCREEN;
     }
+    
+    /*--------------------------------------------------
+     * 
+     *  CountDownScreenDeleter()
+     * 
+     *  DESCRIPTION: This function is used to update
+     *  model and is the entry point for changing from
+     *  the countdown screen to the play action screen.
+     * 
+     -------------------------------------------------*/
+
+     public void CountDownScreenDeleter() 
+     {
+         system_State = PLAY_ACTION_SCREEN;
+     }
     
 
     /*-------------------------------------------------
@@ -338,7 +353,7 @@ public class Model
      *      checkStartGameConditions()
      *
      *  DESCRIPTION: Checks a series of conditions in 
-     *  the player entry screen to determine if we are
+     *  the entry screen to determine if we are
      *  able to start the game. If so, we will
      *  transition to the countdown screen. Otherwise,
      *  tooltips will appear telling the user what is

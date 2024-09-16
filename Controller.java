@@ -158,6 +158,7 @@ public class Controller implements ActionListener, MouseListener, KeyListener
             if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN
              && model.getNewPlayerPopupStatus() == false) {
 
+                // Delete the player entry screen
                 if (model.checkStartGameConditions()) {
                     model.PlayerEntryScreenDeleter();
                 }
