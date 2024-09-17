@@ -123,6 +123,20 @@ public class Controller implements ActionListener, MouseListener, KeyListener
      *  used for most user typing events. Testing is required 
      *  to determine which is better.
      * 
+     *  For the Player Entry Screen, the key listeners for the 
+     *  TextBox objects actually do the majority of handling
+     *  for the input controls. For the vast majority of 
+     *  the time in that screen, TextBoxes have the 'focus' 
+     *  for keyboard inputs. This class' key listener is 
+     *  attatched to the frame. The frame has a collection of 
+     *  objects inside it, including the TextBoxes. The 
+     *  keyListeners of objects inside the fram take precedence 
+     *  over the keyListener of the frame. In case the focus is 
+     *  not on any 'focusable' object, we set the keyListener 
+     *  here to accept F1 and F5 commands.
+     * 
+     *  REQUIREMENTS: 0010, 0011,
+     * 
     ---------------------------------------------------------- */
 	public void keyReleased(KeyEvent e)
 	{

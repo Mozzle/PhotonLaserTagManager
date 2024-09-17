@@ -12,18 +12,33 @@ public class Database {
 
     String jdbcUrl;
     Connection connection;
-    // DB Connection status
+    // DB Connection status flag
     boolean dbStatus;
+
+    /*-------------------------------------------------
+     *
+     *  Database()
+     *
+     *  DESCRIPTION: Database class constructor. 
+     *  Establishes an interface between the PostgreSQL
+     *  Photon database and the program. Provides 
+     *  methods for interfacing with the database.
+     *
+     *  REQUIREMENTS: 0008,
+     *
+    ------------------------------------------------- */
 
     public Database() {
         jdbcUrl = "jdbc:postgresql://localhost:5432/photon";
 
+        // Try establishing a connection with the database.
         try {
             Class.forName("org.postgresql.Driver");
             connection = DriverManager.getConnection(jdbcUrl, "student", "student");
             System.out.println("Connected to DB");
             dbStatus = true;
         }
+        // If connection fails, print stack trace and set connection flag to false
         catch (Exception e) {
             e.printStackTrace();
             System.err.println(e.getClass().getName()+": "+e.getMessage());

@@ -14,6 +14,19 @@ public class TextBox {
 	public JTextField field; //JTextField object
 	Model m;
 
+	/*-------------------------------------------------
+     *
+     *  TextBox()
+     *
+     *  DESCRIPTION: TextBox class constructor. Creates
+	 *  a JTextField object, provides some methods to
+	 *  access it, and provides some default settings
+	 *  for the text field.
+     *
+     *  REQUIREMENTS: 0006, 0009, 0010, 0011, 
+     *
+    ------------------------------------------------- */
+
 	public TextBox(String name, int cols, Model m, int TextFieldType) {
 		/*-----------------------------------------------------------------------
 		 We have an upward reaching architecture here. This class is both 
