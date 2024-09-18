@@ -139,6 +139,7 @@ public class Database {
         boolean returnVal = true;
 
         if (param == PARAM_ID_AND_CODENAME) {
+            // Create a connection and execute our query
             try {
                 Statement statement = connection.createStatement();
                 statement.executeUpdate("INSERT INTO players(id, codename) VALUES (" + id + ", '" + codename +"');");
