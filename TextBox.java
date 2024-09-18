@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.PlainDocument;
 
 import java.awt.Color;
 import java.awt.event.*;
@@ -35,6 +37,21 @@ public class TextBox {
 		this.m = m;
 		field = new JTextField("", cols);
 		field.setName(name);
+
+		// Input sanitation -- use a plain document as the method to push input, we can sanitize from here
+		field.setDocument(new PlainDocument() {
+			@Override
+			public void insertString(int offset, String s, AttributeSet a) throws javax.swing.text.BadLocationException {
+				// Insert nothing if there is no string
+				if (s == null)
+					return;
+				// Only insert if our string contains the values from 0-9
+				if (s.matches("[0-9]+"))
+					super.insertString(offset, s, a);
+				else
+					m.toolTip("ID's should only be numeric (0-9)", 4500);
+			}
+		});
 
 		/*-----------------------------------------------------------------------
 		Text fields have to have a keyListener that is seperate from the main
@@ -90,15 +107,6 @@ public class TextBox {
 						default:
 							break;
 					   }
-				
-					if ( ( ke.getKeyChar() < '0' && ke.getKeyChar() >= ' ' )
-					|| ( ke.getKeyChar() >= ':' && ke.getKeyChar() <= '~' ) ) {
-						field.setEditable(false);
-						m.toolTip("ID's should only be numeric (0-9)", 4500);
-				   	} else {
-					  	field.setEditable(true);
-				   	}
-				
 				}
 			 }); 
 		}

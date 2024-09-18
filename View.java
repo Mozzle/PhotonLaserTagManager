@@ -10,6 +10,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.PlainDocument;
+import javax.swing.JComponent;
+import javax.swing.text.AttributeSet;
 
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -281,21 +284,22 @@ public class View extends JPanel {
                             indexToCompare = lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM;
                         }
                         
-                        // Query database for the entered ID.
+                        // Query database for a codename to match the entered ID.
                         String codename = model.database.searchDB(Database.PARAM_ID, idToCheck, "");
     
-                        // If our ID already exists, return a tooltip to the user
+                        // If our codename already exists for this ID, return a tooltip to the user
                         if (codename != "") {
                             boolean notADuplicate = true;
                             for (int i = 0; i < (Model.NUM_MAX_PLAYERS_PER_TEAM * 2); i++) {
                                 // Ensure that the ID doesn't exist in another textbox locally
                                 if (String.valueOf(idToCheck).equals(model.PlayerIDBoxes.get(i).getTextFromField()) && (i != indexToCompare)) {
+                                    // TODO: Add logic here that removes the offending/duplicate ID from the local text field.
                                     model.toolTip(codename + " (ID: " + idToCheck + ") is already in this game!", 4500);
                                     notADuplicate = false;
                                 }
                             }
 
-                            // Make a tooltip to say player has been added successfully
+                            // Confirmation tooltip. Can we move this to the function that actually inserts a player to the DB?
                             if (notADuplicate)
                                 model.toolTip(codename + " added successfully!", 4500);
                         }
@@ -744,19 +748,18 @@ public class View extends JPanel {
         JTextField NewPlayerName = new JTextField(10);
         JTextField NewPlayerID = new JTextField(5);
 
-        NewPlayerID.setText(idInput);
-
-        // Input sanitation for New Player ID Textfield
-        NewPlayerID.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent ke) {
-                if ( ( ke.getKeyChar() < '0' && ke.getKeyChar() >= ' ' )
-                || ( ke.getKeyChar() >= ':' && ke.getKeyChar() <= '~' ) ) {
-                      NewPlayerID.setEditable(false);
-                   } else {
-                      NewPlayerID.setEditable(true);
-                   }
+        // Input sanitation -- use a plain document as the method to push input, we can sanitize from here
+        NewPlayerID.setDocument(new PlainDocument() {
+            @Override
+            public void insertString(int offset, String s, AttributeSet a) throws javax.swing.text.BadLocationException {
+                // Insert nothing if there is no string
+                if (s == null)
+                    return;
+                // Only insert if our string contains the values from 0-9
+                if (s.matches("[0-9]+"))
+                    super.insertString(offset, s, a);
             }
-         }); 
+        });
 
         String hintLine1 = hint1;
         String hintLine2 = hint2;
@@ -802,15 +805,18 @@ public class View extends JPanel {
                 //Check if the entered ID exists in the database
                 String searchResult = model.database.searchDB(Database.PARAM_ID, Integer.valueOf(NewPlayerID.getText()), "");
 
-                // If the entered ID doesn't exist in the DB, add the new player to the DB. 
+                // If the entered ID doesn't exist in the DB, attempt to add the new player to the DB. 
                 if (searchResult == "" && Integer.valueOf(NewPlayerID.getText()) > 0 && NewPlayerID.getText().length() >= 1 && NewPlayerName.getText().length() >= 1) {
-                    model.database.insertDB(Database.PARAM_ID_AND_CODENAME, Integer.valueOf(NewPlayerID.getText()), NewPlayerName.getText());
                     if (IDBox != null) {
                         IDBox.setText(NewPlayerID.getText());
                     }
-                    model.toolTip(NewPlayerName.getText() + " added successfully!", 4500);
+                    if (model.database.insertDB(Database.PARAM_ID_AND_CODENAME, Integer.valueOf(NewPlayerID.getText()), NewPlayerName.getText()))
+                        model.toolTip(NewPlayerName.getText() + " added successfully!", 4500);
+                    else
+                        model.toolTip("Error adding " + NewPlayerName.getText() + " to the database!", 4500);
                     closePopupFlag = true;
                 }
+
                 // If the entered Player ID is not a new ID
                 else if (searchResult != "") {
                     hintLine1 = "The Player ID you entered already";
