@@ -21,7 +21,6 @@ import java.awt.GridLayout;
 import java.awt.KeyboardFocusManager;
 import java.awt.LayoutManager;
 import java.awt.Point;
-import java.awt.event.ActionListener;
 import java.awt.Component;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -748,6 +747,7 @@ public class View extends JPanel {
         JTextField NewPlayerName = new JTextField(10);
         JTextField NewPlayerID = new JTextField(5);
 
+
         // Input sanitation -- use a plain document as the method to push input, we can sanitize from here
         NewPlayerID.setDocument(new PlainDocument() {
             @Override
@@ -760,6 +760,8 @@ public class View extends JPanel {
                     super.insertString(offset, s, a);
             }
         });
+
+        NewPlayerID.setText(idInput);
 
         String hintLine1 = hint1;
         String hintLine2 = hint2;
