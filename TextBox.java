@@ -64,6 +64,16 @@ public class TextBox {
 						   		}
 							}
 							break;
+						case KeyEvent.VK_F9:
+							if (m.getSystemState() == Model.PLAYER_ENTRY_SCREEN
+							 && m.getNewPlayerPopupStatus() == false) {
+									m.setMakeNewPlayerPopupFlag(true);
+							}
+							break;
+						case KeyEvent.VK_F12:
+								//Do something similar to F9 for the setting menu
+							break;
+
 						case KeyEvent.VK_ENTER:
 							
 							try {

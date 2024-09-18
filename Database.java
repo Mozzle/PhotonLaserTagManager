@@ -3,6 +3,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 
 public class Database {
 
@@ -217,6 +218,39 @@ public class Database {
                 returnVal = -1;
         }
         return returnVal;
+    }
+
+    public int getNextAvailableID() {
+        int lowestUnusedID = -1;
+        ArrayList<Integer> ids = new ArrayList<>();
+
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT id FROM players;");
+            while (resultSet.next()) {
+                ids.add(resultSet.getInt("id"));
+            }
+
+            int i = 1;
+            boolean foundFlag = false;
+
+            while (i < ids.size() + 1 && !foundFlag) {
+                if (!ids.contains(i)) {
+                    lowestUnusedID = i;
+                    foundFlag = true;
+                }
+                i++;
+            }
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+                System.err.println(e.getClass().getName()+": "+e.getMessage());
+        }
+
+
+
+        return lowestUnusedID;
     }
 
     /*-----------------------------------------------------

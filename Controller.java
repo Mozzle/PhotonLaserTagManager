@@ -169,15 +169,23 @@ public class Controller implements ActionListener, MouseListener, KeyListener
 
             // Case F5 -- Start the game
             case KeyEvent.VK_F5:
-            if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN
-             && model.getNewPlayerPopupStatus() == false) {
+                if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN
+                 && model.getNewPlayerPopupStatus() == false) {
 
-                // Delete the player entry screen
-                if (model.checkStartGameConditions()) {
-                    model.PlayerEntryScreenDeleter();
+                    // Delete the player entry screen
+                    if (model.checkStartGameConditions()) {
+                        model.PlayerEntryScreenDeleter();
+                    }
                 }
-             }
-             break;
+                break;
+            case KeyEvent.VK_F9:
+                if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN
+                 && model.getNewPlayerPopupStatus() == false) {
+                        model.setMakeNewPlayerPopupFlag(true);
+                }
+                break;
+
+            
 
             // Default case -- Do nothing
 			default:

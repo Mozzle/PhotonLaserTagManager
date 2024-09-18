@@ -53,7 +53,7 @@ public class View extends JPanel {
     public int toolTipCounter, prevToolTipCounter;
     public int lastSelectedRow;
     public char lastSelectedTeam;
-    public JButton ClearScreenButton, StartGameButton;
+    public JButton ClearScreenButton, StartGameButton, NewPlayerButton, SettingsButton;
     public Component currentFocus;
 
 
@@ -211,6 +211,11 @@ public class View extends JPanel {
                 handleSystemFocus();
             }
             
+            // Check if model is telling us to do create a New Player Popup window
+            if (model.getMakeNewPlayerPopupFlag()) {
+                model.setMakeNewPlayerPopupFlag(false);
+                NewPlayerPopupScreen("", null, "Enter new Player infromation", "");
+            }
         }
 
         // Block that handles the COUNTDOWN SCREEN
@@ -246,8 +251,10 @@ public class View extends JPanel {
             
             // Create a reference to the last object that has been focused
             Component LastFocusedComponent = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
-            // Create an indication to the user that this row is selected
-            LastFocusedComponent.setBackground(Color.LIGHT_GRAY);
+            if (LastFocusedComponent.getName() != null) {
+                // Create an indication to the user that this row is selected
+                LastFocusedComponent.setBackground(Color.LIGHT_GRAY);
+            }
             String selectedRow = LastFocusedComponent.getName();
         
             // Check that the selected row is different from the last selected row
@@ -310,7 +317,7 @@ public class View extends JPanel {
                             }
 
                             // Create the New Player Entry Popup screen
-                            NewPlayerPopupScreen(popupInputID, NewPlayerIDField);
+                            NewPlayerPopupScreen(popupInputID, NewPlayerIDField, "Unknown Player ID entered, would", "you like to create a new Player?");
                         }
 
                         String EquipmentIdToSend = model.EquipmentIDBoxes.get(indexToCompare).getTextFromField();
@@ -361,8 +368,6 @@ public class View extends JPanel {
                 for (int i = 0; i < model.getNumEquipmentIDBoxes(); i++) {
                     model.getEquipmentIDBoxAt(i).setBackground(Color.WHITE);
                 }
-                ClearScreenButton.setBackground(new Color(0, 66, 32));
-                StartGameButton.setBackground(new Color(0, 66, 32));
 
                 if (LastFocusedComponent.getParent() != null) {
                     if (lastSelectedTeam == 'R') {
@@ -377,9 +382,11 @@ public class View extends JPanel {
             
         }
         catch (Exception e) {
-            e.printStackTrace();
-            System.err.println(e.getClass().getName()+": "+e.getMessage());
+            //e.printStackTrace();
+            //System.err.println(e.getClass().getName()+": "+e.getMessage());
         }
+
+        
      }
 
     /*--------------------------------------------------
@@ -452,8 +459,8 @@ public class View extends JPanel {
         ButtonsCenter.setLayout(new FlowLayout(FlowLayout.CENTER));
 
         ClearScreenButton = new JButton("(F1) - Clear Screen");
-        ClearScreenButton.setPreferredSize(new Dimension(175, 60));
-        ClearScreenButton.setMaximumSize(new Dimension(175, 60));
+        ClearScreenButton.setPreferredSize(new Dimension(225, 60));
+        ClearScreenButton.setMaximumSize(new Dimension(225, 60));
         ClearScreenButton.setBackground(new Color(0, 66, 32));
         ClearScreenButton.setForeground(Color.WHITE);
         ClearScreenButton.addActionListener(new ActionListener() {
@@ -466,8 +473,8 @@ public class View extends JPanel {
         ButtonsCenter.add(ClearScreenButton);
 
         StartGameButton = new JButton("(F5) - Start Game");
-        StartGameButton.setPreferredSize(new Dimension(175, 60));
-        StartGameButton.setMaximumSize(new Dimension(175, 60));
+        StartGameButton.setPreferredSize(new Dimension(225, 60));
+        StartGameButton.setMaximumSize(new Dimension(225, 60));
         StartGameButton.setBackground(new Color(0, 66, 32));
         StartGameButton.setForeground(Color.WHITE);
         StartGameButton.addActionListener(new ActionListener() {
@@ -480,6 +487,31 @@ public class View extends JPanel {
             }  
         }); 
         ButtonsCenter.add(StartGameButton);
+
+        NewPlayerButton = new JButton("(F9) - Add New Player");
+        NewPlayerButton.setPreferredSize(new Dimension(225, 60));
+        NewPlayerButton.setMaximumSize(new Dimension(225, 60));
+        NewPlayerButton.setBackground(new Color(0, 66, 32));
+        NewPlayerButton.setForeground(Color.WHITE);
+        NewPlayerButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                NewPlayerPopupScreen("", null, "Enter new Player infromation", "");
+            }  
+        });
+        ButtonsCenter.add(NewPlayerButton);
+
+        SettingsButton = new JButton("(F12) - Settings");
+        SettingsButton.setPreferredSize(new Dimension(225, 60));
+        SettingsButton.setMaximumSize(new Dimension(225, 60));
+        SettingsButton.setBackground(new Color(0, 66, 32));
+        SettingsButton.setForeground(Color.WHITE);
+        SettingsButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                //Popup screen similar to the newPlayer popupscreen
+            }  
+        });
+        ButtonsCenter.add(SettingsButton);
+
         ButtonsCenter.setOpaque(false);
 
         Buttons.add(ButtonsCenter);
@@ -705,7 +737,7 @@ public class View extends JPanel {
             this.remove(i);        
     }
 
-    public void NewPlayerPopupScreen(String idInput, JTextField IDBox) {
+    public void NewPlayerPopupScreen(String idInput, JTextField IDBox, String hint1, String hint2) {
 
         // Text fields on popup window
         model.setNewPlayerPopup(true);
@@ -726,8 +758,8 @@ public class View extends JPanel {
             }
          }); 
 
-        String hintLine1 = "Unknown Player ID entered, would";
-        String hintLine2 = "you like to create a new Player?";
+        String hintLine1 = hint1;
+        String hintLine2 = hint2;
 
         // Flag to mark the popup window ready to close
         boolean closePopupFlag = false;
@@ -736,7 +768,7 @@ public class View extends JPanel {
 
             // making the popup window and adding elements to it
             JPanel NewPlayerPopup = new JPanel();
-            NewPlayerPopup.setPreferredSize(new Dimension(250, 125));
+            NewPlayerPopup.setPreferredSize(new Dimension(250, 150));
             NewPlayerPopup.add(new JLabel(hintLine1));
             NewPlayerPopup.add(Box.createVerticalStrut(15));
             NewPlayerPopup.add(new JLabel(hintLine2));
@@ -747,6 +779,21 @@ public class View extends JPanel {
             NewPlayerPopup.add(Box.createVerticalStrut(15));
             NewPlayerPopup.add(new JLabel("New Player Name"));
             NewPlayerPopup.add(NewPlayerName,BorderLayout.EAST);
+            NewPlayerPopup.add(Box.createVerticalStrut(25));
+
+            JButton GenerateNewIDBtn = new JButton("Generate A New Player ID");
+            GenerateNewIDBtn.setPreferredSize(new Dimension(240, 25));
+            GenerateNewIDBtn.setMaximumSize(new Dimension(240, 25));
+            GenerateNewIDBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e){
+                    int newID = model.database.getNextAvailableID();
+
+                    if (newID != -1) {
+                        NewPlayerID.setText(String.valueOf(newID));
+                    }
+                }  
+            });
+            NewPlayerPopup.add(GenerateNewIDBtn);
 
             //Create the dialog popup with the ok/cancel buttons and wait for the window to be closed
             int result = JOptionPane.showConfirmDialog(null, NewPlayerPopup, "New Player Entry", JOptionPane.OK_CANCEL_OPTION);
@@ -758,7 +805,9 @@ public class View extends JPanel {
                 // If the entered ID doesn't exist in the DB, add the new player to the DB. 
                 if (searchResult == "" && Integer.valueOf(NewPlayerID.getText()) > 0 && NewPlayerID.getText().length() >= 1 && NewPlayerName.getText().length() >= 1) {
                     model.database.insertDB(Database.PARAM_ID_AND_CODENAME, Integer.valueOf(NewPlayerID.getText()), NewPlayerName.getText());
-                    IDBox.setText(NewPlayerID.getText());
+                    if (IDBox != null) {
+                        IDBox.setText(NewPlayerID.getText());
+                    }
                     model.toolTip(NewPlayerName.getText() + " added successfully!", 4500);
                     closePopupFlag = true;
                 }
@@ -783,7 +832,9 @@ public class View extends JPanel {
             // If the user hit cancel or close on the window
             }
             else if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) {
-                IDBox.setText("");
+                if (IDBox != null) {
+                    IDBox.setText("");
+                }
                 closePopupFlag = true;
             }
         }

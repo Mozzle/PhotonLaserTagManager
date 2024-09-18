@@ -45,6 +45,7 @@ public class Model
 
     public boolean PlayerEntryScreenNewPlayerPopup;     // Flag to disable F1, F5 commands while
                                                         // New Player Popup screen is active
+    public boolean makeNewPlayerPopup;      // Flag to View class to create a new New Player Popup.
 
 
     /*-----------------------------------------------------
@@ -114,6 +115,7 @@ public class Model
         timer.schedule(splashScreenTimeoutTask, 3200);
         newToolTip = false;
         PlayerEntryScreenNewPlayerPopup = false;
+        makeNewPlayerPopup = false;
         
         // If we are not connected to the database, make a tooltip to warn the user.
         if (database.getdbConnectionStatus() == false) {
@@ -552,6 +554,14 @@ public class Model
         }
 
         return index;
+    }
+
+    public boolean getMakeNewPlayerPopupFlag() {
+        return makeNewPlayerPopup;
+    }
+
+    public void setMakeNewPlayerPopupFlag(boolean set) {
+        makeNewPlayerPopup = set;
     }
     
 }
