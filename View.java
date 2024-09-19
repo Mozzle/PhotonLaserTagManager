@@ -205,9 +205,9 @@ public class View extends JPanel {
             handleToolTipDrawing();
 
             /*-----------------------------------------------------
-            Update the '>>>>' row selection arrows
+            Update the '>>>>' row selection arrows and handle 
+            valid Player/Equipment ID input detection
             -----------------------------------------------------*/
-
             // Check if a text field has a current focus, if so handle it
             if (KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner() != null) {
                 handleSystemFocus();
@@ -218,14 +218,20 @@ public class View extends JPanel {
                 model.setMakeNewPlayerPopupFlag(false);
                 NewPlayerPopupScreen("", null, "Enter new Player infromation", "");
             }
+
         }
 
         // Block that handles the COUNTDOWN SCREEN
-        if (model.getSystemState() == Model.COUNTDOWN_SCREEN && !inCountDownScreen) {
+        if (model.getSystemState() == Model.COUNTDOWN_SCREEN) {
+        
+            // If it's our first time in the COUNTDOWN SCREEN
+            if (!inCountDownScreen) {
             inPlayerEntryScreen = false;
             inCountDownScreen=true; 
             this.PlayerEntryScreenDeleter(); 
             this.drawCountDownScreen();
+            }
+
         }
 
         // Block that handles the GAME SCREEN
@@ -243,8 +249,19 @@ public class View extends JPanel {
      *  handleSystemFocus()
      * 
      *  DESCRIPTION: Cleaner method to handle when an
-     *  object is given focus in the view.
+     *  object is given focus in the view. Called from 
+     *  the player entry screen to do the following:
+     *  
+     *  Update the shaded backgrounds of text fields to 
+     *  show they are selected.
      * 
+     *  Update the '>>>>' selection arrows
+     * 
+     *  Validate proper entry of Player ID and Equipment
+     *  ID fields and warn user of invalid inputs.
+     * 
+     *  REQUIREMENTS: 0021
+     *  
      -------------------------------------------------*/
 
      public void handleSystemFocus() {
@@ -275,52 +292,71 @@ public class View extends JPanel {
 
                         // Grab the ID and Database Index based on the selected team
                         if (lastSelectedTeam == 'R') {
-                            idToCheck = Integer.valueOf(model.PlayerIDBoxes.get(lastSelectedRow).getTextFromField());
+                            // If the Player ID field is not empty, get the int value of the field
+                            if (!model.PlayerIDBoxes.get(lastSelectedRow).getTextFromField().equals("")) {
+                                idToCheck = Integer.valueOf(model.PlayerIDBoxes.get(lastSelectedRow).getTextFromField());
+                            }
                             indexToCompare = lastSelectedRow;
                         }
                         else if (lastSelectedTeam == 'G') {
-                            idToCheck = Integer.valueOf(model.PlayerIDBoxes.get(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextFromField());
+                            // If the Player ID field is not empty, get the int value of the field
+                            if (!model.PlayerIDBoxes.get(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextFromField().equals("")) {
+                                idToCheck = Integer.valueOf(model.PlayerIDBoxes.get(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextFromField());
+                            }
                             indexToCompare = lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM;
                         }
-                        
-                        // Query database for a codename to match the entered ID.
-                        String codename = model.database.searchDB(Database.PARAM_ID, idToCheck, "");
-    
-                        // If our codename already exists for this ID, return a tooltip to the user
-                        if (codename != "") {
-                            boolean notADuplicate = true;
-                            for (int i = 0; i < (Model.NUM_MAX_PLAYERS_PER_TEAM * 2); i++) {
-                                // Ensure that the ID doesn't exist in another textbox locally
-                                if (String.valueOf(idToCheck).equals(model.PlayerIDBoxes.get(i).getTextFromField()) && (i != indexToCompare)) {
-                                    // TODO: Add logic here that removes the offending/duplicate ID from the local text field.
-                                    model.toolTip(codename + " (ID: " + idToCheck + ") is already in this game!", 4500);
-                                    notADuplicate = false;
-                                }
-                            }
 
-                            // Confirmation tooltip. Can we move this to the function that actually inserts a player to the DB?
-                            if (notADuplicate)
-                                model.toolTip(codename + " added successfully!", 4500);
+                        // If the Player ID Field was empty
+                        if (idToCheck == -1) {
+                            //AND the Equipment ID field was not empty, print a tool tip
+                            if (lastSelectedTeam == 'R' && !model.EquipmentIDBoxes.get(lastSelectedRow).getTextFromField().equals("")) {
+                                model.toolTip("Invalid Player ID for Red Team Player " + lastSelectedRow, 4500);
+                            }
+                            else if (lastSelectedTeam == 'G' && !model.EquipmentIDBoxes.get(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextFromField().equals("")) {
+                                model.toolTip("Invalid Player ID for Green Team Player " + lastSelectedRow, 4500);
+                            }
                         }
-                        // If ID does not exist in the database, add it
+                        // If the Player ID Field was not empty
                         else {
+                            // Query database for a codename to match the entered ID.
+                            String codename = model.database.searchDB(Database.PARAM_ID, idToCheck, "");
+                            
+                            // If our codename already exists for this ID, return a tooltip to the user
+                            if (codename != "") {
+                                boolean notADuplicate = true;
+                                for (int i = 0; i < (Model.NUM_MAX_PLAYERS_PER_TEAM * 2); i++) {
+                                    // Ensure that the ID doesn't exist in another textbox locally
+                                    if (String.valueOf(idToCheck).equals(model.PlayerIDBoxes.get(i).getTextFromField()) && (i != indexToCompare)) {
+                                        // TODO: Add logic here that removes the offending/duplicate ID from the local text field.
+                                        model.toolTip(codename + " (ID: " + idToCheck + ") is already in this game!", 4500);
+                                        notADuplicate = false;
+                                    }
+                                }
 
-                            // Create a popup window to prompt the user to add a new player
-                            String popupInputID = "";
-                            JTextField NewPlayerIDField = new JTextField();
-
-                            // Grab the ID based on the selected team
-                            if (lastSelectedTeam == 'R') {
-                                popupInputID = model.PlayerIDBoxes.get(lastSelectedRow).getTextFromField();
-                                NewPlayerIDField = model.PlayerIDBoxes.get(lastSelectedRow).getTextBox();
+                                // Confirmation tooltip. Can we move this to the function that actually inserts a player to the DB?
+                                if (notADuplicate)
+                                    model.toolTip(codename + " added successfully!", 4500);
                             }
-                            else if (lastSelectedTeam == 'G') {
-                                popupInputID = model.PlayerIDBoxes.get(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextFromField();
-                                NewPlayerIDField = model.PlayerIDBoxes.get(lastSelectedRow  + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextBox();
-                            }
+                            // If ID does not exist in the database, add it
+                            else {
 
-                            // Create the New Player Entry Popup screen
-                            NewPlayerPopupScreen(popupInputID, NewPlayerIDField, "Unknown Player ID entered, would", "you like to create a new Player?");
+                                // Create a popup window to prompt the user to add a new player
+                                String popupInputID = "";
+                                JTextField NewPlayerIDField = new JTextField();
+
+                                // Grab the ID based on the selected team
+                                if (lastSelectedTeam == 'R') {
+                                    popupInputID = model.PlayerIDBoxes.get(lastSelectedRow).getTextFromField();
+                                    NewPlayerIDField = model.PlayerIDBoxes.get(lastSelectedRow).getTextBox();
+                                }
+                                else if (lastSelectedTeam == 'G') {
+                                    popupInputID = model.PlayerIDBoxes.get(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextFromField();
+                                    NewPlayerIDField = model.PlayerIDBoxes.get(lastSelectedRow  + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextBox();
+                                }
+
+                                // Create the New Player Entry Popup screen
+                                NewPlayerPopupScreen(popupInputID, NewPlayerIDField, "Unknown Player ID entered, would", "you like to create a new Player?");
+                            }
                         }
 
                         String EquipmentIdToSend = model.EquipmentIDBoxes.get(indexToCompare).getTextFromField();
@@ -340,8 +376,9 @@ public class View extends JPanel {
                             
                         }
 
-                        // Send tooltip saying that the equipment ID is invalid.
-                        else {
+                        // Else if there IS a player ID entered, and an invalid Equipment ID entered,
+                        // Print a tooltip stating that the Equipment ID is invalid
+                        else if (idToCheck != -1) {
                             String tmpTeam = "";
                             if (indexToCompare < Model.NUM_MAX_PLAYERS_PER_TEAM) {
                                 tmpTeam = "Red";
@@ -399,7 +436,7 @@ public class View extends JPanel {
      *  DESCRIPTION: Creates and draws the Player Entry
      *  Screen, and all Jpanels and elements therein.
      * 
-     *  REQUIREMENTS: 0009,
+     *  REQUIREMENTS: 0009, 0021
      -------------------------------------------------*/
 
      /*                     PLAYER ENTRY PAGE LAYOUT
@@ -684,7 +721,17 @@ public class View extends JPanel {
 
     }
 
-    //Draws countdown screen: unfinished
+
+    /*--------------------------------------------------
+     * 
+     *  drawCountDownScreen()
+     * 
+     *  DESCRIPTION: Creates and draws the Countdown 
+     *  Screen prior to the start of a game.
+     * 
+     *  REQUIREMENTS: 0013,
+     -------------------------------------------------*/
+
     public void drawCountDownScreen(){
         //LayoutManager layout = new FlowLayout();
         //JLabel tmpJLabel;
@@ -731,7 +778,7 @@ public class View extends JPanel {
      *  Used for transitioning into the Countdown 
      *  screen.
      * 
-     *  REQUIREMENTS: 
+     *  REQUIREMENTS: 0013
      * 
      --------------------------------------------------*/
 
@@ -739,6 +786,19 @@ public class View extends JPanel {
         for(int i=this.getComponentCount() - 1; i>= 0 ; i--)
             this.remove(i);        
     }
+
+
+    /*--------------------------------------------------
+     * 
+     *  NewPlayerPopupScreen()
+     * 
+     *  DESCRIPTION: Creates a new Popup window that
+     *  allows players to input information (Codename, ID)
+     *  for a new Player.
+     * 
+     *  REQUIREMENTS: 0015
+     * 
+     --------------------------------------------------*/
 
     public void NewPlayerPopupScreen(String idInput, JTextField IDBox, String hint1, String hint2) {
 
@@ -804,15 +864,21 @@ public class View extends JPanel {
             int result = JOptionPane.showConfirmDialog(null, NewPlayerPopup, "New Player Entry", JOptionPane.OK_CANCEL_OPTION);
             // If the user clicked the "OK" button
             if (result == JOptionPane.OK_OPTION) {
-                //Check if the entered ID exists in the database
-                String searchResult = model.database.searchDB(Database.PARAM_ID, Integer.valueOf(NewPlayerID.getText()), "");
 
+                int newPlayerIDVal = -1;
+                // If the Player ID field String is not empty, get its value as an integer
+                if (!NewPlayerID.getText().equals("")) {
+                    newPlayerIDVal = Integer.valueOf(NewPlayerID.getText());
+                }
+                //Check if the entered ID exists in the database
+                String searchResult = model.database.searchDB(Database.PARAM_ID, newPlayerIDVal, "");
+                
                 // If the entered ID doesn't exist in the DB, attempt to add the new player to the DB. 
-                if (searchResult == "" && Integer.valueOf(NewPlayerID.getText()) > 0 && NewPlayerID.getText().length() >= 1 && NewPlayerName.getText().length() >= 1) {
+                if (searchResult == "" && newPlayerIDVal > 0 && NewPlayerID.getText().length() >= 1 && NewPlayerName.getText().length() >= 1) {
                     if (IDBox != null) {
                         IDBox.setText(NewPlayerID.getText());
                     }
-                    if (model.database.insertDB(Database.PARAM_ID_AND_CODENAME, Integer.valueOf(NewPlayerID.getText()), NewPlayerName.getText()))
+                    if (model.database.insertDB(Database.PARAM_ID_AND_CODENAME, newPlayerIDVal, NewPlayerName.getText()))
                         model.toolTip(NewPlayerName.getText() + " added successfully!", 4500);
                     else
                         model.toolTip("Error adding " + NewPlayerName.getText() + " to the database!", 4500);
