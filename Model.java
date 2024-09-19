@@ -347,6 +347,16 @@ public class Model
         }
     }
 
+    /*-------------------------------------------------
+     *
+     *      toolTip()
+     *
+     *  DESCRIPTION: Creates and displays a new JLabel "toolTip"
+     * which is used in other functions
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
     public boolean toolTip(String tipText, int ms) {
         boolean success = true;
         if (ms > 0) {

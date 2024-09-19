@@ -2,6 +2,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
 
+/*-------------------------------------------------
+     *
+     *  SplashScreen
+     *
+     *  DESCRIPTION: Establishes the variable "animationState"
+     *  and loads the initial Photon logo to be displayed at the beginning of the program
+     *
+    ------------------------------------------------- */
 public class SplashScreen extends Sprite {
     public int animationState;
 
@@ -15,6 +23,14 @@ public class SplashScreen extends Sprite {
         
     }
 
+    /*-------------------------------------------------
+     *
+     *  updateScreenSize
+     *
+     *  DESCRIPTION: Updates the screen's current size and width,
+     * updates the current x and y values
+     *
+    ------------------------------------------------- */
     public void updateScreenSize(int screenW, int screenH) {
         this.screenW = screenW;
         this.screenH = screenH;
