@@ -23,7 +23,7 @@ The following terminal commands must be ran to set up the Manager Program.
 
 ### Step 2. Install the Java 17 JDK:
 
-`apt install openjdk-17-jdk openjdk-17-jre`
+`sudo apt install openjdk-17-jdk openjdk-17-jre`
 
 (We will eventually make this project to be reliant only on the JRE, but for development, we want to build every time we run the program)
 
