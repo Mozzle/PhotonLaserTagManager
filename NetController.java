@@ -4,6 +4,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Arrays;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
     /*-----------------------------------------------------------
      * 
@@ -19,9 +21,11 @@ import java.util.Arrays;
      * 
      *  transmit(String msg) - Transmits a message to all receivers.
      * 
+     *  pop() - Pops the most recent received data off the local data.
+     * 
      *  The listener thread will automatically store the last 10
      *  messages received in the receivedData array. You can access
-     *  this array directly.
+     *  this array directly or with pop().
      * 
     ---------------------------------------------------------- */
 
@@ -109,7 +113,10 @@ public class NetController
 
             // Send the packet
             sendSocket.send(sendPacket);
-            System.out.println("Sent: " + new String(sendPacket.getData()));
+
+            // Log message
+            System.out.println("[NetController - " + timestamp() + "] Sending packet to " 
+            + SEND_ADDRESS + ":" + SEND_PORT + ", data: " + new String(sendPacket.getData()));
 
             // Close the socket since we are done with it
             sendSocket.close();
@@ -154,7 +161,9 @@ public class NetController
         // Start the listener thread
         listenerThread.start();
 
-        System.out.println("Started listening on port " + RECEIVE_PORT + "...");
+        // Log message
+        System.out.println("[NetController - " + timestamp() + "] Starting listening on " 
+        + RECEIVE_PORT);
 
         return returnFlag;
     }
@@ -192,7 +201,9 @@ public class NetController
         socketListener = null;
         listenerThread = null;
 
-        System.out.println("Stopped listening on port " + RECEIVE_PORT + ".");
+        // Log message
+        System.out.println("[NetController - " + timestamp() + "] Stopped listening on " 
+        + SEND_PORT);
 
         return returnFlag;
     }
@@ -214,8 +225,31 @@ public class NetController
         // Add the new data to the end of the array
         receivedData[MAX_MESSAGES - 1] = new String(data);
 
-        // Print the received data
-        System.out.println(Arrays.toString(receivedData));
+        // Log message
+        System.out.println("[NetController - " + timestamp() + "] Received message, data: " + receivedData[MAX_MESSAGES - 1]);
+    }
+
+    /*-----------------------------------------------------------
+     * 
+     *  pop()
+     * 
+     *  DESCRIPTION: Pops the most recent received data off the
+     *  local data array.
+     * 
+    ---------------------------------------------------------- */
+    public String pop() 
+    {
+        // Return the selected data
+        String s = receivedData[MAX_MESSAGES - 1];
+        
+        // Log message
+        System.out.println("[NetController - " + timestamp() + "] Popped message, data: " + s);
+
+        // Shift all elements in the array down by one
+        for (int i = 0; i < MAX_MESSAGES - 1; i++)
+            receivedData[i] = receivedData[i + 1];
+
+        return s;
     }
 
     /*-----------------------------------------------------------
@@ -228,5 +262,19 @@ public class NetController
     public void rflag(boolean flag) 
     {
         returnFlag = flag;
+    }
+
+    /*-----------------------------------------------------------
+     * 
+     *  timestamp()
+     * 
+     *  DESCRIPTION: Helper function that just grabs the time and
+     *  returns it as a string for logging purposes
+     * 
+    ---------------------------------------------------------- */
+    public String timestamp() {
+        long timestamp = System.currentTimeMillis();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
+        return sdf.format(timestamp);
     }
 }
