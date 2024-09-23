@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JTextField;
+import javax.swing.JCheckBox;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -952,6 +953,7 @@ public class View extends JPanel {
         JTextField sendPort = new JTextField(5);
         JTextField receivePort = new JTextField(5);
         JTextField sendAddress = new JTextField(10);
+        JCheckBox debugField = new JCheckBox("Debug Mode");
 
         // Input sanitation -- use a plain document as the method to push input, we can sanitize from here
         sendPort.setDocument(new PlainDocument() {
@@ -986,7 +988,7 @@ public class View extends JPanel {
                 // Insert nothing if there is no string
                 if (s == null)
                     return;
-                // Only insert if our string contains the values from 0-9
+
                 // if (s.matches("[0-9]+"))
                 // TODO: Implement regex logic to check for valid IP addresses or domains
                 super.insertString(offset, s, a);
@@ -997,6 +999,7 @@ public class View extends JPanel {
         sendPort.setText(Integer.toString(netController.getSendPort()));
         receivePort.setText(Integer.toString(netController.getReceivePort()));
         sendAddress.setText(netController.getSendAddress());
+        debugField.setSelected(model.getDebugMode());
 
         // Declare error flag
         boolean error = false;
@@ -1009,13 +1012,16 @@ public class View extends JPanel {
             JPanel NewSettingsPopup = new JPanel();
             NewSettingsPopup.setPreferredSize(new Dimension(250, 150));
             NewSettingsPopup.add(new JLabel("Transmission port:"));
-            NewSettingsPopup.add(sendPort,BorderLayout.WEST);
+            NewSettingsPopup.add(sendPort,BorderLayout.EAST);
             NewSettingsPopup.add(Box.createVerticalStrut(15));
             NewSettingsPopup.add(new JLabel("Receival port:"));
-            NewSettingsPopup.add(receivePort,BorderLayout.WEST);
+            NewSettingsPopup.add(receivePort,BorderLayout.EAST);
             NewSettingsPopup.add(Box.createVerticalStrut(15));
             NewSettingsPopup.add(new JLabel("Destination Address (IPv4):"));
-            NewSettingsPopup.add(sendAddress,BorderLayout.WEST);
+            NewSettingsPopup.add(Box.createVerticalStrut(15));
+            NewSettingsPopup.add(sendAddress,BorderLayout.EAST);
+            NewSettingsPopup.add(Box.createVerticalStrut(25));
+            NewSettingsPopup.add(debugField);
 
             // Create the dialog popup with the ok/cancel buttons and wait for the window to be closed
             int result = JOptionPane.showConfirmDialog(null, NewSettingsPopup, "Settings", JOptionPane.OK_CANCEL_OPTION);
@@ -1026,6 +1032,7 @@ public class View extends JPanel {
                 boolean sChanged = (Integer.parseInt(sendPort.getText()) != netController.getSendPort());
                 boolean rChanged = (Integer.parseInt(receivePort.getText()) != netController.getReceivePort());
                 boolean aChanged = (!sendAddress.getText().equals(netController.getSendAddress()));
+                boolean dChanged = (debugField.isSelected() != model.getDebugMode());
 
                 // Declare vars to hold the current settings
                 int sPort = 0;
@@ -1060,6 +1067,8 @@ public class View extends JPanel {
                 if (aChanged)
                     if(!netController.setSendAddress(sAddr))
                         error = true;
+                if (dChanged)
+                    model.setDebugMode(debugField.isSelected());
 
                 // Success/fail tooltip
                 if(!error)

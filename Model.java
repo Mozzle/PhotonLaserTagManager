@@ -49,6 +49,7 @@ public class Model
     public boolean makePlayerPopup;      // Flag to View class to create a new New Player Popup.
     public boolean makeSettingsPopup;    // Flag to View class to create a new Settings Popup.
 
+    public boolean debugMode;            // Flag to enable debug mode
 
     /*-----------------------------------------------------
      * 
@@ -119,6 +120,7 @@ public class Model
         PlayerEntryScreenNewPopup = false;
         makePlayerPopup = false;
         makeSettingsPopup = false;
+        debugMode = false;
         
         // If we are not connected to the database, make a tooltip to warn the user.
         if (database.getdbConnectionStatus() == false) {
@@ -508,7 +510,7 @@ public class Model
             }
         }
         // Return whether or not the conditions for the game to start have been met
-        return gameConditionsMet;
+        return gameConditionsMet || debugMode;
     } 
     
     public void setNewPopup(boolean isTrue) {
@@ -582,6 +584,14 @@ public class Model
 
     public void setMakeSettingsPopupFlag(boolean set) {
         makeSettingsPopup = set;
+    }
+
+    public boolean getDebugMode() {
+        return debugMode;
+    }
+
+    public void setDebugMode(boolean set) {
+        debugMode = set;
     }
     
 }
