@@ -31,7 +31,7 @@ public class NetListener
 
         // Try/catch attempt to open a socket for receiving data
         try {
-            dataSocket = new DatagramSocket(NetController.RECEIVE_PORT);
+            dataSocket = new DatagramSocket(master.getReceivePort());
             socketOpen = true;
         } 
         // Exception is typically thrown when the port is in use, or already open

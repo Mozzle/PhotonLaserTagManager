@@ -14,14 +14,24 @@ import java.util.Date;
      *  The main methods you will use in this class are:
      * 
      *  startListener() - Starts the listener thread. Use this to
-     *  begin receiving data from the network -- should be always on.
+     *  begin receiving data from the network -- should be always on. Returns boolean.
      * 
      *  stopListener() - Stops the listener thread. Call this probably
-     *  on program exit.
+     *  on program exit. Returns boolean.
      * 
-     *  transmit(String msg) - Transmits a message to all receivers.
+     *  transmit(String msg) - Transmits a message to all receivers. Returns boolean.
      * 
-     *  pop() - Pops the most recent received data off the local data.
+     *  pop() - Pops the most recent received data off the local data. Returns string.
+     * 
+     *  setSendPort(int newPort) - Sets the port to listen on. Returns boolean.
+     * 
+     *  setSendAddress(String a) - Sets the address to send to. Returns boolean.
+     * 
+     *  getSendPort() - Returns the port to send on. Returns int.
+     *  
+     *  getReceivePort() - Returns the port to receive on. Returns int.
+     * 
+     *  getSendAddress() - Returns the address to send to. Returns string.
      * 
      *  The listener thread will automatically store the last 10
      *  messages received in the receivedData array. You can access
@@ -32,9 +42,9 @@ import java.util.Date;
 public class NetController
 {
     /// Define all ports to receive/send on
-    public static final int RECEIVE_PORT = 7501;
-    public static final int SEND_PORT = 7500;
-    private static final String SEND_ADDRESS = "192.168.1.100";
+    private int RECEIVE_PORT = 7501;
+    private int SEND_PORT = 7500;
+    private String SEND_ADDRESS = "192.168.1.100";
     private final int MAX_MESSAGES = 10;
 
     /// Listener object and thread
@@ -80,8 +90,8 @@ public class NetController
      *  Returns false if the code was not transmitted, or failed
      * 
     ---------------------------------------------------------- */
-    public boolean transmit(String msg) {
-
+    public boolean transmit(String msg)
+    {
         returnFlag = true;
 
         // Send data buffer used to hold packet contents
@@ -139,8 +149,8 @@ public class NetController
      *  Returns false if the socket listener couldn't start
      * 
     ---------------------------------------------------------- */
-    public boolean startListener() {
-
+    public boolean startListener() 
+    {
         returnFlag = true;
         // If we're already listening, return false
         if (isListening)
@@ -178,8 +188,8 @@ public class NetController
      *  Returns false if the socket listener couldn't start
      * 
     ---------------------------------------------------------- */
-    public boolean stopListener() {
-
+    public boolean stopListener() 
+    {
         returnFlag = true;
         // If we're not listening, return false
         if (!isListening)
@@ -234,7 +244,7 @@ public class NetController
      *  pop()
      * 
      *  DESCRIPTION: Pops the most recent received data off the
-     *  local data array.
+     *  local data array. Returns as a string.
      * 
     ---------------------------------------------------------- */
     public String pop() 
@@ -259,8 +269,7 @@ public class NetController
      *  DESCRIPTION: Sets the return flag
      * 
     ---------------------------------------------------------- */
-    public void rflag(boolean flag) 
-    {
+    public void rflag(boolean flag) {
         returnFlag = flag;
     }
 
@@ -276,5 +285,88 @@ public class NetController
         long timestamp = System.currentTimeMillis();
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
         return sdf.format(timestamp);
+    }
+
+    /*-----------------------------------------------------------
+     * 
+     *  getSendPort()
+     * 
+     *  DESCRIPTION: Getter method for send port. Returns as int.
+     * 
+    ---------------------------------------------------------- */
+    public int getSendPort() {
+        return SEND_PORT;
+    }
+
+    /*-----------------------------------------------------------
+     * 
+     *  setSendPort(int newPorts)
+     * 
+     *  DESCRIPTION: Setter method for send port.
+     * 
+     *  Returns true if the port was successfully set
+     *  Returns false if no change was made
+     * 
+    ---------------------------------------------------------- */
+    public boolean setSendPort(int newPorts) {
+        if (newPorts > 0 && newPorts < 65535)
+            SEND_PORT = newPorts;
+
+        return SEND_PORT == newPorts;
+    }
+
+    /*-----------------------------------------------------------
+     * 
+     *  getReceivePort()
+     * 
+     *  DESCRIPTION: Getter method for send port. Returns as int.
+     * 
+    ---------------------------------------------------------- */
+    public int getReceivePort() {
+        return RECEIVE_PORT;
+    }
+
+    /*-----------------------------------------------------------
+     * 
+     *  setReceivePort(int newPorts)
+     * 
+     *  DESCRIPTION: Setter method for receive port.
+     * 
+     *  Returns true if the port was successfully set
+     *  Returns false if no change was made
+     * 
+    ---------------------------------------------------------- */
+    public boolean setReceivePort(int newPorts) {
+        if ((newPorts > 0 && newPorts < 65535) && !isListening)
+            RECEIVE_PORT = newPorts;
+
+        return RECEIVE_PORT == newPorts;
+    }
+
+    /*-----------------------------------------------------------
+     * 
+     *  setSendAddress(String a)
+     * 
+     *  DESCRIPTION: Setter method for send address.
+     * 
+     *  Returns true if the address was successfully set
+     *  Returns false if no change was made
+     * 
+    ---------------------------------------------------------- */
+    public boolean setSendAddress(String a) {
+        SEND_ADDRESS = a;
+        return SEND_ADDRESS.equals(a);
+    }
+
+     /*-----------------------------------------------------------
+     * 
+     *  getSendAddress()
+     * 
+     *  DESCRIPTION: Getter method for send address. 
+     *  Returns as string.
+     * 
+    ---------------------------------------------------------- */
+    public String getSendAddress() {
+        return SEND_ADDRESS;
     }
 }
