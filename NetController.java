@@ -41,7 +41,7 @@ import java.util.Date;
 
 public class NetController
 {
-    /// Define all ports to receive/send on
+    /// Define default ports and addresses
     private int RECEIVE_PORT = 7501;
     private int SEND_PORT = 7500;
     private String SEND_ADDRESS = "192.168.1.100";
