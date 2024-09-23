@@ -68,27 +68,33 @@ public class TextBox {
 							break;
 						case KeyEvent.VK_F1:
 							if (m.getSystemState() == Model.PLAYER_ENTRY_SCREEN 
-							&& m.getNewPlayerPopupStatus() == false) {
+							&& m.getNewPopup() == false) {
 								m.clearTextBoxes();
 							}
 							break;
 						case KeyEvent.VK_F5:
 							if (m.getSystemState() == Model.PLAYER_ENTRY_SCREEN
-							&& m.getNewPlayerPopupStatus() == false) {
+							&& m.getNewPopup() == false) {
 		   
 						   		if (m.checkStartGameConditions()) {
 							   		m.PlayerEntryScreenDeleter();
 						   		}
 							}
 							break;
+						// Case F9 -- Open player popup
 						case KeyEvent.VK_F9:
 							if (m.getSystemState() == Model.PLAYER_ENTRY_SCREEN
-							 && m.getNewPlayerPopupStatus() == false) {
-									m.setMakeNewPlayerPopupFlag(true);
+							 && m.getNewPopup() == false) {
+									m.setMakePlayerPopupFlag(true);
 							}
 							break;
+						// Case F12 -- Open settings popup
 						case KeyEvent.VK_F12:
-								//Do something similar to F9 for the setting menu
+							if (m.getSystemState() == Model.PLAYER_ENTRY_SCREEN 
+							&& m.getNewPopup() == false) {
+								m.setMakeSettingsPopupFlag(true);
+							}
+
 							break;
 
 						case KeyEvent.VK_ENTER:

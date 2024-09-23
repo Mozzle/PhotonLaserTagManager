@@ -23,7 +23,11 @@ import java.util.Date;
      * 
      *  pop() - Pops the most recent received data off the local data. Returns string.
      * 
-     *  setSendPort(int newPort) - Sets the port to listen on. Returns boolean.
+     *  setSendPort(int newPort) - Sets the port to send on. Returns boolean.
+     * 
+     *  setReceivePort(int newPort, boolean reset) - Sets the port to listen on. 
+     *  Use reset=true if you want the method to handle restarting the listener,
+     *  otherwise use reset=false. Returns boolean.
      * 
      *  setSendAddress(String a) - Sets the address to send to. Returns boolean.
      * 
@@ -213,7 +217,7 @@ public class NetController
 
         // Log message
         System.out.println("[NetController - " + timestamp() + "] Stopped listening on " 
-        + SEND_PORT);
+        + RECEIVE_PORT);
 
         return returnFlag;
     }
@@ -309,8 +313,10 @@ public class NetController
      * 
     ---------------------------------------------------------- */
     public boolean setSendPort(int newPorts) {
-        if (newPorts > 0 && newPorts < 65535)
+        if (newPorts > 0 && newPorts < 65535) {
             SEND_PORT = newPorts;
+            System.out.println("[NetController - " + timestamp() + "] Set send port to " + SEND_PORT);
+        }
 
         return SEND_PORT == newPorts;
     }
@@ -328,17 +334,32 @@ public class NetController
 
     /*-----------------------------------------------------------
      * 
-     *  setReceivePort(int newPorts)
+     *  setReceivePort(int newPorts, boolean reset)
      * 
      *  DESCRIPTION: Setter method for receive port.
+     * 
+     *  If reset is true, the listener will be 
+     *  stopped and restarted
+     * 
+     *  If reset is false, no attempt will be
+     *  made to stop/start the listener
      * 
      *  Returns true if the port was successfully set
      *  Returns false if no change was made
      * 
     ---------------------------------------------------------- */
-    public boolean setReceivePort(int newPorts) {
-        if ((newPorts > 0 && newPorts < 65535) && !isListening)
+    public boolean setReceivePort(int newPorts, boolean reset) {
+        if ((newPorts > 0 && newPorts < 65535) && !isListening && !reset) {
             RECEIVE_PORT = newPorts;
+            System.out.println("[NetController - " + timestamp() + "] Set receive port to " + RECEIVE_PORT);
+        }
+
+        if ((newPorts > 0 && newPorts < 65535) && reset) {
+            stopListener();
+            RECEIVE_PORT = newPorts;
+            System.out.println("[NetController - " + timestamp() + "] Set receive port to " + RECEIVE_PORT);
+            startListener();
+        }
 
         return RECEIVE_PORT == newPorts;
     }
@@ -355,6 +376,7 @@ public class NetController
     ---------------------------------------------------------- */
     public boolean setSendAddress(String a) {
         SEND_ADDRESS = a;
+        System.out.println("[NetController - " + timestamp() + "] Set send address to " + SEND_ADDRESS);
         return SEND_ADDRESS.equals(a);
     }
 

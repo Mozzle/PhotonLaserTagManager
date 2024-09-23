@@ -214,11 +214,17 @@ public class View extends JPanel {
             }
             
             // Check if model is telling us to do create a New Player Popup window
-            if (model.getMakeNewPlayerPopupFlag()) {
-                model.setMakeNewPlayerPopupFlag(false);
-                NewPlayerPopupScreen("", null, "Enter new Player infromation", "");
+            if (model.getMakePlayerPopupFlag()) {
+                model.setMakePlayerPopupFlag(false);
+                NewPlayerPopupScreen("", null, "Enter new Player information", "");
             }
 
+            // Check if the model is telling us to create a new settings window
+            if (model.getMakeSettingsPopupFlag()) {
+                model.setMakeSettingsPopupFlag(false);
+                // Create a new settings window
+                NewSettingsScreen();
+            }
         }
 
         // Block that handles the COUNTDOWN SCREEN
@@ -267,7 +273,6 @@ public class View extends JPanel {
      public void handleSystemFocus() {
         // Attempt to retrieve a reference to the current focused component
         try {
-            
             // Create a reference to the last object that has been focused
             Component LastFocusedComponent = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
             if (LastFocusedComponent.getName() != null) {
@@ -505,7 +510,7 @@ public class View extends JPanel {
         ClearScreenButton.setForeground(Color.WHITE);
         ClearScreenButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e){  
-            if (model.getNewPlayerPopupStatus() == false) {
+            if (model.getNewPopup() == false) {
 				model.clearTextBoxes();
 			}
         }  
@@ -519,7 +524,7 @@ public class View extends JPanel {
         StartGameButton.setForeground(Color.WHITE);
         StartGameButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
-                if (model.getNewPlayerPopupStatus() == false) {
+                if (model.getNewPopup() == false) {
 				    if (model.checkStartGameConditions()) {
 				    	model.PlayerEntryScreenDeleter();
 				    }
@@ -535,7 +540,7 @@ public class View extends JPanel {
         NewPlayerButton.setForeground(Color.WHITE);
         NewPlayerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
-                NewPlayerPopupScreen("", null, "Enter new Player infromation", "");
+                NewPlayerPopupScreen("", null, "Enter new Player information", "");
             }  
         });
         ButtonsCenter.add(NewPlayerButton);
@@ -546,8 +551,8 @@ public class View extends JPanel {
         SettingsButton.setBackground(new Color(0, 66, 32));
         SettingsButton.setForeground(Color.WHITE);
         SettingsButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e){
-                //Popup screen similar to the newPlayer popupscreen
+            public void actionPerformed(ActionEvent e) {
+                NewSettingsScreen();
             }  
         });
         ButtonsCenter.add(SettingsButton);
@@ -787,7 +792,6 @@ public class View extends JPanel {
             this.remove(i);        
     }
 
-
     /*--------------------------------------------------
      * 
      *  NewPlayerPopupScreen()
@@ -800,13 +804,18 @@ public class View extends JPanel {
      * 
      --------------------------------------------------*/
 
-    public void NewPlayerPopupScreen(String idInput, JTextField IDBox, String hint1, String hint2) {
+    public boolean NewPlayerPopupScreen(String idInput, JTextField IDBox, String hint1, String hint2) {
+
+         // Ensure another popup isn't already open
+         if (model.getNewPopup())
+            return false;
+
+        // Set popup flag
+        model.setNewPopup(true);
 
         // Text fields on popup window
-        model.setNewPlayerPopup(true);
         JTextField NewPlayerName = new JTextField(10);
         JTextField NewPlayerID = new JTextField(5);
-
 
         // Input sanitation -- use a plain document as the method to push input, we can sanitize from here
         NewPlayerID.setDocument(new PlainDocument() {
@@ -821,8 +830,10 @@ public class View extends JPanel {
             }
         });
 
+        // Set the text field to the input ID
         NewPlayerID.setText(idInput);
 
+        // Set the hint lines for the popup window
         String hintLine1 = hint1;
         String hintLine2 = hint2;
 
@@ -830,7 +841,6 @@ public class View extends JPanel {
         boolean closePopupFlag = false;
         
         while (!closePopupFlag) {
-
             // making the popup window and adding elements to it
             JPanel NewPlayerPopup = new JPanel();
             NewPlayerPopup.setPreferredSize(new Dimension(250, 150));
@@ -913,7 +923,162 @@ public class View extends JPanel {
             }
         }
 
-        model.setNewPlayerPopup(false);
+        model.setNewPopup(false);
+        return true;
+    }
+
+    /*--------------------------------------------------
+     * 
+     *  NewSettingsScreen()
+     * 
+     *  DESCRIPTION: Creates a new popup window that allows
+     *  players to manage the settings, such as ip address,
+     *  ports, debug mode.
+     * 
+     *  REQUIREMENTS: 0015? I think.
+     * 
+     --------------------------------------------------*/
+
+     public boolean NewSettingsScreen() {
+
+        // Ensure another popup isn't already open
+        if (model.getNewPopup())
+            return false;
+
+        // Set popup flag
+        model.setNewPopup(true);
+
+        // Text fields on popup window
+        JTextField sendPort = new JTextField(5);
+        JTextField receivePort = new JTextField(5);
+        JTextField sendAddress = new JTextField(10);
+
+        // Input sanitation -- use a plain document as the method to push input, we can sanitize from here
+        sendPort.setDocument(new PlainDocument() {
+            @Override
+            public void insertString(int offset, String s, AttributeSet a) throws javax.swing.text.BadLocationException {
+                // Insert nothing if there is no string
+                if (s == null)
+                    return;
+                // Only insert if our string contains the values from 0-9
+                if (s.matches("[0-9]+"))
+                    super.insertString(offset, s, a);
+            }
+        });
+
+        // Input sanitation for receive port as well.
+        receivePort.setDocument(new PlainDocument() {
+            @Override
+            public void insertString(int offset, String s, AttributeSet a) throws javax.swing.text.BadLocationException {
+                // Insert nothing if there is no string
+                if (s == null)
+                    return;
+                // Only insert if our string contains the values from 0-9
+                if (s.matches("[0-9]+"))
+                    super.insertString(offset, s, a);
+            }
+        });
+
+        // Input sanitation for sending an address as well.
+        sendAddress.setDocument(new PlainDocument() {
+            @Override
+            public void insertString(int offset, String s, AttributeSet a) throws javax.swing.text.BadLocationException {
+                // Insert nothing if there is no string
+                if (s == null)
+                    return;
+                // Only insert if our string contains the values from 0-9
+                // if (s.matches("[0-9]+"))
+                // TODO: Implement regex logic to check for valid IP addresses or domains
+                super.insertString(offset, s, a);
+            }
+        });
+
+        // Initialize the text fields with the current settings
+        sendPort.setText(Integer.toString(netController.getSendPort()));
+        receivePort.setText(Integer.toString(netController.getReceivePort()));
+        sendAddress.setText(netController.getSendAddress());
+
+        // Declare error flag
+        boolean error = false;
+
+        // Flag to mark the popup window ready to close
+        boolean closePopupFlag = false;
+        
+        while (!closePopupFlag) {
+            // Create the JPanel Window and add elements
+            JPanel NewSettingsPopup = new JPanel();
+            NewSettingsPopup.setPreferredSize(new Dimension(250, 150));
+            NewSettingsPopup.add(new JLabel("Transmission port:"));
+            NewSettingsPopup.add(sendPort,BorderLayout.WEST);
+            NewSettingsPopup.add(Box.createVerticalStrut(15));
+            NewSettingsPopup.add(new JLabel("Receival port:"));
+            NewSettingsPopup.add(receivePort,BorderLayout.WEST);
+            NewSettingsPopup.add(Box.createVerticalStrut(15));
+            NewSettingsPopup.add(new JLabel("Destination Address (IPv4):"));
+            NewSettingsPopup.add(sendAddress,BorderLayout.WEST);
+
+            // Create the dialog popup with the ok/cancel buttons and wait for the window to be closed
+            int result = JOptionPane.showConfirmDialog(null, NewSettingsPopup, "Settings", JOptionPane.OK_CANCEL_OPTION);
+
+            // If the user clicked the "OK" button, update the settings
+            if (result == JOptionPane.OK_OPTION) {
+                // Declare vars to determine if a change occurred
+                boolean sChanged = (Integer.parseInt(sendPort.getText()) != netController.getSendPort());
+                boolean rChanged = (Integer.parseInt(receivePort.getText()) != netController.getReceivePort());
+                boolean aChanged = (!sendAddress.getText().equals(netController.getSendAddress()));
+
+                // Declare vars to hold the current settings
+                int sPort = 0;
+                int rPort = 0;
+                try {
+                    sPort = Integer.parseInt(sendPort.getText());
+                }
+                catch (Exception exception) { } // Do nothing
+                try {
+                    rPort = Integer.parseInt(receivePort.getText());
+                }
+                catch (Exception exception) { } // Do nothing
+                String sAddr = sendAddress.getText();
+
+                // Declare flag for duplicate ports
+                boolean duplicatePorts = false;
+
+                // Error handling for duplicate ports.
+                if (sPort == rPort) {
+                    model.toolTip("Transmission and receival ports cannot be the same!", 2500);
+                    error = true;
+                    duplicatePorts = true;
+                }
+
+                // Save all changed settings
+                if (sChanged && !duplicatePorts)
+                    if(!netController.setSendPort(sPort))
+                        error = true;
+                if (rChanged && !duplicatePorts)
+                    if(!netController.setReceivePort(rPort, true))
+                        error = true;
+                if (aChanged)
+                    if(!netController.setSendAddress(sAddr))
+                        error = true;
+
+                // Success/fail tooltip
+                if(!error)
+                    model.toolTip("Settings updated successfully!", 2500);
+                else if (error && !duplicatePorts)
+                    model.toolTip("Error! Not all settings may have saved!", 2500);
+
+                closePopupFlag = true;
+            }
+
+            // If the user hit cancel or close on the window
+            if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) {
+                model.toolTip("No changes made.", 2500);
+                closePopupFlag = true;
+            }
+        }
+
+        model.setNewPopup(false);
+        return true;
     }
 
     /*--------------------------------------------------

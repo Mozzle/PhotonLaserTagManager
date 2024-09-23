@@ -43,14 +43,16 @@ public class Model
     public boolean newToolTip;               // Flag for View class to indicate if Model has
                                              // a screen element that needs updated
 
-    public boolean PlayerEntryScreenNewPlayerPopup;     // Flag to disable F1, F5 commands while
+    public boolean PlayerEntryScreenNewPopup;     // Flag to disable F1, F5 commands while
                                                         // New Player Popup screen is active
-    public boolean makeNewPlayerPopup;      // Flag to View class to create a new New Player Popup.
+
+    public boolean makePlayerPopup;      // Flag to View class to create a new New Player Popup.
+    public boolean makeSettingsPopup;    // Flag to View class to create a new Settings Popup.
 
 
     /*-----------------------------------------------------
      * 
-     *      SplashScreenTimeout
+     *  SplashScreenTimeout
      * 
      *  DESCRIPTION: This class is used as a callback for
      *  a timer that controls how long the splash screen
@@ -114,8 +116,9 @@ public class Model
         system_State = SPLASH_SCREEN;
         timer.schedule(splashScreenTimeoutTask, 3200);
         newToolTip = false;
-        PlayerEntryScreenNewPlayerPopup = false;
-        makeNewPlayerPopup = false;
+        PlayerEntryScreenNewPopup = false;
+        makePlayerPopup = false;
+        makeSettingsPopup = false;
         
         // If we are not connected to the database, make a tooltip to warn the user.
         if (database.getdbConnectionStatus() == false) {
@@ -508,14 +511,13 @@ public class Model
         return gameConditionsMet;
     } 
     
-    public void setNewPlayerPopup(boolean isTrue) {
-        PlayerEntryScreenNewPlayerPopup = isTrue;
+    public void setNewPopup(boolean isTrue) {
+        PlayerEntryScreenNewPopup = isTrue;
     }
 
-    public boolean getNewPlayerPopupStatus() {
-        return PlayerEntryScreenNewPlayerPopup;
+    public boolean getNewPopup() {
+        return PlayerEntryScreenNewPopup;
     }
-
 
     /*-------------------------------------------------
      *
@@ -566,12 +568,20 @@ public class Model
         return index;
     }
 
-    public boolean getMakeNewPlayerPopupFlag() {
-        return makeNewPlayerPopup;
+    public boolean getMakePlayerPopupFlag() {
+        return makePlayerPopup;
     }
 
-    public void setMakeNewPlayerPopupFlag(boolean set) {
-        makeNewPlayerPopup = set;
+    public void setMakePlayerPopupFlag(boolean set) {
+        makePlayerPopup = set;
+    }
+
+    public boolean getMakeSettingsPopupFlag() {
+        return makeSettingsPopup;
+    }
+
+    public void setMakeSettingsPopupFlag(boolean set) {
+        makeSettingsPopup = set;
     }
     
 }
