@@ -691,7 +691,7 @@ public class View extends JPanel {
         tFG.ipady = 5;
 
         if (model.getNumPlayerIDBoxes() != 0) {
-            // Draw the Red Team Text Boxes
+            // Draw the Red Team Text Boxes row by row
             for (int i = 0; i < Model.NUM_MAX_PLAYERS_PER_TEAM; i++) {
                 // ">>>>>" Row selection labels
                 tFR.weightx = 0.1;
@@ -731,7 +731,7 @@ public class View extends JPanel {
                 tFR.gridwidth = 1;
                 TextFieldsR.add(model.getCodenameBoxAt(i), tFR);
             }
-            // Draw the Green Team Text Fields
+            // Draw the Green Team Text Fields row by row
             for (int i = Model.NUM_MAX_PLAYERS_PER_TEAM; i < (Model.NUM_MAX_PLAYERS_PER_TEAM * 2); i++) {
                 // ">>>>" Row selection labels
                 tFG.weightx = 0.1;
@@ -1063,9 +1063,8 @@ public class View extends JPanel {
                 if (s == null)
                     return;
 
-                // if (s.matches("[0-9]+"))
-                // TODO: Implement regex logic to check for valid IP addresses or domains
-                super.insertString(offset, s, a);
+                 if (s.matches("[0-9.]+"))
+                    super.insertString(offset, s, a);
             }
         });
 
