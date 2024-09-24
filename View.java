@@ -432,8 +432,8 @@ public class View extends JPanel {
             //System.err.println(e.getClass().getName()+": "+e.getMessage());
         }
 
-        
      }
+
 
     /*--------------------------------------------------
      * 
@@ -495,6 +495,9 @@ public class View extends JPanel {
         /*-------------
          * Buttons
         --------------*/
+
+        KeyAdapter buttonKeys = model.getStandardKeyAdapter();
+
         JPanel Buttons = new JPanel();
         Buttons.setLayout(new BoxLayout(Buttons, BoxLayout.X_AXIS));
         Buttons.setBackground(Color.BLACK);
@@ -509,6 +512,7 @@ public class View extends JPanel {
         ClearScreenButton.setMaximumSize(new Dimension(225, 60));
         ClearScreenButton.setBackground(new Color(0, 66, 32));
         ClearScreenButton.setForeground(Color.WHITE);
+        ClearScreenButton.addKeyListener(buttonKeys);
         ClearScreenButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e){  
             if (model.getNewPopup() == false) {
@@ -523,6 +527,7 @@ public class View extends JPanel {
         StartGameButton.setMaximumSize(new Dimension(225, 60));
         StartGameButton.setBackground(new Color(0, 66, 32));
         StartGameButton.setForeground(Color.WHITE);
+        StartGameButton.addKeyListener(buttonKeys);
         StartGameButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
                 if (model.getNewPopup() == false) {
@@ -539,6 +544,7 @@ public class View extends JPanel {
         NewPlayerButton.setMaximumSize(new Dimension(225, 60));
         NewPlayerButton.setBackground(new Color(0, 66, 32));
         NewPlayerButton.setForeground(Color.WHITE);
+        NewPlayerButton.addKeyListener(buttonKeys);
         NewPlayerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
                 NewPlayerPopupScreen("", null, "Enter new Player information", "");
@@ -551,6 +557,7 @@ public class View extends JPanel {
         SettingsButton.setMaximumSize(new Dimension(225, 60));
         SettingsButton.setBackground(new Color(0, 66, 32));
         SettingsButton.setForeground(Color.WHITE);
+        SettingsButton.addKeyListener(buttonKeys);
         SettingsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 NewSettingsScreen();

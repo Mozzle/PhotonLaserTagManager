@@ -593,5 +593,59 @@ public class Model
     public void setDebugMode(boolean set) {
         debugMode = set;
     }
+
+    /*-------------------------------------------------
+     *
+     *      getStandardKeyAdapter()
+     *
+     *  DESCRIPTION: Returns the standard Key Listener
+     *  for the Player Entry Screen. Used when the user
+     *  has focus on the buttons, so that their keyboard
+     *  shortcuts still work
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
+    public KeyAdapter getStandardKeyAdapter() {
+        return new KeyAdapter() {
+            public void keyPressed(KeyEvent ke) {
+
+                switch(ke.getKeyCode()) {
+                    case KeyEvent.VK_TAB:
+                    // Check database against this field
+                        break;
+                    case KeyEvent.VK_F1:
+                        if (getSystemState() == Model.PLAYER_ENTRY_SCREEN 
+                        && getNewPopup() == false) {
+                            clearTextBoxes();
+                        }
+                        break;
+                    case KeyEvent.VK_F5:
+                        if (getSystemState() == Model.PLAYER_ENTRY_SCREEN
+                        && getNewPopup() == false) {
+       
+                               if (checkStartGameConditions()) {
+                                   PlayerEntryScreenDeleter();
+                               }
+                        }
+                        break;
+                    // Case F9 -- Open player popup
+                    case KeyEvent.VK_F9:
+                        if (getSystemState() == Model.PLAYER_ENTRY_SCREEN
+                         && getNewPopup() == false) {
+                                setMakePlayerPopupFlag(true);
+                        }
+                        break;
+                    // Case F12 -- Open settings popup
+                    case KeyEvent.VK_F12:
+                        if (getSystemState() == Model.PLAYER_ENTRY_SCREEN 
+                        && getNewPopup() == false) {
+                            setMakeSettingsPopupFlag(true);
+                        }
+                        break;
+                }
+            }
+        };
+    }
     
 }
