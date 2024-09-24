@@ -770,8 +770,8 @@ public class View extends JPanel {
                 tFG.gridwidth = 1;
                 TextFieldsG.add(model.getCodenameBoxAt(i), tFG);
             }
-            TextFieldsR.setPreferredSize(new Dimension(415, 570));
-            TextFieldsG.setPreferredSize(new Dimension(415, 570));
+            TextFieldsR.setPreferredSize(new Dimension(415, 587));
+            TextFieldsG.setPreferredSize(new Dimension(415, 587));
             RedTeamTextBoxPane.add(TextFieldsR, tFR);
             GreenTeamTextBoxPane.add(TextFieldsG, tFG);
             PlayerEntryPanes.add(RedTeamTextBoxPane);
