@@ -34,6 +34,7 @@ public class Model
 
     public ArrayList<TextBox> PlayerIDBoxes;    // For player entry screen
     public ArrayList<TextBox> EquipmentIDBoxes; // For player entry screen
+    public ArrayList<TextBox> CodenameBoxes; // For player entry screen
 
     public Timer timer;
     public TimerTask splashScreenTimeoutTask;
@@ -67,16 +68,20 @@ public class Model
         // Ran when the splash screen timer ends.
         public void run()
         {
-            //removes the splashscreen picture
+            // removes the splashscreen picture
             windowObjects.remove(0);
-            //creates the tables for the player entry screen
+            // creates the tables for the player entry screen
             for (int i = 0; i < NUM_MAX_PLAYERS_PER_TEAM; i++) {
+                // Red Team
                 PlayerIDBoxes.add(new TextBox("R"+i, 12, Model.this, TextBox.NUMERIC_TEXT_FIELD_TYPE));
                 EquipmentIDBoxes.add(new TextBox("R"+i, 8, Model.this,TextBox.NUMERIC_TEXT_FIELD_TYPE));
+                CodenameBoxes.add(new TextBox("R"+i, 8, Model.this, TextBox.DISPLAY_ONLY_NO_TYPE));
             }
             for (int i = 0; i < NUM_MAX_PLAYERS_PER_TEAM; i++) {
+                // Green Team
                 PlayerIDBoxes.add(new TextBox("G"+i, 12, Model.this,TextBox.NUMERIC_TEXT_FIELD_TYPE));
                 EquipmentIDBoxes.add(new TextBox("G"+i, 8, Model.this,TextBox.NUMERIC_TEXT_FIELD_TYPE));
+                CodenameBoxes.add(new TextBox("G"+i, 8, Model.this, TextBox.DISPLAY_ONLY_NO_TYPE));
             }
             system_State = PLAYER_ENTRY_SCREEN;
 
@@ -107,6 +112,7 @@ public class Model
         windowObjects = new ArrayList<Sprite>();
         PlayerIDBoxes = new ArrayList<TextBox>();
         EquipmentIDBoxes = new ArrayList<TextBox>();
+        CodenameBoxes = new ArrayList<TextBox>();
 
         // Start a timer, go to the splash screen, wait for 3.2 seconds,
         // then go to SplashScreenTimeout.run() to go to the player entry
@@ -179,6 +185,7 @@ public class Model
         for (int i = 0; i < getNumPlayerIDBoxes(); i++) {
             PlayerIDBoxes.remove(i);
             EquipmentIDBoxes.remove(i);
+            CodenameBoxes.remove(i);
         }
         system_State = COUNTDOWN_SCREEN;
     }
@@ -318,6 +325,36 @@ public class Model
 
     /*-------------------------------------------------
      *
+     *      getNumCodenameBoxes()
+     *
+     *  DESCRIPTION: Returns the size of the
+     *  CodenameBoxes ArrayList
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
+
+    public int getNumCodenameBoxes() {
+        return CodenameBoxes.size();
+    }
+
+    /*-------------------------------------------------
+     *
+     *      getCodenameBoxAt()
+     *
+     *  DESCRIPTION: Returns the CodenameBox TextField
+     *  at index i
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
+
+    public JTextField getCodenameBoxAt(int i) {
+        return CodenameBoxes.get(i).getTextBox();
+    }
+
+    /*-------------------------------------------------
+     *
      *      getSystemState()
      *
      *  DESCRIPTION: Returns the system_State enum value
@@ -348,6 +385,9 @@ public class Model
             }
             for (int i = 0; i < getNumEquipmentIDBoxes(); i++) {
                 getEquipmentIDBoxAt(i).setText("");
+            }
+            for (int i = 0; i < getNumCodenameBoxes(); i++) {
+                getCodenameBoxAt(i).setText("");
             }
         }
     }

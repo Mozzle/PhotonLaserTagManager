@@ -2,7 +2,9 @@ import javax.swing.*;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.PlainDocument;
 
+import java.awt.font.*;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.*;
 
 public class TextBox {
@@ -11,6 +13,7 @@ public class TextBox {
 	------------------------------*/
 	public static final int NUMERIC_TEXT_FIELD_TYPE = 0;
     public static final int ALPHA_NUMERIC_TEXT_FIELD_TYPE = 1;
+	public static final int DISPLAY_ONLY_NO_TYPE = 2;
 
 
 	public JTextField field; //JTextField object
@@ -38,7 +41,16 @@ public class TextBox {
 		field = new JTextField("", cols);
 		field.setName(name);
 
-		// Input sanitation -- use a plain document as the method to push input, we can sanitize from here
+		
+
+		/*-----------------------------------------------------------------------
+		Text fields have to have a keyListener that is seperate from the main
+		Controller class, Have not yet decided how I will handle keys that should
+		be able to be pressed in any context (e.g. F1-F5)
+		------------------------------------------------------------------------*/
+		if (TextFieldType == NUMERIC_TEXT_FIELD_TYPE) {
+
+			// Input sanitation -- use a plain document as the method to push input, we can sanitize from here
 		field.setDocument(new PlainDocument() {
 			@Override
 			public void insertString(int offset, String s, AttributeSet a) throws javax.swing.text.BadLocationException {
@@ -53,12 +65,6 @@ public class TextBox {
 			}
 		});
 
-		/*-----------------------------------------------------------------------
-		Text fields have to have a keyListener that is seperate from the main
-		Controller class, Have not yet decided how I will handle keys that should
-		be able to be pressed in any context (e.g. F1-F5)
-		------------------------------------------------------------------------*/
-		if (TextFieldType == NUMERIC_TEXT_FIELD_TYPE) {
 			field.addKeyListener(new KeyAdapter() {
 				public void keyPressed(KeyEvent ke) {
 
@@ -122,6 +128,20 @@ public class TextBox {
 				//TODO: Implement Me!
 			});
 			*/
+		}
+		else if (TextFieldType == DISPLAY_ONLY_NO_TYPE) {
+			field.setEditable(false);
+			field.setBackground(new Color(135, 135, 135));
+			if (field.getName().charAt(0) == 'R') {
+				field.setForeground(new Color(91, 0, 14));
+			}
+			else {
+				field.setForeground(new Color(0, 50, 0));
+			}
+			field.setFont(new Font("Arial", Font.BOLD, 12));
+			field.setFocusable(false);
+			field.setFocusTraversalKeysEnabled(false);
+			field.setHorizontalAlignment(JTextField.CENTER);
 		}
 	}
 

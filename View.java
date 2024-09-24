@@ -195,7 +195,7 @@ public class View extends JPanel {
             // This ensures that both the red team and green team panes will be horizontally
             // aligned with one another no matter the window sizing.
             if (PlayerEntryPanePadding != (int)((windowWidth - 780)/ 2)) {
-                PlayerEntryPanePadding = (int)((windowWidth - 780)/ 2);
+                PlayerEntryPanePadding = (int)((windowWidth - 880)/ 2);
                 PlayerEntryPanes.setBorder(new EmptyBorder(0, PlayerEntryPanePadding, 0, PlayerEntryPanePadding));
             }
 
@@ -339,9 +339,16 @@ public class View extends JPanel {
                                     }
                                 }
 
-                                // Confirmation tooltip. Can we move this to the function that actually inserts a player to the DB?
-                                if (notADuplicate)
+                                // We have added a player to the game and they are not a duplicate
+                                if (notADuplicate) {
+                                    if (lastSelectedTeam == 'R') {
+                                        model.getCodenameBoxAt(lastSelectedRow).setText(codename);
+                                    }
+                                    else if (lastSelectedTeam == 'G') {
+                                        model.getCodenameBoxAt(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).setText(codename);
+                                    }
                                     model.toolTip(codename + " added successfully!", 4500);
+                                }
                             }
                             // If ID does not exist in the database, add it
                             else {
@@ -582,12 +589,12 @@ public class View extends JPanel {
         PlayerEntryPanes.setBorder(new EmptyBorder(0, 100, 0, 100));
         
         RedTeamTextBoxPane.setBackground(new Color(207, 0, 0));
-        RedTeamTextBoxPane.setPreferredSize(new Dimension(375, 600));
+        RedTeamTextBoxPane.setPreferredSize(new Dimension(425, 600));
         //RedTeamTextBoxPane.setBorder(new EmptyBorder(0, -100, 0, 0));
         RedTeamTextBoxPane.setLayout(layout);
 
         GreenTeamTextBoxPane.setBackground(new Color(10, 160, 0));
-        GreenTeamTextBoxPane.setPreferredSize(new Dimension(375, 600));
+        GreenTeamTextBoxPane.setPreferredSize(new Dimension(425, 600));
         //GreenTeamTextBoxPane.setBorder(new EmptyBorder(0, 0, 0, -100));
         GreenTeamTextBoxPane.setLayout(layout);
 
@@ -597,7 +604,7 @@ public class View extends JPanel {
         GridBagConstraints tFR = new GridBagConstraints();
         tFR.fill = GridBagConstraints.BOTH;
         tFR.anchor = GridBagConstraints.NORTH;
-        tFR.ipady = 4;
+        tFR.ipady = 5;
         TextFieldsR.setBackground(new Color(175, 31, 0));
 
         // 'Red Team' label
@@ -606,7 +613,7 @@ public class View extends JPanel {
         tmpJLabel.setForeground(Color.WHITE);
         tFR.gridx = 0;
         tFR.gridy = 0;
-        tFR.gridwidth = 6;
+        tFR.gridwidth = 5;
         TextFieldsR.add(tmpJLabel, tFR);
 
         // Set up the 'Text Fields' panel that will be placed inside the GreenTeamTextBoxPane
@@ -615,7 +622,7 @@ public class View extends JPanel {
         GridBagConstraints tFG = new GridBagConstraints();
         tFG.fill = GridBagConstraints.BOTH;
         tFG.anchor = GridBagConstraints.NORTH;
-        tFG.ipady = 4;
+        tFG.ipady = 5;
         TextFieldsG.setBackground(new Color(8, 120, 0));
 
         // 'Green Team' label
@@ -624,16 +631,16 @@ public class View extends JPanel {
         tmpJLabel.setForeground(Color.WHITE);
         tFG.gridx = 0;
         tFG.gridy = 0;
-        tFG.gridwidth = 6;
+        tFG.gridwidth = 5;
         TextFieldsG.add(tmpJLabel, tFG);
 
-        //Draw "Playet ID", Red Team
+        //Draw "Player ID", Red Team
         tmpJLabel = new JLabel("Player ID", SwingConstants.CENTER);
         tmpJLabel.setForeground(Color.WHITE);
         tFR.weightx = 0.5;
         tFR.gridx = 2;
         tFR.gridy = 1;
-        tFR.gridwidth = 2;
+        tFR.gridwidth = 1;
         TextFieldsR.add(tmpJLabel, tFR);
         
         // Draw "Player ID", Green Team
@@ -642,28 +649,45 @@ public class View extends JPanel {
         tFG.weightx = 0.5;
         tFG.gridx = 2;
         tFG.gridy = 1;
-        tFG.gridwidth = 2;
+        tFG.gridwidth = 1;
         TextFieldsG.add(tmpJLabel, tFG);
 
         // Draw "Equipment ID", Red Team
         tmpJLabel = new JLabel("Equipment ID", SwingConstants.CENTER);
         tmpJLabel.setForeground(Color.WHITE);
-        tFR.gridx = 4;
+        tFR.gridx = 3;
         tFR.gridy = 1;
-        tFR.gridwidth = 2;
+        tFR.gridwidth = 1;
         TextFieldsR.add(tmpJLabel, tFR);
 
         // Draw "Equipment ID", Green Team
         tmpJLabel = new JLabel("Equipment ID", SwingConstants.CENTER);
         tmpJLabel.setForeground(Color.WHITE);
+        tFG.gridx = 3;
+        tFG.gridy = 1;
+        tFG.gridwidth = 1;
+        TextFieldsG.add(tmpJLabel, tFG);
+
+        // Draw "Codeame", Red Team
+        tmpJLabel = new JLabel("       Codename       ", SwingConstants.CENTER);
+        tmpJLabel.setForeground(Color.WHITE);
+        tFR.gridx = 4;
+        tFR.gridy = 1;
+        tFR.gridwidth = 1;
+        TextFieldsR.add(tmpJLabel, tFR);
+
+        // Draw "Codeame", Green Team
+        tmpJLabel = new JLabel("       Codename       ", SwingConstants.CENTER);
+        tmpJLabel.setForeground(Color.WHITE);
         tFG.gridx = 4;
         tFG.gridy = 1;
-        tFG.gridwidth = 2;
+        tFG.gridwidth = 1;
         TextFieldsG.add(tmpJLabel, tFG);
 
         if (model.getNumPlayerIDBoxes() != 0) {
             // Draw the Red Team Text Boxes
             for (int i = 0; i < Model.NUM_MAX_PLAYERS_PER_TEAM; i++) {
+                // ">>>>>" Row selection labels
                 tFR.weightx = 0.1;
                 tFR.gridx = 0;
                 tFR.gridy = i + 2;
@@ -671,27 +695,39 @@ public class View extends JPanel {
                 rowSelectionLabel.add(new JLabel("           ", SwingConstants.LEFT));
                 rowSelectionLabel.get(i).setForeground(Color.WHITE);
                 TextFieldsR.add(rowSelectionLabel.get(i), tFR);
+
+                // Row number 0 - 14
                 tFR.weightx = 0.3;
                 tFR.gridx = 1;
                 tFR.gridy = i + 2;
                 tFR.gridwidth = 1;
                 tmpJLabel = new JLabel(String.valueOf(i), SwingConstants.CENTER);
+                //tmpJLabel.setFont(new Font("Arial", Font.BOLD, 14));
                 tmpJLabel.setForeground(Color.WHITE);
                 TextFieldsR.add(tmpJLabel, tFR);
                 
+                // Player ID Box
                 tFR.weightx = 0.5;
                 tFR.gridx = 2;
                 tFR.gridy = i + 2;
-                tFR.gridwidth = 2;
+                tFR.gridwidth = 1;
                 TextFieldsR.add(model.getPlayerIDBoxAt(i), tFR);
+                
+                // Equipment ID Box
+                tFR.gridx = 3;
+                tFR.gridy = i + 2;
+                tFR.gridwidth = 1;
+                TextFieldsR.add(model.getEquipmentIDBoxAt(i), tFR);
 
+                // Codename Box
                 tFR.gridx = 4;
                 tFR.gridy = i + 2;
-                tFR.gridwidth = 2;
-                TextFieldsR.add(model.getEquipmentIDBoxAt(i), tFR);
+                tFR.gridwidth = 1;
+                TextFieldsR.add(model.getCodenameBoxAt(i), tFR);
             }
             // Draw the Green Team Text Fields
             for (int i = Model.NUM_MAX_PLAYERS_PER_TEAM; i < (Model.NUM_MAX_PLAYERS_PER_TEAM * 2); i++) {
+                // ">>>>" Row selection labels
                 tFG.weightx = 0.1;
                 tFG.gridx = 0;
                 tFG.gridy = i + 2;
@@ -699,6 +735,8 @@ public class View extends JPanel {
                 rowSelectionLabel.add(new JLabel("           ", SwingConstants.LEFT));
                 rowSelectionLabel.get(i).setForeground(Color.WHITE);
                 TextFieldsG.add(rowSelectionLabel.get(i), tFG);
+
+                // Row number 0-14
                 tFG.weightx = 0.3;
                 tFG.gridx = 1;
                 tFG.gridy = i + 2;
@@ -706,20 +744,28 @@ public class View extends JPanel {
                 tmpJLabel = new JLabel(String.valueOf(i - Model.NUM_MAX_PLAYERS_PER_TEAM), SwingConstants.CENTER);
                 tmpJLabel.setForeground(Color.WHITE);
                 TextFieldsG.add(tmpJLabel, tFG);
-                
+
+                // Player ID box
                 tFG.weightx = 0.5;
                 tFG.gridx = 2;
                 tFG.gridy = i + 2;
-                tFG.gridwidth = 2;
+                tFG.gridwidth = 1;
                 TextFieldsG.add(model.getPlayerIDBoxAt(i), tFG);
 
+                // Equipment ID Box
+                tFG.gridx = 3;
+                tFG.gridy = i + 2;
+                tFG.gridwidth = 1;
+                TextFieldsG.add(model.getEquipmentIDBoxAt(i), tFG);
+
+                // Codename Box
                 tFG.gridx = 4;
                 tFG.gridy = i + 2;
-                tFG.gridwidth = 2;
-                TextFieldsG.add(model.getEquipmentIDBoxAt(i), tFG);
+                tFG.gridwidth = 1;
+                TextFieldsG.add(model.getCodenameBoxAt(i), tFG);
             }
-            TextFieldsR.setPreferredSize(new Dimension(350, 550));
-            TextFieldsG.setPreferredSize(new Dimension(350, 550));
+            TextFieldsR.setPreferredSize(new Dimension(415, 570));
+            TextFieldsG.setPreferredSize(new Dimension(415, 570));
             RedTeamTextBoxPane.add(TextFieldsR, tFR);
             GreenTeamTextBoxPane.add(TextFieldsG, tFG);
             PlayerEntryPanes.add(RedTeamTextBoxPane);
@@ -835,6 +881,21 @@ public class View extends JPanel {
                 // Only insert if our string contains the values from 0-9
                 if (s.matches("[0-9]+"))
                     super.insertString(offset, s, a);
+            }
+        });
+        
+        // Input sanitation -- use a plain document as the method to push input, we can sanitize from here
+        NewPlayerName.setDocument(new PlainDocument() {
+            @Override
+            public void insertString(int offset, String s, AttributeSet a) throws javax.swing.text.BadLocationException {
+                // Insert nothing if there is no string
+                if (s == null)
+                    return;
+                if (NewPlayerName.getText().length() + s.length() <= 16) {
+                // Only insert if our string contains the values from 0-9
+                    if (s.matches("^[a-zA-Z0-9 ]*$"))
+                        super.insertString(offset, s, a);
+                }
             }
         });
 
