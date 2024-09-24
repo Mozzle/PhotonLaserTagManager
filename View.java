@@ -587,6 +587,7 @@ public class View extends JPanel {
         PlayerEntryPanes.setBackground(new Color (0, 0, 0, 255));
         PlayerEntryPanes.setPreferredSize(new Dimension(900, 900));
         PlayerEntryPanes.setBorder(new EmptyBorder(0, 100, 0, 100));
+        PlayerEntryPanes.setOpaque(false);
         
         RedTeamTextBoxPane.setBackground(new Color(207, 0, 0));
         RedTeamTextBoxPane.setPreferredSize(new Dimension(425, 600));
@@ -604,7 +605,7 @@ public class View extends JPanel {
         GridBagConstraints tFR = new GridBagConstraints();
         tFR.fill = GridBagConstraints.BOTH;
         tFR.anchor = GridBagConstraints.NORTH;
-        tFR.ipady = 5;
+        tFR.ipady = 25;
         TextFieldsR.setBackground(new Color(175, 31, 0));
 
         // 'Red Team' label
@@ -615,6 +616,7 @@ public class View extends JPanel {
         tFR.gridy = 0;
         tFR.gridwidth = 5;
         TextFieldsR.add(tmpJLabel, tFR);
+        tFR.ipady = 15;
 
         // Set up the 'Text Fields' panel that will be placed inside the GreenTeamTextBoxPane
         JPanel TextFieldsG = new JPanel(new GridBagLayout());
@@ -622,7 +624,7 @@ public class View extends JPanel {
         GridBagConstraints tFG = new GridBagConstraints();
         tFG.fill = GridBagConstraints.BOTH;
         tFG.anchor = GridBagConstraints.NORTH;
-        tFG.ipady = 5;
+        tFG.ipady = 25;
         TextFieldsG.setBackground(new Color(8, 120, 0));
 
         // 'Green Team' label
@@ -633,6 +635,7 @@ public class View extends JPanel {
         tFG.gridy = 0;
         tFG.gridwidth = 5;
         TextFieldsG.add(tmpJLabel, tFG);
+        tFG.ipady = 15;
 
         //Draw "Player ID", Red Team
         tmpJLabel = new JLabel("Player ID", SwingConstants.CENTER);
@@ -683,6 +686,9 @@ public class View extends JPanel {
         tFG.gridy = 1;
         tFG.gridwidth = 1;
         TextFieldsG.add(tmpJLabel, tFG);
+
+        tFR.ipady = 5;
+        tFG.ipady = 5;
 
         if (model.getNumPlayerIDBoxes() != 0) {
             // Draw the Red Team Text Boxes
