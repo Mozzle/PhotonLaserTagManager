@@ -194,7 +194,7 @@ public class View extends JPanel {
             // Adjust padding on the outsides of the red and green panes
             // This ensures that both the red team and green team panes will be horizontally
             // aligned with one another no matter the window sizing.
-            if (PlayerEntryPanePadding != (int)((windowWidth - 780)/ 2)) {
+            if (PlayerEntryPanePadding != (int)((windowWidth - 880)/ 2)) {
                 PlayerEntryPanePadding = (int)((windowWidth - 880)/ 2);
                 PlayerEntryPanes.setBorder(new EmptyBorder(0, PlayerEntryPanePadding, 0, PlayerEntryPanePadding));
             }
@@ -1187,8 +1187,10 @@ public class View extends JPanel {
             toolTipCounter++;
             toolTipLabel = model.toolTip;
             toolTipLabel.setBounds((int)((windowWidth - toolTipLabel.getWidth()) / 2), (580 + toolTipCounter * 30), 1000, 30);
-            toolTipLabel.setBorder(new EmptyBorder(0, 100, 0, 100));
-            PlayerEntryPanes.add(toolTipLabel, BorderLayout.SOUTH);
+            toolTipLabel.setPreferredSize(new Dimension(1000, 30));
+            toolTipLabel.setLocation((int)((windowWidth - toolTipLabel.getWidth()) / 2), (580 + toolTipCounter * 30));
+            toolTipLabel.setBorder(new EmptyBorder(0, 150, 0, 150));
+            PlayerEntryPanes.add(toolTipLabel);
             toolTipLabel.setVisible(true);
             timer.schedule(new toolTipTimeout(),model.toolTip_ms);
         }
