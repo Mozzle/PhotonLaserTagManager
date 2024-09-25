@@ -1043,7 +1043,7 @@ public class View extends JPanel {
         // Text fields on popup window
         JTextField sendPort = new JTextField(5);
         JTextField receivePort = new JTextField(5);
-        JTextField sendAddress = new JTextField(10);
+        JTextField sendAddress = new JTextField(9);
         JCheckBox debugField = new JCheckBox("Debug Mode");
 
         // Input sanitation -- use a plain document as the method to push input, we can sanitize from here
@@ -1100,17 +1100,19 @@ public class View extends JPanel {
         while (!closePopupFlag) {
             // Create the JPanel Window and add elements
             JPanel NewSettingsPopup = new JPanel();
-            NewSettingsPopup.setPreferredSize(new Dimension(250, 150));
-            NewSettingsPopup.add(new JLabel("Outbound port:"));
+            NewSettingsPopup.setPreferredSize(new Dimension(280, 150));
+            NewSettingsPopup.add(new JLabel("Outbound port:         "));
             NewSettingsPopup.add(sendPort,BorderLayout.EAST);
             NewSettingsPopup.add(Box.createVerticalStrut(15));
-            NewSettingsPopup.add(new JLabel("Inbound port:"));
+            //NewSettingsPopup.add(Box.createHorizontalStrut(40));
+            NewSettingsPopup.add(new JLabel("Inbound port:            "));
             NewSettingsPopup.add(receivePort,BorderLayout.EAST);
             NewSettingsPopup.add(Box.createVerticalStrut(15));
+            //NewSettingsPopup.add(Box.createHorizontalStrut(45));
             NewSettingsPopup.add(new JLabel("Destination Address (IPv4):"));
-            NewSettingsPopup.add(Box.createVerticalStrut(15));
+            //NewSettingsPopup.add(Box.createVerticalStrut(15));
             NewSettingsPopup.add(sendAddress,BorderLayout.EAST);
-            NewSettingsPopup.add(Box.createVerticalStrut(25));
+            NewSettingsPopup.add(Box.createVerticalStrut(20));
             NewSettingsPopup.add(debugField);
 
             // Create the dialog popup with the ok/cancel buttons and wait for the window to be closed
