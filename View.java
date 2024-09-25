@@ -217,7 +217,7 @@ public class View extends JPanel {
             // Check if model is telling us to do create a New Player Popup window
             if (model.getMakePlayerPopupFlag()) {
                 model.setMakePlayerPopupFlag(false);
-                NewPlayerPopupScreen("", null, "Enter new Player information", "");
+                NewPlayerPopupScreen("", null, null, "Enter new Player information", "");
             }
 
             // Check if the model is telling us to create a new settings window
@@ -356,19 +356,22 @@ public class View extends JPanel {
                                 // Create a popup window to prompt the user to add a new player
                                 String popupInputID = "";
                                 JTextField NewPlayerIDField = new JTextField();
+                                JTextField PlayerCodenameField = new JTextField();
 
                                 // Grab the ID based on the selected team
                                 if (lastSelectedTeam == 'R') {
                                     popupInputID = model.PlayerIDBoxes.get(lastSelectedRow).getTextFromField();
                                     NewPlayerIDField = model.PlayerIDBoxes.get(lastSelectedRow).getTextBox();
+                                    PlayerCodenameField = model.CodenameBoxes.get(lastSelectedRow).getTextBox();
                                 }
                                 else if (lastSelectedTeam == 'G') {
                                     popupInputID = model.PlayerIDBoxes.get(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextFromField();
-                                    NewPlayerIDField = model.PlayerIDBoxes.get(lastSelectedRow  + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextBox();
+                                    NewPlayerIDField = model.PlayerIDBoxes.get(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextBox();
+                                    PlayerCodenameField = model.CodenameBoxes.get(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextBox();
                                 }
 
                                 // Create the New Player Entry Popup screen
-                                NewPlayerPopupScreen(popupInputID, NewPlayerIDField, "Unknown Player ID entered, would", "you like to create a new Player?");
+                                NewPlayerPopupScreen(popupInputID, NewPlayerIDField, PlayerCodenameField, "Unknown Player ID entered, would", "you like to create a new Player?");
                             }
                         }
 
@@ -554,7 +557,7 @@ public class View extends JPanel {
         NewPlayerButton.addKeyListener(buttonKeys);
         NewPlayerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
-                NewPlayerPopupScreen("", null, "Enter new Player information", "");
+                NewPlayerPopupScreen("", null, null, "Enter new Player information", "");
             }  
         });
         ButtonsCenter.add(NewPlayerButton);
@@ -864,7 +867,7 @@ public class View extends JPanel {
      * 
      --------------------------------------------------*/
 
-    public boolean NewPlayerPopupScreen(String idInput, JTextField IDBox, String hint1, String hint2) {
+    public boolean NewPlayerPopupScreen(String idInput, JTextField IDBox, JTextField NameBox, String hint1, String hint2) {
 
          // Ensure another popup isn't already open
          if (model.getNewPopup())
@@ -965,6 +968,10 @@ public class View extends JPanel {
                     }
                     if (model.database.insertDB(Database.PARAM_ID_AND_CODENAME, newPlayerIDVal, NewPlayerName.getText()))
                         model.toolTip(NewPlayerName.getText() + " added successfully!", 4500);
+                        if (NameBox != null) {
+                            NameBox.setText(NewPlayerName.getText());
+                        }
+
                     else
                         model.toolTip("Error adding " + NewPlayerName.getText() + " to the database!", 4500);
                     closePopupFlag = true;
