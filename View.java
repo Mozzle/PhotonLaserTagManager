@@ -350,9 +350,12 @@ public class View extends JPanel {
                                     model.toolTip(codename + " added successfully!", 4500);
                                 }
                             }
-                            // If ID does not exist in the database, add it
+                            // If we are not connected to the database.
+                            else if (model.database.getdbConnectionStatus() == false && !model.getDebugMode()) {
+                                model.toolTip("No database connection! Game will not work!",10000);
+                            }
+                            // If ID does not exist in the database and the connection is good, add the ID to the DB
                             else {
-
                                 // Create a popup window to prompt the user to add a new player
                                 String popupInputID = "";
                                 JTextField NewPlayerIDField = new JTextField();
@@ -966,14 +969,21 @@ public class View extends JPanel {
                     if (IDBox != null) {
                         IDBox.setText(NewPlayerID.getText());
                     }
-                    if (model.database.insertDB(Database.PARAM_ID_AND_CODENAME, newPlayerIDVal, NewPlayerName.getText()))
+                    // If we are not connected to the database, print a tooltip
+                    if (model.database.getdbConnectionStatus() == false && !model.getDebugMode()) {
+                        model.toolTip("No database connection! Game will not work!",10000);
+                    }
+                    // If we are connected to the database, add the new user to the database
+                    else if (model.database.insertDB(Database.PARAM_ID_AND_CODENAME, newPlayerIDVal, NewPlayerName.getText())) {
                         model.toolTip(NewPlayerName.getText() + " added successfully!", 4500);
                         if (NameBox != null) {
                             NameBox.setText(NewPlayerName.getText());
                         }
+                    }
 
-                    else
+                    else {
                         model.toolTip("Error adding " + NewPlayerName.getText() + " to the database!", 4500);
+                    }
                     closePopupFlag = true;
                 }
 
