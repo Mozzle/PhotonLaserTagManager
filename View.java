@@ -1101,10 +1101,10 @@ public class View extends JPanel {
             // Create the JPanel Window and add elements
             JPanel NewSettingsPopup = new JPanel();
             NewSettingsPopup.setPreferredSize(new Dimension(250, 150));
-            NewSettingsPopup.add(new JLabel("Transmission port:"));
+            NewSettingsPopup.add(new JLabel("Outbound port:"));
             NewSettingsPopup.add(sendPort,BorderLayout.EAST);
             NewSettingsPopup.add(Box.createVerticalStrut(15));
-            NewSettingsPopup.add(new JLabel("Receival port:"));
+            NewSettingsPopup.add(new JLabel("Inbound port:"));
             NewSettingsPopup.add(receivePort,BorderLayout.EAST);
             NewSettingsPopup.add(Box.createVerticalStrut(15));
             NewSettingsPopup.add(new JLabel("Destination Address (IPv4):"));
