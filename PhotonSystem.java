@@ -17,7 +17,7 @@ public class PhotonSystem extends JFrame {
      * 
      *  DESCRIPTION: Highest level program initializer
      * 
-     *  REQUIREMENTS: 0005, 
+     *  REQUIREMENTS: 0005, 0023
      * 
     ---------------------------------------------------------- */
 

@@ -8,6 +8,8 @@ import javax.imageio.ImageIO;
      *
      *  DESCRIPTION: Establishes the variable "animationState"
      *  and loads the initial Photon logo to be displayed at the beginning of the program
+     * 
+     *  REQUIREMENTS: 0023,
      *
     ------------------------------------------------- */
 public class SplashScreen extends Sprite {

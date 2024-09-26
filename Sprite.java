@@ -4,8 +4,8 @@ import java.awt.image.BufferedImage;
  * 
  *      class Sprite
  * 
- *  DESCRIPTION: Parent class for all objects
- *  that will be drawn to the screen.
+ *  DESCRIPTION: Parent class for png/jpg based
+ *  objects that will be drawn to the screen.
  * 
  * 
  --------------------------------------------*/

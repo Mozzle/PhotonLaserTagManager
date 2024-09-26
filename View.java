@@ -70,7 +70,7 @@ public class View extends JPanel {
      *
      *  DESCRIPTION: View Class Initializer
      *
-     *  REQUIREMENTS:
+     *  REQUIREMENTS: 0023
      *
     ------------------------------------------------- */
 
@@ -108,7 +108,7 @@ public class View extends JPanel {
      *
      *  DESCRIPTION: Draws the images to the screen
      *
-     *  REQUIREMENTS:
+     *  REQUIREMENTS: 0024
      *
     ------------------------------------------------- */
     public void paintComponent(Graphics g)
@@ -142,7 +142,7 @@ public class View extends JPanel {
      *  DESCRIPTION: loads image for a Sprite object,
      *  given a file link.
      *
-     *  REQUIREMENTS:
+     *  REQUIREMENTS: 0024,
      *
     ------------------------------------------------- */
     static BufferedImage loadImage(String filename) {	// Static image loading 
@@ -164,7 +164,7 @@ public class View extends JPanel {
      *  DESCRIPTION: PhotonSystem.java gives view.java 
      *  the current window height for proper sizing action
      *
-     *  REQUIREMENTS:
+     *  REQUIREMENTS: 0005,
      *
     ------------------------------------------------- */
     public void setScreenSize(int w, int h) { 
@@ -180,7 +180,7 @@ public class View extends JPanel {
      *  model and is the entry point for changing from
      *  the one screen to another.
      * 
-     *  REQUIREMENTS: 
+     *  REQUIREMENTS: 0005, 
      -------------------------------------------------*/
     public void update() {
         model.updateScreenSize(windowWidth, windowHeight);
@@ -846,7 +846,7 @@ public class View extends JPanel {
      *  tool tip has timed out on the screen. Deletes 
      *  the tool Tip
      * 
-     *  REQUIREMENTS: 
+     *  REQUIREMENTS: 0026,
      * 
      --------------------------------------------------*/
 
@@ -1047,7 +1047,7 @@ public class View extends JPanel {
      *  players to manage the settings, such as ip address,
      *  ports, debug mode.
      * 
-     *  REQUIREMENTS: 0015? I think.
+     *  REQUIREMENTS: 0027
      * 
      --------------------------------------------------*/
 
@@ -1209,7 +1209,7 @@ public class View extends JPanel {
      *  DESCRIPTION: Handles the updating and display of 
      *  tool tips
      * 
-     *  REQUIREMENTS: 
+     *  REQUIREMENTS: 0026
      * 
      --------------------------------------------------*/
     void handleToolTipDrawing() {

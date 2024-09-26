@@ -28,7 +28,7 @@ public class TextBox {
 	 *  access it, and provides some default settings
 	 *  for the text field.
      *
-     *  REQUIREMENTS: 0006, 0009, 0010, 0011, 
+     *  REQUIREMENTS: 0006, 0009, 0010, 0011, 0023
      *
     ------------------------------------------------- */
 

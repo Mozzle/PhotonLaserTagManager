@@ -18,6 +18,8 @@ public class Controller implements ActionListener, MouseListener, KeyListener
      * 
      *  DESCRIPTION: Controller class initializer
      * 
+     *  REQUIREMENTS: 0023,
+     * 
     ---------------------------------------------------------- */
 
     public Controller(Model m)

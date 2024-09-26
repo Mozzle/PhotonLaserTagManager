@@ -21,7 +21,7 @@ public class NetListener
      * 
      *  Keeps a reference to the master controller for sending data
      * 
-     *  REQUIREMENTS: 0007, 
+     *  REQUIREMENTS: 0007, 0023,
      * 
     ---------------------------------------------------------- */
     public NetListener(NetController c) {

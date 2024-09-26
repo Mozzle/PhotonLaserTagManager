@@ -62,6 +62,8 @@ public class Model
      *  the Player Entry Screen is initialized, then it is
      *  drawn in the View.update() function.
      * 
+     *  REQUIREMENTS: 0024
+     * 
      ----------------------------------------------------*/
     public class SplashScreenTimeout extends TimerTask
     {
@@ -100,7 +102,7 @@ public class Model
      *
      *  DESCRIPTION: Model Class Initializer
      *
-     *  REQUIREMENTS:
+     *  REQUIREMENTS: 0023
      *
     ------------------------------------------------- */
     public Model()
@@ -178,7 +180,8 @@ public class Model
      * 
      ----------------------------------------------------*/
 
-    // Runs when F5 is pushed.
+    // Runs when game is started: transition from Player Entry Screen
+    // to the Countdown screen
     public void PlayerEntryScreenDeleter()
     {
         //creates the tables for the player entry screen
@@ -244,7 +247,7 @@ public class Model
      *  DESCRIPTION: Creates the splash screen, called
      *  at program initialization
      *
-     *  REQUIREMENTS:
+     *  REQUIREMENTS: 0024,
      *
     ------------------------------------------------- */
 
@@ -399,7 +402,7 @@ public class Model
      *  DESCRIPTION: Creates and displays a new JLabel "toolTip"
      * which is used in other functions
      *
-     *  REQUIREMENTS:
+     *  REQUIREMENTS: 0026
      *
     ------------------------------------------------- */
     public boolean toolTip(String tipText, int ms) {
@@ -429,7 +432,7 @@ public class Model
      *  tooltips will appear telling the user what is
      *  preventing the game from starting.
      *
-     *  REQUIREMENTS:
+     *  REQUIREMENTS: 0025,
      *
     ------------------------------------------------- */
 
