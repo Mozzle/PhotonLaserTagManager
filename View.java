@@ -59,6 +59,8 @@ public class View extends JPanel {
     public JButton ClearScreenButton, StartGameButton, NewPlayerButton, SettingsButton;
     public Component currentFocus;
 
+    public TimerTask countDownScreenTimeoutTask;
+
 
     // Variable declarations
 
@@ -235,8 +237,14 @@ public class View extends JPanel {
             if (!inCountDownScreen) {
             inPlayerEntryScreen = false;
             inCountDownScreen=true; 
-            this.PlayerEntryScreenDeleter(); 
+            timer = new Timer();
+            countDownScreenTimeoutTask = new CountDownScreenTimeout();
+            // Delete Player Entry Screen
+            this.PlayerEntryScreenDeleter();
+            // Draw the Countdown Screen 
             this.drawCountDownScreen();
+            // Schedule the end of the countdown screen
+            timer.schedule(countDownScreenTimeoutTask, 3000);
             }
 
         }
@@ -838,6 +846,29 @@ public class View extends JPanel {
                 View.this.PlayerEntryPanes.remove(View.this.PlayerEntryPanes.getComponentCount() - toolTipCounter);
                 toolTipCounter--;
             }
+        }
+    }
+
+    /*--------------------------------------------------
+     * 
+     *  toolTipTimeout.run()
+     * 
+     *  DESCRIPTION: Timer Task that executes when the 
+     *  countdown screen has timed out. Transitions the
+     *  system state to the Play Action Screen
+     * 
+     *  REQUIREMENTS:
+     * 
+     --------------------------------------------------*/
+
+    public class CountDownScreenTimeout extends TimerTask
+    {
+        public void run()
+        {
+            for (int i = 0; i < View.this.getComponentCount(); i++) {
+                View.this.remove(View.this.getComponent(i));
+            }
+            model.system_State = Model.PLAY_ACTION_SCREEN;
         }
     }
 
