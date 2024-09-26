@@ -60,8 +60,7 @@ public class View extends JPanel {
     public char lastSelectedTeam;
     public JButton ClearScreenButton, StartGameButton, NewPlayerButton, SettingsButton;
     public Component currentFocus;
-
-    public TimerTask countDownScreenTimeoutTask;
+    JLabel countDownLabel;
 
 
     // Variable declarations
@@ -239,14 +238,11 @@ public class View extends JPanel {
             if (!inCountDownScreen) {
             inPlayerEntryScreen = false;
             inCountDownScreen=true; 
-            timer = new Timer();
-            countDownScreenTimeoutTask = new CountDownScreenTimeout();
             // Delete Player Entry Screen
             this.PlayerEntryScreenDeleter();
             // Draw the Countdown Screen 
             this.drawCountDownScreen();
             // Schedule the end of the countdown screen
-            timer.schedule(countDownScreenTimeoutTask, 3000);
             }
 
         }
@@ -827,22 +823,23 @@ public class View extends JPanel {
         Timer timer = new Timer();
         
         ImageIcon imgIcon = new ImageIcon(this.getClass().getResource("Timer.gif"));
-        JLabel label = new JLabel(imgIcon);
-        label.setBounds(200, 200, 256, 256); // Adjust these values to suit your layout
-        add(label);
-        setVisible(true);
+        countDownLabel = new JLabel(imgIcon);
+        countDownLabel.setBounds(200, 200, 256, 256); // Adjust these values to suit your layout
+        add(countDownLabel);
+        countDownLabel.setVisible(true);
 
         
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-            setVisible(false);
+            View.this.remove(countDownLabel);
+            model.system_State = Model.PLAY_ACTION_SCREEN;
             }
         };
         
 
         // Schedule the task to run every 30 seconds (30000 milliseconds)
-        timer.schedule(task, 30000, 30000);
+        timer.schedule(task, 30000);
         
     }
 
