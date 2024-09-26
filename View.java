@@ -42,6 +42,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class View extends JPanel {
 
@@ -811,11 +813,29 @@ public class View extends JPanel {
 
         //this.setLayout(new BorderLayout());
 
-        ImageIcon imgIcon = new ImageIcon(this.getClass().getResource("CountDown.gif"));
+        
+        //system.threadcount(30000);
+        
+        Timer timer = new Timer();
+        
+        ImageIcon imgIcon = new ImageIcon(this.getClass().getResource("Timer.gif"));
         JLabel label = new JLabel(imgIcon);
-        label.setBounds(30, 43, 256, 256); // Adjust these values to suit your layout
+        label.setBounds(200, 200, 256, 256); // Adjust these values to suit your layout
         add(label);
         setVisible(true);
+
+        
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+            setVisible(false);
+            }
+        };
+        
+
+        // Schedule the task to run every 30 seconds (30000 milliseconds)
+        timer.schedule(task, 30000, 30000);
+        
     }
 
     /*--------------------------------------------------
