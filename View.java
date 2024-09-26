@@ -251,6 +251,8 @@ public class View extends JPanel {
         if (model.getSystemState() == Model.PLAY_ACTION_SCREEN && !inGameScreen) {
             inCountDownScreen = false;
             inGameScreen = true;
+            drawPlayActionScreen();
+            
             // TODO: Link a method here that handles all the sprites and objects
             // for the game screen. Or implement it here directly.
         }
@@ -866,28 +868,6 @@ public class View extends JPanel {
         }
     }
 
-    /*--------------------------------------------------
-     * 
-     *  toolTipTimeout.run()
-     * 
-     *  DESCRIPTION: Timer Task that executes when the 
-     *  countdown screen has timed out. Transitions the
-     *  system state to the Play Action Screen
-     * 
-     *  REQUIREMENTS:
-     * 
-     --------------------------------------------------*/
-
-    public class CountDownScreenTimeout extends TimerTask
-    {
-        public void run()
-        {
-            for (int i = 0; i < View.this.getComponentCount(); i++) {
-                View.this.remove(View.this.getComponent(i));
-            }
-            model.system_State = Model.PLAY_ACTION_SCREEN;
-        }
-    }
 
     /*--------------------------------------------------
      * 
@@ -1263,5 +1243,22 @@ public class View extends JPanel {
             prevToolTipCounter = toolTipCounter;
         }
     }
+
+    /*--------------------------------------------------
+     * 
+     *  drawPlayActionScreen()
+     * 
+     *  DESCRIPTION: Creates and draws the Play Action
+     *  Screen 
+     * 
+     *  REQUIREMENTS: 
+     -------------------------------------------------*/
+
+     public void drawPlayActionScreen() {
+        // Implement ME!!! 
+        // See the concept that I posted in slack for what the play action
+        // screen should look like
+     }
+
 }
 
