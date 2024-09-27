@@ -468,44 +468,44 @@ public class View extends JPanel {
 
      /*                     PLAYER ENTRY PAGE LAYOUT
       *
-      *     -------[PlayerEntryPanes]----------------------------------------------------------------------
-      *     |         |--------[RedTeamTextBoxPane]--------||------[GreenTeamTextBoxPane]--------|        |
-      *     |         ||----------[TextFieldsR]-----------||||-----------[TextFieldsG]----------||        |
-      *     |         ||                                  ||||                                  ||        |
-      *     |         ||             RED TEAM             ||||            GREEN TEAM            ||        |
-      *     |         ||  Player ID       Equipment ID    ||||  Player ID       Equipment ID    ||        |
-      *     |         || |||||||||||||||  ||||||||||||||  |||| |||||||||||||||  ||||||||||||||  ||        |
-      *     |         || |||||||||||||||  ||||||||||||||  |||| |||||||||||||||  ||||||||||||||  ||        |
-      *     |         || |||||||||||||||  ||||||||||||||  |||| |||||||||||||||  ||||||||||||||  ||        |
-      *     |         || |||||||||||||||  ||||||||||||||  |||| |||||||||||||||  ||||||||||||||  ||        |
-      *     |         || |||||||||||||||  ||||||||||||||  |||| |||||||||||||||  ||||||||||||||  ||        |
-      *     |         || |||||||||||||||  ||||||||||||||  |||| |||||||||||||||  ||||||||||||||  ||        |
-      *     |         || |||||||||||||||  ||||||||||||||  |||| |||||||||||||||  ||||||||||||||  ||        |
-      *     |         || |||||||||||||||  ||||||||||||||  |||| |||||||||||||||  ||||||||||||||  ||        |
-      *     |         || |||||||||||||||  ||||||||||||||  |||| |||||||||||||||  ||||||||||||||  ||        |
-      *     |         || |||||||||||||||  ||||||||||||||  |||| |||||||||||||||  ||||||||||||||  ||        |
-      *     |         || |||||||||||||||  ||||||||||||||  |||| |||||||||||||||  ||||||||||||||  ||        |
-      *     |         || |||||||||||||||  ||||||||||||||  |||| |||||||||||||||  ||||||||||||||  ||        |
-      *     |         || |||||||||||||||  ||||||||||||||  |||| |||||||||||||||  ||||||||||||||  ||        |
-      *     |         || |||||||||||||||  ||||||||||||||  |||| |||||||||||||||  ||||||||||||||  ||        |
-      *     |         || |||||||||||||||  ||||||||||||||  |||| |||||||||||||||  ||||||||||||||  ||        |
-      *     |         ||                                  ||||                                  ||        |
-      *     |         ||----------------------------------||||----------------------------------||        |
-      *     |         |                                    ||                                   ||        |
-      *     |         |                                    ||                                    |        |
-      *     |         |------------------------------------||------------------------------------|        |
-      *     ||-------------------------------------------------------------------------------------------||
-      *     |                                                                                             |
-      *     |                                                                                             |
-      *     |----------------[Buttons]--------------------------------------------------------------------|
-      *     ||-----------------------------[ButtonsCenter]-----------------------------------------------||
-      *     ||                            |----------------||----------------|                           ||
-      *     ||                            |                ||                |                           ||
-      *     ||                            |  Clear Screen  ||   Start Game   |                           ||
-      *     ||                            |[ClearScreenBtn]|| [StartGameBtn  |                           ||
-      *     ||                            |----------------||----------------|                           ||
-      *     ||-------------------------------------------------------------------------------------------||
-      *     |----------------------------------------------------------------------------------------------
+      *     -------[PlayerEntryPanes]------------------------------------------------------------------------------------------
+      *     |         |--------[RedTeamTextBoxPane]----------------||------[GreenTeamTextBoxPane]--------------------|        |
+      *     |         ||----------[TextFieldsR]-------------------||||-----------[TextFieldsG]----------------------||        |
+      *     |         ||                                          ||||                                              ||        |
+      *     |         ||             RED TEAM                     ||||            GREEN TEAM                        ||        |
+      *     |         ||  Player ID     Equipment ID    Codename  ||||  Player ID       Equipment ID     Codename   ||        |
+      *     |         || ||||||||||||  ||||||||||||||  |||||||||| |||| |||||||||||||||  ||||||||||||||  ||||||||||  ||        |
+      *     |         || ||||||||||||  ||||||||||||||  |||||||||| |||| |||||||||||||||  ||||||||||||||  ||||||||||  ||        |
+      *     |         || ||||||||||||  ||||||||||||||  |||||||||| |||| |||||||||||||||  ||||||||||||||  ||||||||||  ||        |
+      *     |         || ||||||||||||  ||||||||||||||  |||||||||| |||| |||||||||||||||  ||||||||||||||  ||||||||||  ||        |
+      *     |         || ||||||||||||  ||||||||||||||  |||||||||| |||| |||||||||||||||  ||||||||||||||  ||||||||||  ||        |
+      *     |         || ||||||||||||  ||||||||||||||  |||||||||| |||| |||||||||||||||  ||||||||||||||  ||||||||||  ||        |
+      *     |         || ||||||||||||  ||||||||||||||  |||||||||| |||| |||||||||||||||  ||||||||||||||  ||||||||||  ||        |
+      *     |         || ||||||||||||  ||||||||||||||  |||||||||| |||| |||||||||||||||  ||||||||||||||  ||||||||||  ||        |
+      *     |         || ||||||||||||  ||||||||||||||  |||||||||| |||| |||||||||||||||  ||||||||||||||  ||||||||||  ||        |
+      *     |         || ||||||||||||  ||||||||||||||  |||||||||| |||| |||||||||||||||  ||||||||||||||  ||||||||||  ||        |
+      *     |         || ||||||||||||  ||||||||||||||  |||||||||| |||| |||||||||||||||  ||||||||||||||  ||||||||||  ||        |
+      *     |         || ||||||||||||  ||||||||||||||  |||||||||| |||| |||||||||||||||  ||||||||||||||  ||||||||||  ||        |
+      *     |         || ||||||||||||  ||||||||||||||  |||||||||| |||| |||||||||||||||  ||||||||||||||  ||||||||||  ||        |
+      *     |         || ||||||||||||  ||||||||||||||  |||||||||| |||| |||||||||||||||  ||||||||||||||  ||||||||||  ||        |
+      *     |         || ||||||||||||  ||||||||||||||  |||||||||| |||| |||||||||||||||  ||||||||||||||  ||||||||||  ||        |
+      *     |         ||                                          ||||                                              ||        |
+      *     |         ||------------------------------------------||||----------------------------------------------||        |
+      *     |         |                                            ||                                               ||        |
+      *     |         |                                            ||                                                |        |
+      *     |         |--------------------------------------------||------------------------------------------------|        |
+      *     ||---------------------------------------------------------------------------------------------------------------||
+      *     |                                                                                                                 |
+      *     |                                                                                                                 |
+      *     |----------------[Buttons]----------------------------------------------------------------------------------------|
+      *     ||-----------------------------[ButtonsCenter]-------------------------------------------------------------------||
+      *     ||                  |----------------||----------------||----------------||----------------|                     ||
+      *     ||                  |                ||                ||                ||                |                     ||
+      *     ||                  |  Clear Screen  ||   Start Game   || Add New Player ||    Settings    |                     ||
+      *     ||                  |[ClearScreenBtn]|| [StartGameBtn] || [NewPlayerBtn] ||[SettingsButton]|                     ||
+      *     ||                  |----------------||----------------||----------------||----------------|                     ||
+      *     ||---------------------------------------------------------------------------------------------------------------||
+      *     |-----------------------------------------------------------------------------------------------------------------|
       */
     public void drawPlayerEntryScreen() {
         LayoutManager layout = new FlowLayout();
@@ -517,17 +517,22 @@ public class View extends JPanel {
          * Buttons
         --------------*/
 
+        // Key controller for when buttons are in focus
         KeyAdapter buttonKeys = model.getStandardKeyAdapter();
 
+        // Buttons panel container
         JPanel Buttons = new JPanel();
         Buttons.setLayout(new BoxLayout(Buttons, BoxLayout.X_AXIS));
         Buttons.setBackground(Color.BLACK);
         Buttons.setOpaque(false);
 
+        // Buttons Center is within Buttons, centers all buttons that get
+        // put within it
         JPanel ButtonsCenter = new JPanel();
         ButtonsCenter.setBackground(Color.BLACK);
         ButtonsCenter.setLayout(new FlowLayout(FlowLayout.CENTER));
 
+        // Clear Screen button
         ClearScreenButton = new JButton("(F1) - Clear Screen");
         ClearScreenButton.setPreferredSize(new Dimension(225, 60));
         ClearScreenButton.setMaximumSize(new Dimension(225, 60));
@@ -543,6 +548,7 @@ public class View extends JPanel {
         }); 
         ButtonsCenter.add(ClearScreenButton);
 
+        // Start Game Button
         StartGameButton = new JButton("(F5) - Start Game");
         StartGameButton.setPreferredSize(new Dimension(225, 60));
         StartGameButton.setMaximumSize(new Dimension(225, 60));
@@ -560,6 +566,7 @@ public class View extends JPanel {
         }); 
         ButtonsCenter.add(StartGameButton);
 
+        // New Player Button
         NewPlayerButton = new JButton("(F9) - Add New Player");
         NewPlayerButton.setPreferredSize(new Dimension(225, 60));
         NewPlayerButton.setMaximumSize(new Dimension(225, 60));
@@ -573,6 +580,7 @@ public class View extends JPanel {
         });
         ButtonsCenter.add(NewPlayerButton);
 
+        // Settings Button
         SettingsButton = new JButton("(F12) - Settings");
         SettingsButton.setPreferredSize(new Dimension(225, 60));
         SettingsButton.setMaximumSize(new Dimension(225, 60));
@@ -824,12 +832,11 @@ public class View extends JPanel {
         
         Timer timer = new Timer();
         
-        ImageIcon imgIcon = new ImageIcon(this.getClass().getResource("Timer.gif"));
+        ImageIcon imgIcon = new ImageIcon(this.getClass().getResource("src/timer.gif"));
         countDownLabel = new JLabel(imgIcon);
-        countDownLabel.setBounds(200, 200, 256, 256); // Adjust these values to suit your layout
+        countDownLabel.setBounds((int)((windowWidth - 256) / 2), (int)((windowHeight - 256) / 2), 256, 256); // Adjust these values to suit your layout
         add(countDownLabel);
         countDownLabel.setVisible(true);
-
         
         TimerTask task = new TimerTask() {
             @Override
@@ -839,8 +846,7 @@ public class View extends JPanel {
             }
         };
         
-
-        // Schedule the task to run every 30 seconds (30000 milliseconds)
+        // Schedule the task to run after 30 seconds (30000 milliseconds)
         timer.schedule(task, 30000);
         
     }
@@ -1221,8 +1227,9 @@ public class View extends JPanel {
      * 
      --------------------------------------------------*/
     void handleToolTipDrawing() {
+        // If there is a new toolTip for us to add
         if (model.newToolTip == true) {
-
+            // Add it
             model.newToolTip = false;
             toolTipCounter++;
             toolTipLabel = model.toolTip;

@@ -70,6 +70,7 @@ public class Database {
 
     }
 
+
     /*-----------------------------------------------------
      * 
      *      searchDB()
@@ -85,11 +86,15 @@ public class Database {
      *  Searches for ID # 3 in the ID column of the table,
      *  and returns the corresponding codename
      * 
+     *  EXAMPLE:
+     *  searchDB(Database.PARAM_ID, 6, "");
+     * 
      -----------------------------------------------------*/
 
     public String searchDB(int searchParam, int id, String codename) {
         String returnVal = "";
 
+        // Searching for a player with a given Player ID
         if (searchParam == PARAM_ID) {
             try {
                 Statement statement = connection.createStatement();
@@ -104,6 +109,7 @@ public class Database {
                 System.err.println(e.getClass().getName()+": "+e.getMessage());
             }
         }
+        // Searching for a player with a given codename
         else if (searchParam == PARAM_CODENAME) {
             try {
                 Statement statement = connection.createStatement();
@@ -124,6 +130,7 @@ public class Database {
         return returnVal;
     }
 
+
     /*-----------------------------------------------------
      * 
      *      insertDB()
@@ -133,7 +140,7 @@ public class Database {
      *  DESCRIPTION: Inserts a new entry in the table given
      *  an ID and/or codename. 
      *  EXAMPLE:
-     * insertDB(Database.PARAM_ID_AND_CODENAME, 7, "Sparky")
+     *  insertDB(Database.PARAM_ID_AND_CODENAME, 7, "Sparky")
      * 
      -----------------------------------------------------*/
     public boolean insertDB(int param, int id, String codename) {
@@ -153,6 +160,7 @@ public class Database {
         }
         return returnVal;
     }
+
 
     /*-----------------------------------------------------
      * 
@@ -194,6 +202,7 @@ public class Database {
         return returnVal;
     }
 
+
     /*-----------------------------------------------------
      * 
      *      getNumRows()
@@ -220,6 +229,7 @@ public class Database {
         }
         return returnVal;
     }
+
 
     public int getNextAvailableID() {
         int lowestUnusedID = -1;
@@ -254,6 +264,7 @@ public class Database {
         return lowestUnusedID;
     }
 
+
     /*-----------------------------------------------------
      * 
      *      getdbConnectionStatus()
@@ -268,6 +279,7 @@ public class Database {
      boolean getdbConnectionStatus() {
         return dbStatus;
      }
+
 }
 
 

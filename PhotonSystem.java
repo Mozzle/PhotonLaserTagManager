@@ -40,6 +40,7 @@ public class PhotonSystem extends JFrame {
         netController.startListener();
     }
 
+    
     /*-----------------------------------------------------------
      * 
      *      run()
@@ -76,7 +77,7 @@ public class PhotonSystem extends JFrame {
      * 
      *      main()
      * 
-     *  DESCRIPTION: Entry point of all Java program
+     *  DESCRIPTION: Entry point of the Java program
      * 
      *  REQUIREMENTS:
      * 

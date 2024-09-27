@@ -28,6 +28,7 @@ public class Controller implements ActionListener, MouseListener, KeyListener
         model = m;
     }
 
+
     /*-----------------------------------------------------------
      * 
      *  update()
@@ -42,6 +43,7 @@ public class Controller implements ActionListener, MouseListener, KeyListener
         model.update();
     }
 
+
     /*-----------------------------------------------------------
      * 
      *  setView(View v)
@@ -55,6 +57,7 @@ public class Controller implements ActionListener, MouseListener, KeyListener
         view = v;
 	}
 
+
     /*-----------------------------------------------------------
      * 
      *  actionPerformed()
@@ -67,6 +70,7 @@ public class Controller implements ActionListener, MouseListener, KeyListener
 	{
 
 	}
+
 
     /*-----------------------------------------------------------
      * 
@@ -84,6 +88,7 @@ public class Controller implements ActionListener, MouseListener, KeyListener
 
 	}
 
+    
     /*-----------------------------------------------------------
      * 
      *  mouseReleased(), mouseEntered(), mouseExited(), mouseClicked()
@@ -101,6 +106,7 @@ public class Controller implements ActionListener, MouseListener, KeyListener
 	public void mouseExited(MouseEvent e) {}
 	public void mouseClicked(MouseEvent e) {}
 
+
     /*-----------------------------------------------------------
      * 
      *  keyPressed()
@@ -115,6 +121,7 @@ public class Controller implements ActionListener, MouseListener, KeyListener
 	{
 	}
     
+
     /*-----------------------------------------------------------
      * 
      *  keyReleased()
@@ -203,6 +210,7 @@ public class Controller implements ActionListener, MouseListener, KeyListener
 		}
 	}
 
+
     /*-----------------------------------------------------------
      * 
      *  keyTyped()
@@ -222,4 +230,5 @@ public class Controller implements ActionListener, MouseListener, KeyListener
 		// to model to add text to a field.
 	}
 
+    
 }

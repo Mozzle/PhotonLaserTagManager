@@ -27,30 +27,31 @@ public class Model
     public static final int NUM_MAX_PLAYERS_PER_TEAM = 15;
 
     Database database;
-    public int system_State;
+    public int system_State;                        // Controls the state of the program.
+                                                    // See the 'System_States' enums above
 
-    public ArrayList<Sprite> windowObjects; // This arrayList contains all elements that
-                                            //  will be drawn to the scrren
+    public ArrayList<Sprite> windowObjects;         // This arrayList contains all elements that
+                                                    //  will be drawn to the scrren
 
-    public ArrayList<TextBox> PlayerIDBoxes;    // For player entry screen
-    public ArrayList<TextBox> EquipmentIDBoxes; // For player entry screen
-    public ArrayList<TextBox> CodenameBoxes; // For player entry screen
+    public ArrayList<TextBox> PlayerIDBoxes;        // For player entry screen
+    public ArrayList<TextBox> EquipmentIDBoxes;     // For player entry screen
+    public ArrayList<TextBox> CodenameBoxes;        // For player entry screen
 
     public Timer timer;
     public TimerTask splashScreenTimeoutTask;
 
-    public JLabel toolTip;
-    public int toolTip_ms;                   // On-screen time for the tool tip in ms
-    public boolean newToolTip;               // Flag for View class to indicate if Model has
-                                             // a screen element that needs updated
+    public JLabel toolTip;                          // Container for the newest tooltip in program
+    public int toolTip_ms;                          // On-screen time for the tool tip in ms
+    public boolean newToolTip;                      // Flag for View class to indicate if Model has
+                                                    // a screen element that needs updated
 
-    public boolean PlayerEntryScreenNewPopup;     // Flag to disable F1, F5 commands while
-                                                        // New Player Popup screen is active
+    public boolean PlayerEntryScreenNewPopup;       // Flag to disable F1, F5 commands while
+                                                    // New Player Popup screen is active
 
-    public boolean makePlayerPopup;      // Flag to View class to create a new New Player Popup.
-    public boolean makeSettingsPopup;    // Flag to View class to create a new Settings Popup.
+    public boolean makePlayerPopup;                 // Flag to View class to create a new New Player Popup.
+    public boolean makeSettingsPopup;               // Flag to View class to create a new Settings Popup.
 
-    public boolean debugMode;            // Flag to enable debug mode
+    public boolean debugMode;                       // Flag to enable debug mode
 
     /*-----------------------------------------------------
      * 
@@ -87,12 +88,6 @@ public class Model
             }
             system_State = PLAYER_ENTRY_SCREEN;
 
-            /*  DATABASE TEST CODE
-            System.out.println(database.getNumRows());
-            database.insertDB(Database.PARAM_ID_AND_CODENAME, 2, "Gerald");
-            System.out.println(database.searchDB(Database.PARAM_ID, 2, ""));
-            database.deleteDBRow(Database.PARAM_ID, 2, "");
-            */
         }
     }
 
@@ -170,6 +165,7 @@ public class Model
         }
 
     }
+
 
     /*-----------------------------------------------------
      * 
@@ -407,11 +403,13 @@ public class Model
     ------------------------------------------------- */
     public boolean toolTip(String tipText, int ms) {
         boolean success = true;
+        // Some error handling
         if (ms > 0) {
             toolTip_ms = ms;
         } else {
             toolTip_ms = 4500;
         }
+        // Make the new toolTip, then set the newToolTip flag
         toolTip = new JLabel(tipText, SwingConstants.CENTER);
         toolTip.setBackground(new Color(104, 110, 58));
         toolTip.setForeground(Color.WHITE);
@@ -426,7 +424,7 @@ public class Model
      *      checkStartGameConditions()
      *
      *  DESCRIPTION: Checks a series of conditions in 
-     *  the entry screen to determine if we are
+     *  the player entry screen to determine if we are
      *  able to start the game. If so, we will
      *  transition to the countdown screen. Otherwise,
      *  tooltips will appear telling the user what is
@@ -564,6 +562,7 @@ public class Model
         return PlayerEntryScreenNewPopup;
     }
 
+
     /*-------------------------------------------------
      *
      *      checkEquipmentIDFieldsForDupicates()
@@ -600,6 +599,23 @@ public class Model
         return result;
     }
 
+
+    /*-------------------------------------------------
+     *
+     *      getTextBoxIndexFromName()
+     *
+     *  DESCRIPTION: The Player ID boxes, Equipment ID 
+     *  boxes, and Codename boxes on the player entry 
+     *  screen are assigned names of the following 
+     *  format when they are created: 'R4', 'G11', 'G7',
+     *  etc. Given one of these objects, this method
+     *  will return its index in its respective ID Boxes
+     *  ArrayList (EquipmentIDBoxes, for example). 
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
+
     public int getTextBoxIndexFromName(String name) {
         char team = name.charAt(0);
         int index = -1;
@@ -613,25 +629,104 @@ public class Model
         return index;
     }
 
+
+    /*-------------------------------------------------
+     *
+     *      getMakePlayerPopupFlag()
+     *
+     *  DESCRIPTION: Gets the status of the flag that
+     *  controls whether or not a New Player Entry
+     *  popup window should appear
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
+
     public boolean getMakePlayerPopupFlag() {
         return makePlayerPopup;
     }
+
+    /*-------------------------------------------------
+     *
+     *      setMakePlayerPopupFlag()
+     *
+     *  DESCRIPTION: Sets the status of the flag that
+     *  controls whether or not a New Player Entry
+     *  popup window should appear
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
 
     public void setMakePlayerPopupFlag(boolean set) {
         makePlayerPopup = set;
     }
 
+
+    /*-------------------------------------------------
+     *
+     *      getMakeSettingsPopupFlag()
+     *
+     *  DESCRIPTION: Gets the status of the flag that
+     *  controls whether or not a Settings popup window
+     *  should appear
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
+
     public boolean getMakeSettingsPopupFlag() {
         return makeSettingsPopup;
     }
+
+
+    /*-------------------------------------------------
+     *
+     *      setMakeSettingsPopupFlag()
+     *
+     *  DESCRIPTION: Sets the status of the flag that
+     *  controls whether or not a Settings popup window
+     *  should appear
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
 
     public void setMakeSettingsPopupFlag(boolean set) {
         makeSettingsPopup = set;
     }
 
+
+    /*-------------------------------------------------
+     *
+     *      getDebugMode()
+     *
+     *  DESCRIPTION: Gets the boolean debugMode status.
+     *  debugMode controls whether database connection
+     *  and other conditions need to be met for a game
+     *  to start.
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
+
     public boolean getDebugMode() {
         return debugMode;
     }
+
+
+    /*-------------------------------------------------
+     *
+     *      setDebugMode()
+     *
+     *  DESCRIPTION: Sets the boolean debugMode status.
+     *  debugMode controls whether database connection
+     *  and other conditions need to be met for a game
+     *  to start.
+     *
+     *  REQUIREMENTS:
+     *
+    ------------------------------------------------- */
 
     public void setDebugMode(boolean set) {
         debugMode = set;

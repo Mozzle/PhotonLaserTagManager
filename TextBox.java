@@ -12,7 +12,7 @@ public class TextBox {
 		Enums
 	------------------------------*/
 	public static final int NUMERIC_TEXT_FIELD_TYPE = 0;
-    public static final int ALPHA_NUMERIC_TEXT_FIELD_TYPE = 1;
+    	public static final int ALPHA_NUMERIC_TEXT_FIELD_TYPE = 1;
 	public static final int DISPLAY_ONLY_NO_TYPE = 2;
 
 
@@ -24,9 +24,9 @@ public class TextBox {
      *  TextBox()
      *
      *  DESCRIPTION: TextBox class constructor. Creates
-	 *  a JTextField object, provides some methods to
-	 *  access it, and provides some default settings
-	 *  for the text field.
+     *  a JTextField object, provides some methods to
+     *  access it, and provides some default settings
+     *  for the text field.
      *
      *  REQUIREMENTS: 0006, 0009, 0010, 0011, 0023
      *
