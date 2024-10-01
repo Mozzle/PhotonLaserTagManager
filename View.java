@@ -13,6 +13,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.PlainDocument;
 import javax.swing.JComponent;
+import javax.swing.JSeparator;
 import javax.swing.text.AttributeSet;
 
 import java.awt.Graphics;
@@ -62,6 +63,9 @@ public class View extends JPanel {
     public Component currentFocus;
     JLabel countDownLabel;
     public boolean CountDownVar; 
+
+    // Game Action Screen
+    JPanel GameActionScreen, RedTeamScorePane, GameActionPane, GreenTeamScorePane;
 
 
     // Variable declarations
@@ -259,6 +263,9 @@ public class View extends JPanel {
             
             // TODO: Link a method here that handles all the sprites and objects
             // for the game screen. Or implement it here directly.
+        }
+        else if (model.getSystemState() == Model.PLAY_ACTION_SCREEN && inGameScreen) {
+
         }
         
     }
@@ -1279,10 +1286,184 @@ public class View extends JPanel {
      -------------------------------------------------*/
 
      public void drawPlayActionScreen() {
-        // Implement ME!!! 
-        // See the concept that I posted in slack for what the play action
-        // screen should look like
+
+        model.PlayActionScreenDataInitializer();
+
+        JLabel tmpJLabel; // Used for all static labels on the screen.
+
+        // Set up GridBag Layout Manager
+        this.setLayout(new GridBagLayout());
+        GridBagConstraints constraint = new GridBagConstraints();
+        constraint.fill = GridBagConstraints.BOTH;
+        constraint.anchor = GridBagConstraints.NORTH;
+        constraint.weightx = 1;
+        constraint.weighty = 1;
+
+        // Game Action Screen is a container for all of the components of this screen
+        GameActionScreen = new JPanel(new GridBagLayout());
+        GameActionScreen.setBackground(new Color (0, 0, 0, 0));
+        GameActionScreen.setOpaque(false);
+
+        // Red Team Score Pane -> Left hand side
+        RedTeamScorePane = new JPanel();
+        RedTeamScorePane.setBackground(new Color (136, 0, 21));
+        constraint.gridx = 0;
+        constraint.gridy = 0;
+        constraint.gridwidth = 1;
+        RedTeamScorePane.setBorder(new EmptyBorder(15, 30, 15, 30));
+        RedTeamScorePane.setLayout(new GridBagLayout());
+        GameActionScreen.add(RedTeamScorePane, constraint);
+
+        // Game Action Pane -> Center Pane
+        GameActionPane = new JPanel();
+        GameActionPane.setBackground(new Color(20, 20, 20));
+        constraint.gridx = 1;
+        GameActionPane.setBorder(new EmptyBorder(0, 30, 15, 30));
+        GameActionPane.setLayout(new GridBagLayout());
+        GameActionScreen.add(GameActionPane, constraint);
+
+        // Green Team Score Pane -> Right hand side
+        GreenTeamScorePane = new JPanel();
+        GreenTeamScorePane.setBackground(new Color (29, 156, 66));
+        constraint.gridx = 2;
+        GreenTeamScorePane.setBorder(new EmptyBorder(15, 30, 15, 30));
+        GreenTeamScorePane.setLayout(new GridBagLayout());
+        GameActionScreen.add(GreenTeamScorePane, constraint);
+
+        // "Red/Green Team" Labels
+        constraint.gridx = 0;
+        constraint.gridy = 0;
+        constraint.gridwidth = 3;
+        constraint.ipady = 25;
+
+        tmpJLabel = new JLabel("Red Team", SwingConstants.CENTER);
+        tmpJLabel.setForeground(Color.WHITE);
+        tmpJLabel.setFont(new Font("Arial", Font.BOLD, 35));
+        RedTeamScorePane.add(tmpJLabel, constraint);
+
+        tmpJLabel = new JLabel("Green Team", SwingConstants.CENTER);
+        tmpJLabel.setForeground(Color.WHITE);
+        tmpJLabel.setFont(new Font("Arial", Font.BOLD, 35));
+        GreenTeamScorePane.add(tmpJLabel, constraint);
+
+        // Red Team Players and their Scores
+        constraint.gridwidth = 1;
+        constraint.ipady = 8;
+        constraint.ipadx = 10;
+        
+        for (int i = 0; i < Model.NUM_MAX_PLAYERS_PER_TEAM; i++) {
+            // Player
+            constraint.gridy = i + 1;
+            constraint.gridx = 0;
+            tmpJLabel = new JLabel("Jerry");
+            tmpJLabel.setForeground(Color.WHITE);
+            tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
+            RedTeamScorePane.add(tmpJLabel, constraint);            
+
+            // Score
+            constraint.gridx = 2;
+            tmpJLabel = new JLabel("1400", SwingConstants.RIGHT);
+            tmpJLabel.setForeground(Color.WHITE);
+            tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
+            RedTeamScorePane.add(tmpJLabel, constraint);
+        }
+
+        // Green Team Players and their Scores
+        for (int i = 0; i < Model.NUM_MAX_PLAYERS_PER_TEAM; i++) {
+            // Player
+            constraint.gridy = i + 1;
+            constraint.gridx = 0;
+            tmpJLabel = new JLabel("Tommy Joe");
+            tmpJLabel.setForeground(Color.WHITE);
+            tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
+            GreenTeamScorePane.add(tmpJLabel, constraint);
+
+            // Score
+            constraint.gridx = 2;
+            tmpJLabel = new JLabel("800", SwingConstants.RIGHT);
+            tmpJLabel.setForeground(Color.WHITE);
+            tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
+            GreenTeamScorePane.add(tmpJLabel, constraint);
+        }
+
+        // Red Team Total Score
+        constraint.ipady = 25;
+        constraint.gridx = 0;
+        constraint.gridy = 17;
+        constraint.gridwidth = 3;
+        tmpJLabel = new JLabel("6120", SwingConstants.CENTER);
+        tmpJLabel.setForeground(Color.WHITE);
+        tmpJLabel.setFont(new Font("Arial", Font.BOLD, 35));
+        RedTeamScorePane.add(tmpJLabel, constraint);
+        // And Green Team Total Score
+        tmpJLabel = new JLabel("4120", SwingConstants.CENTER);
+        tmpJLabel.setForeground(Color.WHITE);
+        tmpJLabel.setFont(new Font("Arial", Font.BOLD, 35));
+        GreenTeamScorePane.add(tmpJLabel, constraint);
+
+        // Game Events Scroll
+        JLabel gameEventsScroll = new JLabel();
+        gameEventsScroll.setLayout(new GridLayout(16, 1, 0, 6));
+        constraint.ipady = 3;
+        constraint.weighty = 24;
+        constraint.gridx = 0;
+        constraint.gridy = 0;
+        constraint.gridwidth = 1;
+        constraint.gridheight = 10;
+        constraint.anchor = GridBagConstraints.SOUTH;
+
+        // Add all 16 scroll labels
+        for (int i = 0; i < model.getNumGameEventQueue(); i++) {
+            gameEventsScroll.add(model.getGameEventQueueAtNum(i));
+        }
+        
+        // DELETE ME AFTER IMPLEMENTING DYNAMIC STUFF
+        model.getGameEventQueueAtNum(14).setText("Jerry hit Tommy Joe.");
+        model.getGameEventQueueAtNum(15).setText("Tommy Joe hit Jerry.");
+
+        GameActionPane.add(gameEventsScroll, constraint);
+
+        // Time Remaining counter
+        constraint.anchor = GridBagConstraints.NORTH;
+        constraint.weighty = 0.5;
+        constraint.ipady = 0;
+        constraint.gridy = 10;
+        constraint.gridheight = 1;
+
+        // Separaty McSeparatorFace
+        GameActionPane.add(new JSeparator(SwingConstants.HORIZONTAL), constraint);
+
+        // "Time Remaining:"
+        constraint.gridy = 11;
+        tmpJLabel = new JLabel("Time Remaining:", SwingConstants.CENTER);
+        tmpJLabel.setForeground(Color.WHITE);
+        tmpJLabel.setFont(new Font("Arial", Font.BOLD, 32));
+        GameActionPane.add(tmpJLabel, constraint);
+
+        // Time. NEEDS TO BE REPLACED WITH DYNAMIC
+        constraint.gridy = 12;
+        constraint.ipady = 5;
+        tmpJLabel = new JLabel("5:27", SwingConstants.CENTER);
+        tmpJLabel.setForeground(Color.WHITE);
+        tmpJLabel.setFont(new Font("Arial", Font.BOLD, 35));
+        GameActionPane.add(tmpJLabel, constraint);
+
+        // Add Game Action Screen to the main JFrame (The View class)
+        constraint.gridx = 0;
+        constraint.gridy = 0;
+        this.add(GameActionScreen, constraint);
+        
+        // Set Everything visible and force the screen to update
+        RedTeamScorePane.setVisible(true);
+        GreenTeamScorePane.setVisible(true);
+        GameActionPane.setVisible(true);
+        GameActionScreen.setVisible(true);
+        this.setVisible(true);
+        this.repaint();
+        this.revalidate();
+        
      }
+
 
 }
 

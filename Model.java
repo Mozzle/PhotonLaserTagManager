@@ -53,6 +53,8 @@ public class Model
 
     public boolean debugMode;                       // Flag to enable debug mode
 
+    public ArrayList<JLabel> gameEventsQueue;              // For Game Action Screen
+
     /*-----------------------------------------------------
      * 
      *  SplashScreenTimeout
@@ -110,6 +112,7 @@ public class Model
         PlayerIDBoxes = new ArrayList<TextBox>();
         EquipmentIDBoxes = new ArrayList<TextBox>();
         CodenameBoxes = new ArrayList<TextBox>();
+        gameEventsQueue = new ArrayList<JLabel>();
 
         // Start a timer, go to the splash screen, wait for 3.2 seconds,
         // then go to SplashScreenTimeout.run() to go to the player entry
@@ -784,6 +787,22 @@ public class Model
                 }
             }
         };
+    }
+
+    public void PlayActionScreenDataInitializer() {
+        for (int i = 0; i < 16; i++) {
+            gameEventsQueue.add(new JLabel(""));
+            gameEventsQueue.get(i).setForeground(Color.WHITE);
+            gameEventsQueue.get(i).setFont(new Font("Arial", Font.BOLD, 20));
+        }
+    }
+
+    public JLabel getGameEventQueueAtNum(int i) {
+        return gameEventsQueue.get(i);
+    }
+
+    public int getNumGameEventQueue() {
+        return gameEventsQueue.size();
     }
     
 }
