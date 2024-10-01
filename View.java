@@ -61,6 +61,7 @@ public class View extends JPanel {
     public JButton ClearScreenButton, StartGameButton, NewPlayerButton, SettingsButton;
     public Component currentFocus;
     JLabel countDownLabel;
+    public boolean CountDownVar; 
 
 
     // Variable declarations
@@ -101,6 +102,9 @@ public class View extends JPanel {
         lastSelectedRow = 99;
         lastSelectedTeam = 'R';
         PlayerEntryPanePadding = 0;
+
+        //For countdown variable
+        CountDownVar=true;
     }
 
     /*-------------------------------------------------
@@ -820,24 +824,17 @@ public class View extends JPanel {
      -------------------------------------------------*/
 
     public void drawCountDownScreen(){
-        //LayoutManager layout = new FlowLayout();
-        //JLabel tmpJLabel;
-       // ImageIcon Icon; 
-        //JFrame frame = new JFrame("CountDown");
-
-        //this.setLayout(new BorderLayout());
-
-        
-        //system.threadcount(30000);
         
         Timer timer = new Timer();
         
+        //JAva stuff
         ImageIcon imgIcon = new ImageIcon(this.getClass().getResource("src/timer.gif"));
         countDownLabel = new JLabel(imgIcon);
         countDownLabel.setBounds((int)((windowWidth - 256) / 2), (int)((windowHeight - 256) / 2), 256, 256); // Adjust these values to suit your layout
         add(countDownLabel);
         countDownLabel.setVisible(true);
         
+        //If timer scheulde is true thne run belwo function
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
@@ -847,9 +844,29 @@ public class View extends JPanel {
         };
         
         // Schedule the task to run after 30 seconds (30000 milliseconds)
-        timer.schedule(task, 30000);
+        
+            timer.schedule(task, 300000);
+        
+        if(CountDownVar==false){
+            timer.cancel(); 
+            View.this.remove(countDownLabel); 
+            model.system_State=Model.PLAY_ACTION_SCREEN;
+        }
+        
         
     }
+    /*--------------------------------------------------
+     * 
+     *  Function for if countdown debug mode is active
+     * 
+     *  DESCRIPTION: Cancels the countdown screen for debuggin purposes
+     * 
+     *  REQUIREMENTS: 
+     * 
+     --------------------------------------------------*/
+     public void CountDownDebug(){
+        CountDownVar=false; 
+     }
 
     /*--------------------------------------------------
      * 
