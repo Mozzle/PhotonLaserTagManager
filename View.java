@@ -838,24 +838,52 @@ public class View extends JPanel {
         //system.threadcount(30000);
         
         Timer timer = new Timer();
-        
+        BorderFactory border1;
+
         ImageIcon imgIcon = new ImageIcon(this.getClass().getResource("src/timer.gif"));
         countDownLabel = new JLabel(imgIcon);
         countDownLabel.setBounds((int)((windowWidth - 256) / 2), (int)((windowHeight - 256) / 2), 256, 256); // Adjust these values to suit your layout
         add(countDownLabel);
         countDownLabel.setVisible(true);
+
+        setBorder(BorderFactory.createLineBorder(Color.RED, 50));
         
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
             View.this.remove(countDownLabel);
+            
             model.system_State = Model.PLAY_ACTION_SCREEN;
             }
         };
+
+        TimerTask task1 = new TimerTask() {
+            @Override
+            public void run() {
+            setBorder(BorderFactory.createLineBorder(Color.YELLOW, 50));
+            }
+        };
+
+        TimerTask task2 = new TimerTask() {
+            @Override
+            public void run() {
+            setBorder(BorderFactory.createLineBorder(Color.GREEN, 50));
+            }
+        };
+
+        TimerTask task3 = new TimerTask() {
+            @Override
+            public void run() {
+            setBorder(BorderFactory.createLineBorder(Color.BLACK, 0));
+            }
+        };
+
+        timer.schedule(task1, 10000);
+        timer.schedule(task2, 20000);
+        timer.schedule(task3, 30000);
         
         // Schedule the task to run after 30 seconds (30000 milliseconds)
         timer.schedule(task, 30000);
-        
     }
 
     /*--------------------------------------------------
