@@ -204,6 +204,11 @@ public class Controller implements ActionListener, MouseListener, KeyListener
                 }
                 break;
 
+            case KeyEvent.VK_D:
+                if(model.getSystemState()== Model.COUNTDOWN_SCREEN){
+                    view.CountDownDebug();
+                }
+
             // Default case -- Do nothing
 			default:
 				break;
