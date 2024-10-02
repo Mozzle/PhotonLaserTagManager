@@ -205,8 +205,9 @@ public class Controller implements ActionListener, MouseListener, KeyListener
                 break;
 
             case KeyEvent.VK_D:
-                if(model.getSystemState()== Model.COUNTDOWN_SCREEN){
+                if(model.getSystemState()== Model.PLAYER_ENTRY_SCREEN){
                     view.CountDownDebug();
+                    System.out.println("Button Pressed");
                 }
 
             // Default case -- Do nothing

@@ -109,6 +109,13 @@ public class View extends JPanel {
 
         //For countdown variable
         CountDownVar=true;
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+            View.this.remove(countDownLabel);
+            model.system_State = Model.PLAY_ACTION_SCREEN;
+            }
+        };
     }
 
     /*-------------------------------------------------
@@ -855,7 +862,7 @@ public class View extends JPanel {
             timer.schedule(task, 300000);
         
         if(CountDownVar==false){
-            timer.cancel(); 
+            task.cancel(); 
             View.this.remove(countDownLabel); 
             model.system_State=Model.PLAY_ACTION_SCREEN;
         }

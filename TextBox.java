@@ -18,6 +18,7 @@ public class TextBox {
 
 	public JTextField field; //JTextField object
 	Model m;
+	private View view;
 
 	/*-------------------------------------------------
      *
@@ -115,6 +116,12 @@ public class TextBox {
 							}
 							catch (Exception e) {
 								//Do nothing
+							}
+
+						case KeyEvent.VK_D:
+							if(m.getSystemState()==Model.PLAY_ACTION_SCREEN){
+								view.CountDownDebug();
+								System.out.println("Countdown Skip Button Pressed Textbox");
 							}
 						default:
 							break;
