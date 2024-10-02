@@ -12,6 +12,9 @@
      * 
      *  getStatus() -- Returns the players current flag
      * 
+     *  createPlayer(String name, int equipID) -- Creates
+     *  and returns a player object
+     * 
      *  setEquipID() -- Set the players equipment ID
      * 
      *  getEquipID() -- Get the players equipment ID
@@ -42,6 +45,22 @@ public class Player
 
     /*-----------------------------------------------------------
      * 
+     *  createPlayer(String NAME, int equipID)
+     * 
+     *  DESCRIPTION: Static method used to create a player object
+     * 
+    ---------------------------------------------------------- */
+    public static Player createPlayer(String NAME, int equipID) {
+        Player p = new Player();
+
+        p.name = NAME;
+        p.equipmentID = equipID;
+
+        return p;
+    }
+
+    /*-----------------------------------------------------------
+     * 
      *  verify() and revoke()
      * 
      *  DESCRIPTION: Two methods that shift the player flag to T/F
@@ -49,10 +68,12 @@ public class Player
     ---------------------------------------------------------- */
     public void verify() {
         verified = true;
+        System.out.println("[Player] Verified " + name + ".");
     }
 
     public void revoke() {
         verified = false;
+        System.out.println("[Player] Revoked " + name + ".");
     }
 
     /*-----------------------------------------------------------

@@ -30,6 +30,8 @@ public class Model
     public int system_State;                        // Controls the state of the program.
                                                     // See the 'System_States' enums above
 
+    public ArrayList<Player> playerList;
+
     public ArrayList<Sprite> windowObjects;         // This arrayList contains all elements that
                                                     //  will be drawn to the scrren
 
@@ -113,6 +115,7 @@ public class Model
         EquipmentIDBoxes = new ArrayList<TextBox>();
         CodenameBoxes = new ArrayList<TextBox>();
         gameEventsQueue = new ArrayList<JLabel>();
+        playerList = new ArrayList<Player>();
 
         // Start a timer, go to the splash screen, wait for 3.2 seconds,
         // then go to SplashScreenTimeout.run() to go to the player entry
@@ -588,9 +591,15 @@ public class Model
         if (indexToCompare == -1) {
             // Check all equipment IDs against all other IDs
         }
-        // Else check that the equipment ID at indexToCompare is unique. assumes that given equipment ID box
-        // is not blank.
+
+        // Check that the equipment ID at indexToCompare is unique (assumes the equipment ID box isn't empty)
         else {
+            // Check our playerlist, if we find a duplicate return true
+            int compareID = Integer.parseInt(EquipmentIDBoxes.get(indexToCompare).getTextFromField());
+            if (identifyPlayer(compareID) != null)
+                result = true;
+
+            // Check all other text boxes for duplicates
             for (int i = 0; (i < Model.NUM_MAX_PLAYERS_PER_TEAM * 2); i++) {
                 if ( EquipmentIDBoxes.get(i).getTextFromField().equals(EquipmentIDBoxes.get(indexToCompare).getTextFromField() )
                 && ( i != indexToCompare)) {
@@ -804,5 +813,69 @@ public class Model
     public int getNumGameEventQueue() {
         return gameEventsQueue.size();
     }
-    
+
+    public int returnNextAvailableBox(boolean team) {
+        // Return the index of the next empty and available textbox based on the given team
+        int index = -1;
+
+        for (int i = 0; i < Model.NUM_MAX_PLAYERS_PER_TEAM; i++) {
+            // Check for next available green team box
+            if (team) {
+                if (PlayerIDBoxes.get(i).getTextFromField().equals("")) {
+                    index = i;
+                    break;
+                }
+            }
+            else {
+            // Check for next available red team box
+                if (PlayerIDBoxes.get(i + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextFromField().equals("")) {
+                    index = i + Model.NUM_MAX_PLAYERS_PER_TEAM;
+                    break;
+                }
+            }
+        }
+
+        return index;
+    }
+
+    public void clearPlayerList() {
+        playerList.clear();
+        System.out.println("[Model] Cleared the playerlist.");
+    }
+
+    public boolean addPlayer(Player p) {
+        // Check to ensure we aren't adding a duplicate equipment ID
+        for (Player player : playerList) {
+            if (player.getEquipID() == p.getEquipID()) {
+                System.out.println("[Model] Failed to add " + p.name + ", duplicate equipment ID found.");
+                return false;
+            }
+        }
+
+        playerList.add(p);
+        System.out.println("[Model] Added " + p.name + " to playerlist.");
+        return true;
+    }
+
+    public boolean removePlayer(Player p) {
+        // Attempt to find & remove player from list -- return result as boolean
+        boolean result = playerList.remove(p);
+
+        if (result)
+            System.out.println("[Model] Removed " + p.name + " from playerlist.");
+        else
+            System.out.println("[Model] Could not find/remove " + p.name + ".");
+
+        return result;
+    }
+
+    public Player identifyPlayer(int equipID) {
+        // Attempt to find a player by ID, and return their reference
+        for (Player player : playerList) {
+            if (player.getEquipID() == equipID) {
+                return player;
+            }
+        }
+        return null;
+    }
 }

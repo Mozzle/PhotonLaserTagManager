@@ -48,27 +48,39 @@ import java.util.TimerTask;
 
 public class View extends JPanel {
 
+    // Declare references
     private Model model;
     public NetController netController;
+
+    // Declare window variables
     private int windowHeight, windowWidth, PlayerEntryPanePadding;
+    
+    // Declare current state flags (to determine what to draw)
     private boolean inPlayerEntryScreen, inCountDownScreen, inGameScreen;
+
+    // Declare panes for the main JPanel
     public JPanel RedTeamTextBoxPane, GreenTeamTextBoxPane, PlayerEntryPanes;
+
+    // Declare tooltip related vars
     public JLabel toolTipLabel;
-    public ArrayList<JLabel> rowSelectionLabel;
-    public Timer timer;
     public int toolTipCounter, prevToolTipCounter;
+
+    // Declare selection related vars
+    public ArrayList<JLabel> rowSelectionLabel;
     public int lastSelectedRow;
     public char lastSelectedTeam;
+
+    // Declare button components
     public JButton ClearScreenButton, StartGameButton, NewPlayerButton, SettingsButton;
     public Component currentFocus;
+
+    // Declare timer related vars
     JLabel countDownLabel;
     public boolean CountDownVar; 
+    public Timer timer;
 
     // Game Action Screen
     JPanel GameActionScreen, RedTeamScorePane, GameActionPane, GreenTeamScorePane;
-
-
-    // Variable declarations
 
     /*-------------------------------------------------
      *
@@ -407,9 +419,6 @@ public class View extends JPanel {
                         String EquipmentIdToSend = model.EquipmentIDBoxes.get(indexToCompare).getTextFromField();
                         //If Equipment ID field is not empty and is not the game start/end code
                         if (!EquipmentIdToSend.equals("") && !EquipmentIdToSend.equals("202") && !EquipmentIdToSend.equals("221")) {
-                            //TODO!: Check all other Equipment ID fields for this equipment ID, make sure that that equipment ID doesn't already exist in the game
-                            //before sending out the UDP.
-                            //Make this ^ a function in model and do some real modular programming, silly
                             boolean tmpDuplicateFlag = model.checkEquipmentIDFieldsForDupicates(indexToCompare);
 
                             if (tmpDuplicateFlag) {
@@ -561,6 +570,7 @@ public class View extends JPanel {
         public void actionPerformed(ActionEvent e){  
             if (model.getNewPopup() == false) {
 				model.clearTextBoxes();
+                model.clearPlayerList();
 			}
         }  
         }); 
@@ -1015,8 +1025,10 @@ public class View extends JPanel {
         boolean closePopupFlag = false;
         
         while (!closePopupFlag) {
-            // making the popup window and adding elements to it
+            // Create the popup JPanel
             JPanel NewPlayerPopup = new JPanel();
+
+            // Add elements to our JPanel
             NewPlayerPopup.setPreferredSize(new Dimension(250, 150));
             NewPlayerPopup.add(new JLabel(hintLine1));
             NewPlayerPopup.add(Box.createVerticalStrut(15));
@@ -1030,9 +1042,11 @@ public class View extends JPanel {
             NewPlayerPopup.add(NewPlayerName,BorderLayout.EAST);
             NewPlayerPopup.add(Box.createVerticalStrut(25));
 
+            // Add a "generate ID" button to our JPanel
             JButton GenerateNewIDBtn = new JButton("Generate A New Player ID");
             GenerateNewIDBtn.setPreferredSize(new Dimension(240, 25));
             GenerateNewIDBtn.setMaximumSize(new Dimension(240, 25));
+            // Attach a listener to our button that selects an ID and applys it to the ID textbox
             GenerateNewIDBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e){
                     int newID = model.database.getNextAvailableID();
@@ -1044,9 +1058,10 @@ public class View extends JPanel {
             });
             NewPlayerPopup.add(GenerateNewIDBtn);
 
-            //Create the dialog popup with the ok/cancel buttons and wait for the window to be closed
+            // Create the dialog popup with the ok/cancel buttons and wait for the window to be closed
             int result = JOptionPane.showConfirmDialog(null, NewPlayerPopup, "New Player Entry", JOptionPane.OK_CANCEL_OPTION);
-            // If the user clicked the "OK" button
+            
+            // Logic to run if the user selects OK
             if (result == JOptionPane.OK_OPTION) {
 
                 int newPlayerIDVal = -1;
@@ -1054,20 +1069,26 @@ public class View extends JPanel {
                 if (!NewPlayerID.getText().equals("")) {
                     newPlayerIDVal = Integer.valueOf(NewPlayerID.getText());
                 }
-                //Check if the entered ID exists in the database
+
+                // Check if the entered ID exists in the database
                 String searchResult = model.database.searchDB(Database.PARAM_ID, newPlayerIDVal, "");
                 
                 // If the entered ID doesn't exist in the DB, attempt to add the new player to the DB. 
-                if (searchResult == "" && newPlayerIDVal > 0 && NewPlayerID.getText().length() >= 1 && NewPlayerName.getText().length() >= 1) {
-                    if (IDBox != null) {
+                if (searchResult == "" && newPlayerIDVal > 0 
+                && NewPlayerID.getText().length() >= 1 
+                && NewPlayerName.getText().length() >= 1) {
+
+                    // If the ID box is empty, apply it to the textbox
+                    if (IDBox != null)
                         IDBox.setText(NewPlayerID.getText());
-                    }
+
                     // If we are not connected to the database, print a tooltip
                     if (model.database.getdbConnectionStatus() == false && !model.getDebugMode()) {
                         model.toolTip("No database connection! Game will not work!",10000);
                     }
                     // If we are connected to the database, add the new user to the database
                     else if (model.database.insertDB(Database.PARAM_ID_AND_CODENAME, newPlayerIDVal, NewPlayerName.getText())) {
+                        model.addPlayer(Player.createPlayer(NewPlayerName.getText(),newPlayerIDVal));
                         model.toolTip(NewPlayerName.getText() + " added successfully!", 4500);
                         if (NameBox != null) {
                             NameBox.setText(NewPlayerName.getText());
@@ -1098,7 +1119,7 @@ public class View extends JPanel {
                     hintLine2 = "something went wrong.";
                 }
             
-            // If the user hit cancel or close on the window
+            // Logic to run if the user clicked CANCEL or CLOSED out of the JPanel
             }
             else if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) {
                 if (IDBox != null) {
@@ -1108,6 +1129,7 @@ public class View extends JPanel {
             }
         }
 
+        // Inform our model that we no longer need to create a new popup
         model.setNewPopup(false);
         return true;
     }

@@ -23,6 +23,11 @@ public class PhotonSystem extends JFrame {
 
     public PhotonSystem()
     {
+        /// REFACTOR!!!
+
+        // Our controller should only have access to Model, View and NetController
+        // Our view should only have access to Model
+
         model = new Model();
         controller = new Controller(model);
         netController = new NetController();
