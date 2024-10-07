@@ -140,7 +140,7 @@ public class Model
 
     /*-------------------------------------------------
      *
-     *      update()
+     *  update()
      *
      *  DESCRIPTION: Updates all data for the program,
      *  outside of graphical elements. May be necessary
@@ -161,6 +161,11 @@ public class Model
                 break;
 
             case PLAYER_ENTRY_SCREEN:
+
+            for(Player p : playerList) {
+                p.update();
+            }
+            
                 break;
 
             case COUNTDOWN_SCREEN:
@@ -345,7 +350,7 @@ public class Model
 
     /*-------------------------------------------------
      *
-     *      getCodenameBoxAt()
+     *  getCodenameBoxAt()
      *
      *  DESCRIPTION: Returns the CodenameBox TextField
      *  at index i
@@ -571,7 +576,7 @@ public class Model
 
     /*-------------------------------------------------
      *
-     *      checkEquipmentIDFieldsForDupicates()
+     *  checkEquipmentIDFieldsForDupicates()
      *
      *  DESCRIPTION: If given parameter of '-1', compare
      *  all non-blank Equipment ID's against one another
@@ -614,7 +619,7 @@ public class Model
 
     /*-------------------------------------------------
      *
-     *      getTextBoxIndexFromName()
+     *  getTextBoxIndexFromName()
      *
      *  DESCRIPTION: The Player ID boxes, Equipment ID 
      *  boxes, and Codename boxes on the player entry 
@@ -644,7 +649,7 @@ public class Model
 
     /*-------------------------------------------------
      *
-     *      getMakePlayerPopupFlag()
+     *  getMakePlayerPopupFlag()
      *
      *  DESCRIPTION: Gets the status of the flag that
      *  controls whether or not a New Player Entry
@@ -838,6 +843,8 @@ public class Model
         return index;
     }
 
+    /// PLAYER-MODEL METHODS
+
     public void clearPlayerList() {
         playerList.clear();
         System.out.println("[Model] Cleared the playerlist.");
@@ -846,14 +853,18 @@ public class Model
     public boolean addPlayer(Player p) {
         // Check to ensure we aren't adding a duplicate equipment ID
         for (Player player : playerList) {
-            if (player.getEquipID() == p.getEquipID()) {
-                System.out.println("[Model] Failed to add " + p.name + ", duplicate equipment ID found.");
+            if (player.getEquipID() == p.getEquipID() || player.getNormalID() == p.getNormalID()) {
+                System.out.println("[Model] Failed to add " + p.getNormalID() + ", duplicate ID or invalid name found.");
                 return false;
             }
         }
 
+        // Ensure we don't add an invalid player (invalid IDs)
+        if (p.getEquipID() == -1 || p.getNormalID() == -1)
+            return false;
+
         playerList.add(p);
-        System.out.println("[Model] Added " + p.name + " to playerlist.");
+        System.out.println("[Model] Added player \"" + p.getNormalID() + "\" to playerlist.");
         return true;
     }
 
@@ -862,9 +873,9 @@ public class Model
         boolean result = playerList.remove(p);
 
         if (result)
-            System.out.println("[Model] Removed " + p.name + " from playerlist.");
+            System.out.println("[Model] Removed " + p.getNormalID() + " from playerlist.");
         else
-            System.out.println("[Model] Could not find/remove " + p.name + ".");
+            System.out.println("[Model] Could not find/remove " + p.getNormalID() + ".");
 
         return result;
     }
@@ -878,4 +889,8 @@ public class Model
         }
         return null;
     }
+
+    /// DATABASE METHODS
+
+    /// NETCONTROLLER METHODS
 }

@@ -43,6 +43,18 @@ public class Controller implements ActionListener, MouseListener, KeyListener
         model.update();
     }
 
+    /*-----------------------------------------------------------
+     * 
+     *  updateView()
+     * 
+     *  DESCRIPTION: Updates the view
+     * 
+    ---------------------------------------------------------- */
+    public void updateView()
+    {
+        view.update();
+    }
+
 
     /*-----------------------------------------------------------
      * 

@@ -13,7 +13,7 @@ public class PhotonSystem extends JFrame {
 
     /*-----------------------------------------------------------
      * 
-     *      PhotonSystem()
+     *  PhotonSystem()
      * 
      *  DESCRIPTION: Highest level program initializer
      * 
@@ -62,7 +62,7 @@ public class PhotonSystem extends JFrame {
         {
             controller.update();
             view.setScreenSize(this.getWidth(), this.getHeight());
-            view.update();
+            controller.updateView();
             view.repaint();
             Toolkit.getDefaultToolkit().sync();
 
@@ -80,7 +80,7 @@ public class PhotonSystem extends JFrame {
 
     /*-----------------------------------------------------------
      * 
-     *      main()
+     *  main()
      * 
      *  DESCRIPTION: Entry point of the Java program
      * 
