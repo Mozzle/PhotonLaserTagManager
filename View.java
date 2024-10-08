@@ -296,7 +296,7 @@ public class View extends JPanel {
         
     }
 
-    public void handleNewFocus(JTextField ID, JTextField Equip, JTextField Name) {
+    public void handleFocusLogic(JTextField ID, JTextField Equip, JTextField Name) {
 
         // Exit if we focus is switched due to pop-up menu
         if (finishPopup) {
@@ -324,7 +324,6 @@ public class View extends JPanel {
             Integer.valueOf(ID.getText()));
 
         // Add our player to the local playerlist, exit method early if failed to insert
-        System.out.println("Adding player [HANDLE]");
         if (!model.addPlayer(newPlayer)) {
             // Clear reference text boxes and print a tooltip
             ID.setText("");
@@ -421,7 +420,7 @@ public class View extends JPanel {
         if ((selectedRow.length() == 2 || selectedRow.length() == 3) 
         && (lastSelectedRow != selectedRowValue)
             || (lastSelectedTeam != selectedRow.charAt(0))) {
-                handleNewFocus(IDBox, EquipIDBox, CodenameBox);
+                handleFocusLogic(IDBox, EquipIDBox, CodenameBox);
             }
 
         // Update our lastSelected variables
@@ -582,7 +581,7 @@ public class View extends JPanel {
         NewPlayerButton.addKeyListener(buttonKeys);
         NewPlayerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
-                NewPlayerPopupScreen("", null, null, "Enter new player information to add to DB only", "");
+                NewPlayerPopupScreen("", null, null, "Add Player to the", "database only");
             }  
         });
         ButtonsCenter.add(NewPlayerButton);
