@@ -246,7 +246,7 @@ public class View extends JPanel {
             if (model.getMakePlayerPopupFlag()) {
                 model.setMakePlayerPopupFlag(false);
                 finishPopup = true;
-                NewPlayerPopupScreen("", null, null, "Enter new Player information", "");
+                NewPlayerPopupScreen("", null, null, "Add player to", "the database only");
             }
 
             // Check if the model is telling us to create a new settings window
@@ -313,7 +313,7 @@ public class View extends JPanel {
             return;
 
         // Check if a player already lives in this row
-        if (controller.checkRefForPlayer(ID, Equip, Name) != null) {
+        if (controller.checkRefForPlayer(ID, Equip, Name, lastSelectedRow) != null) {
             return;
         }
 
@@ -336,6 +336,9 @@ public class View extends JPanel {
 
         // Update player references if successfully added
         newPlayer.setReferences(ID,Equip,Name);
+
+        // Set row identifier for our player
+        newPlayer.rowIdentifier = lastSelectedRow;
 
         // Query database for a codename to match the entered ID.
         String returnCode = model.database.searchDB(Database.PARAM_ID, newPlayer.getNormalID(), "");
@@ -425,7 +428,9 @@ public class View extends JPanel {
         && (lastSelectedRow != selectedRowValue)
         || (lastSelectedTeam != selectedRow.charAt(0))
         && (!model.getMakePlayerPopupFlag())) {
+            model.playerUpdateFlag = false;
             handleFocusLogic(IDBox, EquipIDBox, CodenameBox);
+            model.playerUpdateFlag = true;
         }
 
         // Update our lastSelected variables
@@ -1019,14 +1024,28 @@ public class View extends JPanel {
         // Flag to mark the popup window ready to close
         boolean closePopupFlag = false;
 
+        // Temp string to prevent number format exception
+        String s = "";
+
         // If we have references to the ID and Equipment ID boxes, grab their values
         if (IDBox != null)
             tempIDReference = model.getTextBoxIndexFromName(IDBox.getName());
-            NormalID = Integer.valueOf(NewPlayerID.getText());
+
+            s = NewPlayerID.getText();
+            if (s.equals("")) {
+                s = "-1";
+            }
+
+            NormalID = Integer.valueOf(s);
         if (tempIDReference != -1)
             tempEquipIDBox = model.getEquipmentIDBoxAt(tempIDReference);
-        if (tempEquipIDBox != null)
-            EquipID = Integer.valueOf(tempEquipIDBox.getText());
+        if (tempEquipIDBox != null) {
+            s = tempEquipIDBox.getText();
+            if (s.equals("")) {
+                s = "-1";
+            }
+            EquipID = Integer.valueOf(s);
+        }
         
         while (!closePopupFlag) {
             // Create the popup JPanel
@@ -1053,6 +1072,7 @@ public class View extends JPanel {
             // Attach a listener to our button that selects an ID and applys it to the ID textbox
             GenerateNewIDBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e){
+
                     int newID = model.database.getNextAvailableID();
 
                     if (newID != -1) {
@@ -1073,8 +1093,9 @@ public class View extends JPanel {
             // Logic to run if the user selects OK
             if (result == JOptionPane.OK_OPTION) {
 
-                // Update our name var
+                // Update our player vars
                 Name = NewPlayerName.getText();
+                NormalID = Integer.valueOf(NewPlayerID.getText());
 
                 // Check if the entered ID exists in the database
                 String searchResult = model.database.searchDB(Database.PARAM_ID, NormalID, "");
@@ -1102,9 +1123,12 @@ public class View extends JPanel {
 
                     // Apply changes to the players references and add to playerlist
                     if (allowNewPlayer) {
-                        Player p = model.identifyPlayer(NormalID, EquipID, Name);
-                        NameBox.setText(Name);
-                        p.setReferences(IDBox, tempEquipIDBox, NameBox);
+                        Player p = model.identifyPlayer(NormalID, EquipID, Name, lastSelectedRow);
+                        if (p != null) {
+                            NameBox.setText(Name);
+                            p.setReferences(IDBox, tempEquipIDBox, NameBox);
+                            p.rowIdentifier = lastSelectedRow;
+                        }
                     } else {
                         if (tempEquipIDBox != null)
                             tempEquipIDBox.setText("");
@@ -1143,7 +1167,7 @@ public class View extends JPanel {
                 Name = NewPlayerName.getText();
 
                 // Remove the player from the local list since we cancelled the operation
-                Player p = model.identifyPlayer(NormalID, EquipID, Name);
+                Player p = model.identifyPlayer(NormalID, EquipID, Name, lastSelectedRow);
                 if (p != null) {
                     model.removePlayer(p);
                 }

@@ -102,7 +102,7 @@ public class Controller implements ActionListener, MouseListener, KeyListener
         String savedEquipID = EquipIDRef.getText();
 
         // Check if the row contains a valid player
-        Player checkPlayer = checkRefForPlayer(IDRef, EquipIDRef, NameRef);
+        Player checkPlayer = checkRefForPlayer(IDRef, EquipIDRef, NameRef, rowIndex);
 
         // Check if our reference textboxes contain info belonging to another player
         if (checkPlayer != null) {
@@ -115,13 +115,14 @@ public class Controller implements ActionListener, MouseListener, KeyListener
 
     /*-----------------------------------------------------------
      * 
-     *  checkRefForPlayer(JTextField NormalIDBox, JTextField EquipIDBox, JTextField NameBox)
+     *  checkRefForPlayer(JTextField NormalIDBox, JTextField EquipIDBox, 
+     *  JTextField NameBox, int lastSelectedRow)
      * 
      *  DESCRIPTION: Checks if the given references already exist in another player object.
      *  Returns the offending player object if found, otherwise returns null.
      * 
     ---------------------------------------------------------- */
-    public Player checkRefForPlayer(JTextField NormalIDBox, JTextField EquipIDBox, JTextField NameBox) {
+    public Player checkRefForPlayer(JTextField NormalIDBox, JTextField EquipIDBox, JTextField NameBox, int lastSelectedRow) {
         // Check if our references are null, if so exit early
         if (NormalIDBox == null || EquipIDBox == null || NameBox == null)
             return null;
@@ -145,7 +146,8 @@ public class Controller implements ActionListener, MouseListener, KeyListener
         int equipIDSearched = Integer.valueOf(tmpEquipID);
         String nameSearched = NameBox.getText();
 
-        Player checkPlayer = model.identifyPlayer(normalIDSearched, equipIDSearched, nameSearched);
+        // Identify the player exists on the list
+        Player checkPlayer = model.identifyPlayer(normalIDSearched, equipIDSearched, nameSearched, lastSelectedRow);
 
         // Identify if our player already exists, if so then remove the player from the list
         if (checkPlayer != null) {

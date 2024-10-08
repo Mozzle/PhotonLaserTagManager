@@ -49,6 +49,9 @@ public class Player
     private JTextField refEquipID;
     private JTextField refName;
 
+    /// Identifies which row this player lives in
+    public int rowIdentifier;
+
     /*-----------------------------------------------------------
      * 
      *  Player()
@@ -61,6 +64,7 @@ public class Player
         verified = false;
         equipmentID = -1;
         normalID = -1;
+        rowIdentifier = -1;
     }
 
     /*-----------------------------------------------------------

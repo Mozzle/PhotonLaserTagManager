@@ -6,6 +6,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.*;
 import javax.xml.crypto.Data;
+import java.util.Iterator;
 
 import java.awt.event.*;
 import java.awt.Color;
@@ -57,6 +58,8 @@ public class Model
     public boolean makeSettingsPopup;               // Flag to View class to create a new Settings Popup.
 
     public boolean debugMode;                       // Flag to enable debug mode
+
+    public boolean playerUpdateFlag;                // Flag to allow player updates in model.update() to avoid concurrentexception
 
     public ArrayList<JLabel> gameEventsQueue;              // For Game Action Screen
 
@@ -138,6 +141,7 @@ public class Model
         makePlayerPopup = false;
         makeSettingsPopup = false;
         debugMode = false;
+        playerUpdateFlag = true;
         
         // If we are not connected to the database, make a tooltip to warn the user.
         if (database.getdbConnectionStatus() == false) {
@@ -171,10 +175,12 @@ public class Model
             case PLAYER_ENTRY_SCREEN:
 
             // Update playerlist
-            for(Player p : playerList) {
+           Iterator<Player> it = playerList.iterator();
+              while (it.hasNext()) {
+                Player p = it.next();
                 if (p != null)
                     p.update();
-            }
+              }
             
             // Remove any needed players
             for(Player p : removePlayerQueue) {
@@ -626,7 +632,7 @@ public class Model
         else {
             // Check our playerlist, if we find a duplicate return true
             int compareID = Integer.parseInt(EquipmentIDBoxes.get(indexToCompare).getTextFromField());
-            if (identifyPlayer(compareID, -1, "NULL") != null)
+            if (identifyPlayer(compareID, -1, "NULL", -1) != null)
                 result = true;
 
             // Check all other text boxes for duplicates
@@ -958,7 +964,7 @@ public class Model
 
     /*-------------------------------------------------
      *
-     *  identifyPlayer(int normID, int equipID, String name)
+     *  identifyPlayer(int normID, int equipID, String name, int lastSelectedRow)
      *
      *  DESCRIPTION: Searches the playerlist for a player
      *  that matches the given criteria
@@ -966,24 +972,47 @@ public class Model
      *  A player is located with the following order
      *  of importance: Name -> Normal ID -> Equipment ID
      * 
+     *  If multiple players are found, the first player that matches the
+     *  lastSelectedRow criteria is returned
+     * 
      *  in question is returned
      *  Returns null if no player is found
      *
     ------------------------------------------------- */
-    public Player identifyPlayer(int normID, int equipID, String name) {
-        // Attempt to locate player by name, then normal id, then equip ID
+    public Player identifyPlayer(int normID, int equipID, String name, int lastSelectedRow) {
+
+        ArrayList <Player> possiblePlayers = new ArrayList<Player>();
+
+        // Attempt to locate all possible players by name, then normal id, then equip ID
         for (Player player : playerList) {
 
             if (player.name.equals(name) && !name.equals("NULL")) {
-                return player;
+                possiblePlayers.add(player);
             }
             else if (player.getNormalID() == normID && normID != -1) {
-                return player;
+                possiblePlayers.add(player);
             }
             else if (player.getEquipID() == equipID && equipID != -1) {
+                possiblePlayers.add(player);
+            }
+        }
+
+        // Return the first player that matches the lastSelectedRow criteria
+        for (Player player : possiblePlayers) {
+
+            if (player.rowIdentifier == lastSelectedRow && player.rowIdentifier != -1) {
                 return player;
             }
         }
+
+        // Return the first found match if we can't find the previous criteria
+        if (possiblePlayers.size() > 0) {
+            System.out.println("Couldn't match " + lastSelectedRow + " row, returning " + possiblePlayers.get(0).name + " at " + possiblePlayers.get(0).getNormalID());
+            return possiblePlayers.get(0);
+        }
+
+        // If no match is found on either list, then return null
+        System.out.println("No player match found");
         return null;
     }
 
@@ -997,6 +1026,7 @@ public class Model
      *
     ------------------------------------------------- */
     public void addComponentToRemoveQueue(Player p, JTextField f, String s) {
+
         // Check that the queue doesn't contain the same object already
         if (removePlayerQueue.contains(p) || setTBQueue.contains(f) || dataTBQueue.contains(s))
             return;
