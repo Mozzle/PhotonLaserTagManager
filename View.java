@@ -855,7 +855,7 @@ public class View extends JPanel {
             @Override
             public void run() {
             View.this.remove(countDownLabel);
-            
+            View.this.removeAll();
             model.system_State = Model.PLAY_ACTION_SCREEN;
             }
         };
@@ -887,7 +887,7 @@ public class View extends JPanel {
         
         // Schedule the task to run after 30 seconds (30000 milliseconds)
         
-            timer.schedule(task, 300000);
+        timer.schedule(task, 30000);
         
         if(CountDownVar==false){
             task.cancel(); 
