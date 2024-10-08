@@ -334,10 +334,6 @@ public class View extends JPanel {
             return;
         }
 
-        // Transmit the new player to the server
-        netController.transmit(String.valueOf(newPlayer.getNormalID()));
-        newPlayer.verify();
-
         // Update player references if successfully added
         newPlayer.setReferences(ID,Equip,Name);
 
@@ -361,6 +357,10 @@ public class View extends JPanel {
                 model.getCodenameBoxAt(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).setText(newPlayer.name);
             }
             model.toolTip(newPlayer.name + " added successfully!", 4500);
+
+            // Transmit the new player to the server
+            netController.transmit(String.valueOf(newPlayer.getNormalID()));
+            newPlayer.verify();
         }
 
         // Print a tooltip and adjust playerlist if database connection fails
