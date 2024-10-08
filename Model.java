@@ -172,12 +172,14 @@ public class Model
 
             // Update playerlist
             for(Player p : playerList) {
-                p.update();
+                if (p != null)
+                    p.update();
             }
             
             // Remove any needed players
             for(Player p : removePlayerQueue) {
-                removePlayer(p);
+                if (p != null)
+                    removePlayer(p);
             }
 
             // Clear any needed textboxes

@@ -80,7 +80,7 @@ public class View extends JPanel {
     public boolean CountDownVar; 
     public Timer timer;
 
-    private boolean finishPopup;
+    public boolean finishPopup;
 
     // Game Action Screen
     JPanel GameActionScreen, RedTeamScorePane, GameActionPane, GreenTeamScorePane;
@@ -242,18 +242,10 @@ public class View extends JPanel {
             -----------------------------------------------------*/
             handleToolTipDrawing();
 
-            /*-----------------------------------------------------
-            Update the '>>>>' row selection arrows and handle 
-            valid Player/Equipment ID input detection
-            -----------------------------------------------------*/
-            // Check if a text field has a current focus, if so handle it
-            if (KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner() != null) {
-                handleFocusDrawing();
-            }
-            
             // Check if model is telling us to do create a New Player Popup window
             if (model.getMakePlayerPopupFlag()) {
                 model.setMakePlayerPopupFlag(false);
+                finishPopup = true;
                 NewPlayerPopupScreen("", null, null, "Enter new Player information", "");
             }
 
@@ -262,6 +254,15 @@ public class View extends JPanel {
                 model.setMakeSettingsPopupFlag(false);
                 // Create a new settings window
                 NewSettingsScreen();
+            }
+
+            /*-----------------------------------------------------
+            Update the '>>>>' row selection arrows and handle 
+            valid Player/Equipment ID input detection
+            -----------------------------------------------------*/
+            // Check if a text field has a current focus, if so handle it
+            if (KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner() != null && !finishPopup) {
+                handleFocusDrawing();
             }
         }
 
@@ -300,7 +301,6 @@ public class View extends JPanel {
 
         // Exit if we focus is switched due to pop-up menu
         if (finishPopup) {
-            finishPopup = false;
             return;
         }
 
@@ -365,6 +365,7 @@ public class View extends JPanel {
         // If ID does not exist in the database and the connection is good, add the ID to the DB
         else {
             // Create the New Player Entry Popup screen
+            finishPopup = true;
             NewPlayerPopupScreen(ID.getText(), ID, Name, "Unknown Player ID entered, would", "you like to create a new Player?");
         }
     }
@@ -416,12 +417,16 @@ public class View extends JPanel {
         if (selectedComponent.getName() != null)
             selectedComponent.setBackground(Color.LIGHT_GRAY); // Indicate to the user the box is selected
 
-        /// Check if we have selected a different row than the previous one -- if so, switch to logic method
+        /// Make several checks to see if we can apply logic to add players
+        // If we have a valid row selection and the row selection has changed
+        // If the team has changed
+        // If we are not currently in the process of creating a new player popup
         if ((selectedRow.length() == 2 || selectedRow.length() == 3) 
         && (lastSelectedRow != selectedRowValue)
-            || (lastSelectedTeam != selectedRow.charAt(0))) {
-                handleFocusLogic(IDBox, EquipIDBox, CodenameBox);
-            }
+        || (lastSelectedTeam != selectedRow.charAt(0))
+        && (!model.getMakePlayerPopupFlag())) {
+            handleFocusLogic(IDBox, EquipIDBox, CodenameBox);
+        }
 
         // Update our lastSelected variables
         lastSelectedRow = selectedRowValue;
@@ -581,6 +586,7 @@ public class View extends JPanel {
         NewPlayerButton.addKeyListener(buttonKeys);
         NewPlayerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
+                finishPopup = true;
                 NewPlayerPopupScreen("", null, null, "Add Player to the", "database only");
             }  
         });
@@ -954,9 +960,6 @@ public class View extends JPanel {
 
     public boolean NewPlayerPopupScreen(String idInput, JTextField IDBox, JTextField NameBox, String hint1, String hint2) {
 
-        // Set our finish popup flag to fix focus issues
-        finishPopup = true;
-
          // Ensure another popup isn't already open
          if (model.getNewPopup())
             return false;
@@ -967,6 +970,16 @@ public class View extends JPanel {
         // Text fields on popup window
         JTextField NewPlayerName = new JTextField(10);
         JTextField NewPlayerID = new JTextField(5);
+
+        // Declare new player vars
+        boolean allowNewPlayer = true;
+        int EquipID = -1;
+        int NormalID = -1;
+        String Name = "NULL";
+
+        // Find a reference to the equipment ID field to link for our player
+        int tempIDReference = -1;
+        JTextField tempEquipIDBox = null;
 
         // Input sanitation -- use a plain document as the method to push input, we can sanitize from here
         NewPlayerID.setDocument(new PlainDocument() {
@@ -1005,6 +1018,15 @@ public class View extends JPanel {
 
         // Flag to mark the popup window ready to close
         boolean closePopupFlag = false;
+
+        // If we have references to the ID and Equipment ID boxes, grab their values
+        if (IDBox != null)
+            tempIDReference = model.getTextBoxIndexFromName(IDBox.getName());
+            NormalID = Integer.valueOf(NewPlayerID.getText());
+        if (tempIDReference != -1)
+            tempEquipIDBox = model.getEquipmentIDBoxAt(tempIDReference);
+        if (tempEquipIDBox != null)
+            EquipID = Integer.valueOf(tempEquipIDBox.getText());
         
         while (!closePopupFlag) {
             // Create the popup JPanel
@@ -1035,6 +1057,11 @@ public class View extends JPanel {
 
                     if (newID != -1) {
                         NewPlayerID.setText(String.valueOf(newID));
+                        if (IDBox != null) {
+                            String temp = IDBox.getText();
+                            IDBox.setText(String.valueOf(newID));
+                            System.out.println("[Model] Changed ID of \"" + temp + "\" to \"" + newID + "\"");
+                        }
                     }
                 }  
             });
@@ -1046,20 +1073,11 @@ public class View extends JPanel {
             // Logic to run if the user selects OK
             if (result == JOptionPane.OK_OPTION) {
 
-                // Declare new player vars and set references
-                Player newPlayer = new Player();
-                boolean addPlayer = true;
-
-                // Ensure our references exist before using them
-                if (NewPlayerID != null) {
-                    newPlayer.setNormalID(Integer.valueOf(NewPlayerID.getText()));
-                }
-                if (NewPlayerName != null) {
-                    newPlayer.name = NewPlayerName.getText();
-                }
+                // Update our name var
+                Name = NewPlayerName.getText();
 
                 // Check if the entered ID exists in the database
-                String searchResult = model.database.searchDB(Database.PARAM_ID, newPlayer.getNormalID(), "");
+                String searchResult = model.database.searchDB(Database.PARAM_ID, NormalID, "");
                 
                 // If the entered ID doesn't exist in the DB, attempt to add the new player to the DB. 
                 if (searchResult == "" 
@@ -1069,32 +1087,31 @@ public class View extends JPanel {
                     // If we are not connected to the database, print a tooltip
                     if (model.database.getdbConnectionStatus() == false && !model.getDebugMode()) {
                         model.toolTip("No database connection! Game will not work!",10000);
-                        addPlayer = false;
+                        allowNewPlayer = false;
                     }
 
                     // If we are connected to the database, add the new user to the database
-                    else if (model.database.insertDB(Database.PARAM_ID_AND_CODENAME, newPlayer.getNormalID(), newPlayer.name)) {
-                        model.toolTip(newPlayer.name + " added successfully!", 4500);
+                    else if (model.database.insertDB(Database.PARAM_ID_AND_CODENAME, NormalID, Name)) {
+                        model.toolTip(Name + " added successfully!", 4500);
                     }
 
                     else {
-                        model.toolTip("Error adding " + newPlayer.name + " to the database!", 4500);
-                        addPlayer = false;
+                        model.toolTip("Error adding " + Name + " to the database!", 4500);
+                        allowNewPlayer = false;
                     }
 
-                    // Find a reference to the equipment ID field to link for our player
-                    int tempIDReference = model.getTextBoxIndexFromName(IDBox.getName());
-                    JTextField tempEquipIDBox = model.getEquipmentIDBoxAt(tempIDReference);
-
                     // Apply changes to the players references and add to playerlist
-                    if (addPlayer) {
-                        model.addPlayer(newPlayer);
-                        newPlayer.setReferences(IDBox, tempEquipIDBox, NameBox);
-                        newPlayer.syncRefs();
+                    if (allowNewPlayer) {
+                        Player p = model.identifyPlayer(NormalID, EquipID, Name);
+                        NameBox.setText(Name);
+                        p.setReferences(IDBox, tempEquipIDBox, NameBox);
                     } else {
-                        model.getEquipmentIDBoxAt(tempIDReference).setText("");
-                        IDBox.setText("");
-                        NameBox.setText("");
+                        if (tempEquipIDBox != null)
+                            tempEquipIDBox.setText("");
+                        if (IDBox != null)
+                            IDBox.setText("");
+                        if (NameBox != null)
+                            NameBox.setText("");
                     }
 
                     closePopupFlag = true;
@@ -1121,16 +1138,24 @@ public class View extends JPanel {
 
             // Logic to run if the user clicked CANCEL or CLOSED out of the JPanel
             else if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) {
-                int tempIDReference = model.getTextBoxIndexFromName(IDBox.getName());
-                model.getEquipmentIDBoxAt(tempIDReference).setText("");
-                IDBox.setText("");
-                NameBox.setText("");
+
+                // Update our name var
+                Name = NewPlayerName.getText();
+
+                // Remove the player from the local list since we cancelled the operation
+                Player p = model.identifyPlayer(NormalID, EquipID, Name);
+                if (p != null) {
+                    model.removePlayer(p);
+                }
+
                 closePopupFlag = true;
             }
         }
 
         // Inform our model that we no longer need to create a new popup
         model.setNewPopup(false);
+        finishPopup = false;
+        
         return true;
     }
 
