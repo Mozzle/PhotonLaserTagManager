@@ -1,4 +1,9 @@
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
+
+import javax.swing.JTextField;
+import javax.swing.event.DocumentListener;
+
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionListener;
 import java.awt.RenderingHints.Key;
@@ -6,11 +11,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.Document;
+
 public class Controller implements ActionListener, MouseListener, KeyListener
 {
     // Class variables
     private View view;
     private Model model;
+    
+    // Reference to all textboxes in the player entry screen
+    ArrayList<TextBox> masterTextboxList;
 
     /*-----------------------------------------------------------
      * 
@@ -26,6 +38,123 @@ public class Controller implements ActionListener, MouseListener, KeyListener
     {
         // Initialization
         model = m;
+    }
+
+    /*-----------------------------------------------------------
+     * 
+     *  initTextboxListener()
+     * 
+     *  DESCRIPTION: Attachs a key listener to all textboxes in the player entry screen.
+     * 
+    ---------------------------------------------------------- */
+    public void initTextboxListener() {
+        // Create a list of all textboxes in the player entry screen to attach key listeners to
+        masterTextboxList = new ArrayList<TextBox>();
+        masterTextboxList.addAll(model.PlayerIDBoxes);
+        masterTextboxList.addAll(model.EquipmentIDBoxes);
+
+        // Attach a key listener to every box on our list
+        for (int i = 0; i < masterTextboxList.size(); i++) {
+            masterTextboxList.get(i).getTextBox().getDocument().addDocumentListener(new DocumentListener() {
+                @Override
+                public void changedUpdate(DocumentEvent e) {  } // Do nothing
+
+                @Override
+                public void insertUpdate(DocumentEvent e) { handleDocEvent(e); }
+
+                @Override
+                public void removeUpdate(DocumentEvent e) { handleDocEvent(e); }
+            });
+        }
+    }
+
+    /*-----------------------------------------------------------
+     * 
+     *  handleDocEvent(DocumentEvent e)
+     * 
+     *  DESCRIPTION: Handles a change in a document, or in other words a key change
+     *  in a textbox. This function is called when a change is detected in a textbox.
+     * 
+    ---------------------------------------------------------- */
+    public void handleDocEvent(DocumentEvent e) {
+        // Grab the reference document to identify which row we are working with
+        Document compareDoc = e.getDocument();
+        JTextField referenceRow = null;
+        for (int j = 0; j < masterTextboxList.size(); j++) {
+            if (masterTextboxList.get(j).getTextBox().getDocument() == compareDoc) {
+                referenceRow = masterTextboxList.get(j).getTextBox();
+            }
+        }
+
+        // If we find no match, exit early
+        if (referenceRow == null)
+            return;
+
+        // Find the row we are working with
+        int rowIndex = model.getTextBoxIndexFromName(referenceRow.getName());
+
+        // Grab references for this row
+        JTextField IDRef = model.PlayerIDBoxes.get(rowIndex).getTextBox();
+        JTextField EquipIDRef = model.EquipmentIDBoxes.get(rowIndex).getTextBox();
+        JTextField NameRef = model.CodenameBoxes.get(rowIndex).getTextBox();
+
+        String savedNormID = IDRef.getText();
+        String savedEquipID = EquipIDRef.getText();
+
+        Player checkPlayer = checkRefForPlayer(IDRef, EquipIDRef, NameRef);
+
+        System.out.println("Checking for player: " + savedNormID + " " + savedEquipID + " " + NameRef.getText());
+
+        // Check if our reference textboxes contain info belonging to another player
+        if (checkPlayer != null) {
+            // If so, add our player to the remove queue (since a modification has been made)
+            // and reset the textboxes to contain the previously entered data
+            model.addComponentToRemoveQueue(checkPlayer, IDRef, savedNormID);
+            model.addComponentToRemoveQueue(null, EquipIDRef, savedEquipID);
+        }
+    }
+
+    /*-----------------------------------------------------------
+     * 
+     *  checkRefForPlayer(JTextField NormalIDBox, JTextField EquipIDBox, JTextField NameBox)
+     * 
+     *  DESCRIPTION: Checks if the given references already exist in another player object.
+     *  Returns the offending player object if found, otherwise returns null.
+     * 
+    ---------------------------------------------------------- */
+    public Player checkRefForPlayer(JTextField NormalIDBox, JTextField EquipIDBox, JTextField NameBox) {
+        // Check if our references are null, if so exit early
+        if (NormalIDBox == null || EquipIDBox == null || NameBox == null)
+            return null;
+
+        // Check if a player has populated the row by looking for a name
+        if (NameBox.getText().equals(""))
+            return null;
+
+        // Adjust strings in case they are empty, -1 will return no search
+        String tmpNormID = NormalIDBox.getText();
+        String tmpEquipID = EquipIDBox.getText();
+        if (tmpNormID.equals("")) {
+            tmpNormID = "-1";
+        }
+        if (tmpEquipID.equals("")) {
+            tmpEquipID = "-1";
+        }
+        
+        // Create player search parameters
+        int normalIDSearched = Integer.valueOf(tmpNormID);
+        int equipIDSearched = Integer.valueOf(tmpEquipID);
+        String nameSearched = NameBox.getText();
+
+        Player checkPlayer = model.identifyPlayer(normalIDSearched, equipIDSearched, nameSearched);
+
+        // Identify if our player already exists, if so then remove the player from the list
+        if (checkPlayer != null) {
+            System.out.println("Found player: " + checkPlayer.getNormalID() + " in the list, returning: " + checkPlayer.name);
+            return checkPlayer;
+        }
+
+        return null;
     }
 
 

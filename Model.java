@@ -30,7 +30,10 @@ public class Model
     public int system_State;                        // Controls the state of the program.
                                                     // See the 'System_States' enums above
 
-    public ArrayList<Player> playerList;
+    public ArrayList<Player> playerList;            // Local player list for the game
+    public ArrayList<Player> removePlayerQueue;           // Queue for players to be removed from the game
+    public ArrayList<JTextField> setTBQueue;     // Queue for textboxes to be set with text
+    public ArrayList<String> dataTBQueue;   // Queue of text to be set with a textbox
 
     public ArrayList<Sprite> windowObjects;         // This arrayList contains all elements that
                                                     //  will be drawn to the scrren
@@ -117,6 +120,11 @@ public class Model
         gameEventsQueue = new ArrayList<JLabel>();
         playerList = new ArrayList<Player>();
 
+        // Init our remove and set queues
+        removePlayerQueue = new ArrayList<Player>();
+        setTBQueue = new ArrayList<JTextField>();
+        dataTBQueue = new ArrayList<String>();
+
         // Start a timer, go to the splash screen, wait for 3.2 seconds,
         // then go to SplashScreenTimeout.run() to go to the player entry
         // screen
@@ -162,10 +170,25 @@ public class Model
 
             case PLAYER_ENTRY_SCREEN:
 
+            // Update playerlist
             for(Player p : playerList) {
                 p.update();
             }
             
+            // Remove any needed players
+            for(Player p : removePlayerQueue) {
+                removePlayer(p);
+            }
+
+            // Clear any needed textboxes
+            for (int i = 0; i < setTBQueue.size(); i++) {
+                setTBQueue.get(i).setText(dataTBQueue.get(i));
+            }
+
+            removePlayerQueue.clear();
+            setTBQueue.clear();
+            dataTBQueue.clear();
+
                 break;
 
             case COUNTDOWN_SCREEN:
@@ -601,7 +624,7 @@ public class Model
         else {
             // Check our playerlist, if we find a duplicate return true
             int compareID = Integer.parseInt(EquipmentIDBoxes.get(indexToCompare).getTextFromField());
-            if (identifyPlayer(compareID) != null)
+            if (identifyPlayer(compareID, -1, "NULL") != null)
                 result = true;
 
             // Check all other text boxes for duplicates
@@ -665,7 +688,7 @@ public class Model
 
     /*-------------------------------------------------
      *
-     *      setMakePlayerPopupFlag()
+     *  setMakePlayerPopupFlag()
      *
      *  DESCRIPTION: Sets the status of the flag that
      *  controls whether or not a New Player Entry
@@ -682,7 +705,7 @@ public class Model
 
     /*-------------------------------------------------
      *
-     *      getMakeSettingsPopupFlag()
+     *  getMakeSettingsPopupFlag()
      *
      *  DESCRIPTION: Gets the status of the flag that
      *  controls whether or not a Settings popup window
@@ -699,7 +722,7 @@ public class Model
 
     /*-------------------------------------------------
      *
-     *      setMakeSettingsPopupFlag()
+     *  setMakeSettingsPopupFlag()
      *
      *  DESCRIPTION: Sets the status of the flag that
      *  controls whether or not a Settings popup window
@@ -716,7 +739,7 @@ public class Model
 
     /*-------------------------------------------------
      *
-     *      getDebugMode()
+     *  getDebugMode()
      *
      *  DESCRIPTION: Gets the boolean debugMode status.
      *  debugMode controls whether database connection
@@ -734,7 +757,7 @@ public class Model
 
     /*-------------------------------------------------
      *
-     *      setDebugMode()
+     *  setDebugMode()
      *
      *  DESCRIPTION: Sets the boolean debugMode status.
      *  debugMode controls whether database connection
@@ -751,7 +774,7 @@ public class Model
 
     /*-------------------------------------------------
      *
-     *      getStandardKeyAdapter()
+     *  getStandardKeyAdapter()
      *
      *  DESCRIPTION: Returns the standard Key Listener
      *  for the Player Entry Screen. Used when the user
@@ -843,13 +866,40 @@ public class Model
         return index;
     }
 
-    /// PLAYER-MODEL METHODS
-
+    /*-------------------------------------------------
+     *
+     *  clearPlayerList()
+     *
+     *  DESCRIPTION: Clears the player list
+     *
+    ------------------------------------------------- */
     public void clearPlayerList() {
         playerList.clear();
         System.out.println("[Model] Cleared the playerlist.");
     }
 
+    /*-------------------------------------------------
+     *
+     *  getPlayer(int index)
+     *
+     *  DESCRIPTION: Returns a player object at an index
+     *
+    ------------------------------------------------- */
+    public Player getPlayer(int index) {
+        return playerList.get(index);
+    }
+
+    /*-------------------------------------------------
+     *
+     *  addPlayer(Player p)
+     *
+     *  DESCRIPTION: Adds a player to the player list
+     *  Returns true if successful, false if not
+     * 
+     *  Will add a player to the player list only if
+     *  the player's ID and equipment ID is unique and valid
+     *
+    ------------------------------------------------- */
     public boolean addPlayer(Player p) {
         // Check to ensure we aren't adding a duplicate equipment ID
         for (Player player : playerList) {
@@ -868,26 +918,90 @@ public class Model
         return true;
     }
 
+    /*-------------------------------------------------
+     *
+     *  removePlayer(Player p)
+     *
+     *  DESCRIPTION: Removes a player from the playerlist
+     *  and clears their reference text boxes
+     *  Returns true if successful, false if not
+     * 
+     *
+    ------------------------------------------------- */
     public boolean removePlayer(Player p) {
+
+        if (p == null) {
+            return false;
+        }
+
+        // Clear reference text boxes for given player
+        JTextField j[] = p.getReferences();
+        if (j[0] != null)
+            j[0].setText("");
+        if (j[1] != null)
+            j[1].setText("");
+        if (j[2] != null)
+            j[2].setText("");
+
         // Attempt to find & remove player from list -- return result as boolean
         boolean result = playerList.remove(p);
 
         if (result)
-            System.out.println("[Model] Removed " + p.getNormalID() + " from playerlist.");
+            System.out.println("[Model] Removed player that contained or now contains ID reference " + p.getNormalID() + " from playerlist.");
         else
             System.out.println("[Model] Could not find/remove " + p.getNormalID() + ".");
 
         return result;
     }
 
-    public Player identifyPlayer(int equipID) {
-        // Attempt to find a player by ID, and return their reference
+    /*-------------------------------------------------
+     *
+     *  identifyPlayer(int normID)
+     *
+     *  DESCRIPTION: Searches the playerlist for a player
+     *  that matches the given criteria
+     * 
+     *  A player is located with the following order
+     *  of importance: Name -> Normal ID -> Equipment ID
+     * 
+     *  in question is returned
+     *  Returns null if no player is found
+     *
+    ------------------------------------------------- */
+    public Player identifyPlayer(int normID, int equipID, String name) {
+        // Attempt to locate player by name, then normal id, then equip ID
         for (Player player : playerList) {
-            if (player.getEquipID() == equipID) {
+
+            if (player.name.equals(name) && !name.equals("NULL")) {
+                return player;
+            }
+            else if (player.getNormalID() == normID && normID != -1) {
+                return player;
+            }
+            else if (player.getEquipID() == equipID && equipID != -1) {
                 return player;
             }
         }
         return null;
+    }
+
+    /*-------------------------------------------------
+     *
+     *  addComponentToRemoveQueue(Player p, JTextField f, String s)
+     *
+     *  DESCRIPTION: Adds both input components to the
+     *  removal list to safely remove them from the screen
+     *  without causing a ConcurrentModificationException
+     *
+    ------------------------------------------------- */
+    public void addComponentToRemoveQueue(Player p, JTextField f, String s) {
+        // Check that the queue doesn't contain the same object already
+        if (removePlayerQueue.contains(p) || setTBQueue.contains(f) || dataTBQueue.contains(s))
+            return;
+            
+        removePlayerQueue.add(p);
+        setTBQueue.add(f);
+        dataTBQueue.add(s);
     }
 
     /// DATABASE METHODS

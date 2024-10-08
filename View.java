@@ -50,6 +50,7 @@ public class View extends JPanel {
 
     // Declare references
     private Model model;
+    private Controller controller;
     public NetController netController;
 
     // Declare window variables
@@ -97,6 +98,7 @@ public class View extends JPanel {
         // Set references to the controller and model
         c.setView(this);
         model = m;
+        controller = c;
         netController = n;
 
         // Initialize current UI state, or flags
@@ -306,8 +308,15 @@ public class View extends JPanel {
             Integer.valueOf(ID.getText()));
 
         // Add our player to the local playerlist, exit method early if failed to insert
-        if (!model.addPlayer(newPlayer))
+        if (!model.addPlayer(newPlayer)) {
+            // Clear reference text boxes and print a tooltip
+            ID.setText("");
+            Equip.setText("");
+            Name.setText("");
+
+            model.toolTip("Player ID or equipment ID already exists!", 4500);
             return;
+        }
 
         // Update player references if successfully added
         newPlayer.setReferences(ID,Equip,Name);
@@ -331,8 +340,9 @@ public class View extends JPanel {
             model.toolTip(newPlayer.name + " added successfully!", 4500);
         }
 
-        // Print a tooltip if database connection fails
+        // Print a tooltip and adjust playerlist if database connection fails
         else if (model.database.getdbConnectionStatus() == false && !model.getDebugMode()) {
+            model.removePlayer(newPlayer);
             model.toolTip("No database connection! Game will not work!",10000);
         }
 
@@ -358,9 +368,6 @@ public class View extends JPanel {
             // Create the New Player Entry Popup screen
             NewPlayerPopupScreen(popupInputID, NewPlayerIDField, PlayerCodenameField, "Unknown Player ID entered, would", "you like to create a new Player?");
         }
-
-        /// Handle player verification here via model method -- ONLY if a DB match exists
-            // Check if the entry is valid (both boxes contain data, entry in DB), if 
     }
 
     public void REWRITEdrawFocus() {
@@ -393,10 +400,17 @@ public class View extends JPanel {
         JTextField CodenameBox = null;
 
         // Grab references to all components in our row
-        if (lastSelectedRow >= 0 && lastSelectedRow <= 30) {
-            IDBox = (JTextField)model.getPlayerIDBoxAt(lastSelectedRow);
-            EquipIDBox = (JTextField)model.getEquipmentIDBoxAt(lastSelectedRow);
-            CodenameBox = (JTextField)model.getCodenameBoxAt(lastSelectedRow);
+        if (lastSelectedRow >= 0 && lastSelectedRow <= 31) {
+            int queryRow = lastSelectedRow;
+
+            // Check and adjust our index if we are looking at green/red team
+            if (lastSelectedTeam == 'G') {
+                queryRow += Model.NUM_MAX_PLAYERS_PER_TEAM;
+            }
+
+            IDBox = (JTextField)model.getPlayerIDBoxAt(queryRow);
+            EquipIDBox = (JTextField)model.getEquipmentIDBoxAt(queryRow);
+            CodenameBox = (JTextField)model.getCodenameBoxAt(queryRow);
         }
 
         // Highlight selection to our user using gray background
@@ -799,6 +813,7 @@ public class View extends JPanel {
         RedTeamTextBoxPane.setVisible(true);
         GreenTeamTextBoxPane.setVisible(true);
 
+        controller.initTextboxListener();
     }
 
 
@@ -1029,39 +1044,52 @@ public class View extends JPanel {
             // Logic to run if the user selects OK
             if (result == JOptionPane.OK_OPTION) {
 
-                int newPlayerIDVal = -1;
-                // If the Player ID field String is not empty, get its value as an integer
-                if (!NewPlayerID.getText().equals("")) {
-                    newPlayerIDVal = Integer.valueOf(NewPlayerID.getText());
+                // Declare new player vars and set references
+                Player newPlayer = new Player();
+                boolean addPlayer = true;
+                newPlayer.setReferences(IDBox, null, NameBox);
+
+                if (NewPlayerID != null) {
+                    newPlayer.setNormalID(Integer.valueOf(NewPlayerID.getText()));
+                }
+                if (NewPlayerName != null) {
+                    newPlayer.name = NewPlayerName.getText();
                 }
 
                 // Check if the entered ID exists in the database
-                String searchResult = model.database.searchDB(Database.PARAM_ID, newPlayerIDVal, "");
+                String searchResult = model.database.searchDB(Database.PARAM_ID, newPlayer.getNormalID(), "");
                 
                 // If the entered ID doesn't exist in the DB, attempt to add the new player to the DB. 
-                if (searchResult == "" && newPlayerIDVal > 0 
-                && NewPlayerID.getText().length() >= 1 
-                && NewPlayerName.getText().length() >= 1) {
-
-                    // If the ID box is empty, apply it to the textbox
-                    if (IDBox != null)
-                        IDBox.setText(NewPlayerID.getText());
+                if (searchResult == "" 
+                && NewPlayerID.getText().length() > 0
+                 && NewPlayerName.getText().length() > 0) {
 
                     // If we are not connected to the database, print a tooltip
                     if (model.database.getdbConnectionStatus() == false && !model.getDebugMode()) {
                         model.toolTip("No database connection! Game will not work!",10000);
+                        addPlayer = false;
                     }
+
                     // If we are connected to the database, add the new user to the database
-                    else if (model.database.insertDB(Database.PARAM_ID_AND_CODENAME, newPlayerIDVal, NewPlayerName.getText())) {
-                        model.toolTip(NewPlayerName.getText() + " added successfully!", 4500);
-                        if (NameBox != null) {
-                            NameBox.setText(NewPlayerName.getText());
-                        }
+                    else if (model.database.insertDB(Database.PARAM_ID_AND_CODENAME, newPlayer.getNormalID(), newPlayer.name)) {
+                        model.toolTip(newPlayer.name + " added successfully!", 4500);
                     }
 
                     else {
-                        model.toolTip("Error adding " + NewPlayerName.getText() + " to the database!", 4500);
+                        model.toolTip("Error adding " + newPlayer.name + " to the database!", 4500);
+                        addPlayer = false;
                     }
+
+                    // Apply changes to the players references and add to playerlist
+                    if (addPlayer) {
+                        model.addPlayer(newPlayer);
+                    } else {
+                        int tempIDReference = model.getTextBoxIndexFromName(IDBox.getName());
+                        model.getEquipmentIDBoxAt(tempIDReference).setText("");
+                        IDBox.setText("");
+                        NameBox.setText("");
+                    }
+
                     closePopupFlag = true;
                 }
 
@@ -1086,9 +1114,10 @@ public class View extends JPanel {
             // Logic to run if the user clicked CANCEL or CLOSED out of the JPanel
             }
             else if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) {
-                if (IDBox != null) {
-                    IDBox.setText("");
-                }
+                int tempIDReference = model.getTextBoxIndexFromName(IDBox.getName());
+                model.getEquipmentIDBoxAt(tempIDReference).setText("");
+                IDBox.setText("");
+                NameBox.setText("");
                 closePopupFlag = true;
             }
         }

@@ -28,6 +28,10 @@ import javax.swing.JTextField;
      * 
      *  getEquipID() -- Get the players equipment ID
      * 
+     *  setNormalID() -- Set the players normal ID
+     * 
+     *  getNormalID() -- Get the players normal ID
+     * 
     ---------------------------------------------------------- */
 
 public class Player
@@ -182,15 +186,29 @@ public class Player
     ---------------------------------------------------------- */
     public void update() {
 
-        // If our references are empty or null, exit early
-        if (refID != null || refEquipID != null)
-            if (refEquipID.getText().equals("") || refID.getText().equals(""))
-                return;
+        // If our references are null, exit early
+        if (refID == null || refEquipID == null)
+            return;
+        if (refEquipID.getText().equals("") || refID.getText().equals(""))
+            return;
 
         // Apply changes
         normalID = Integer.valueOf(refID.getText());
         equipmentID = Integer.valueOf(refEquipID.getText());
         if (refName != null)
             name = refName.getText();
+    }
+
+    /*-----------------------------------------------------------
+     * 
+     *  equals(Player p)
+     * 
+     *  DESCRIPTION: Override equal method to compare two player objects
+     * 
+    ---------------------------------------------------------- */
+    public boolean equals(Player p) {
+        if (p == null)
+            return false;
+        return (p.name.equals(name) && p.equipmentID == equipmentID && p.normalID == normalID);
     }
 }
