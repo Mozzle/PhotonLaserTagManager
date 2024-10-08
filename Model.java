@@ -186,8 +186,14 @@ public class Model
                 
                 if (!p.getStatus()) {
                     // Retransmit if the player is not verified
-                    netController.transmit(String.valueOf(p.getNormalID()));
+                    netController.transmit(String.valueOf(p.getEquipID()));
                     p.verify();
+                }
+
+                // Query the database and remove any impure selections
+                if (p.name.equals("")) {
+                    removePlayerQueue.add(p);
+                    database.query("DELETE FROM players WHERE id = " + p.getNormalID() + ";");
                 }
               }
             

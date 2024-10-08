@@ -356,10 +356,10 @@ public class View extends JPanel {
             else if (lastSelectedTeam == 'G') {
                 model.getCodenameBoxAt(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).setText(newPlayer.name);
             }
-            model.toolTip(newPlayer.name + " added successfully!", 4500);
 
+            model.toolTip(newPlayer.name + " added successfully!", 4500);
             // Transmit the new player to the server
-            netController.transmit(String.valueOf(newPlayer.getNormalID()));
+            netController.transmit(String.valueOf(newPlayer.getEquipID()));
             newPlayer.verify();
         }
 

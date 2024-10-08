@@ -280,6 +280,17 @@ public class Database {
         return dbStatus;
      }
 
+     public void query(String s) {
+        try {
+            Statement statement = connection.createStatement();
+            statement.executeUpdate(s);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            System.err.println(e.getClass().getName()+": "+e.getMessage());
+        }
+     }
+
 }
 
 
