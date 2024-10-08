@@ -956,7 +956,7 @@ public class Model
 
     /*-------------------------------------------------
      *
-     *  identifyPlayer(int normID)
+     *  identifyPlayer(int normID, int equipID, String name)
      *
      *  DESCRIPTION: Searches the playerlist for a player
      *  that matches the given criteria
@@ -998,7 +998,7 @@ public class Model
         // Check that the queue doesn't contain the same object already
         if (removePlayerQueue.contains(p) || setTBQueue.contains(f) || dataTBQueue.contains(s))
             return;
-            
+
         removePlayerQueue.add(p);
         setTBQueue.add(f);
         dataTBQueue.add(s);

@@ -101,9 +101,8 @@ public class Controller implements ActionListener, MouseListener, KeyListener
         String savedNormID = IDRef.getText();
         String savedEquipID = EquipIDRef.getText();
 
+        // Check if the row contains a valid player
         Player checkPlayer = checkRefForPlayer(IDRef, EquipIDRef, NameRef);
-
-        System.out.println("Checking for player: " + savedNormID + " " + savedEquipID + " " + NameRef.getText());
 
         // Check if our reference textboxes contain info belonging to another player
         if (checkPlayer != null) {
@@ -150,7 +149,6 @@ public class Controller implements ActionListener, MouseListener, KeyListener
 
         // Identify if our player already exists, if so then remove the player from the list
         if (checkPlayer != null) {
-            System.out.println("Found player: " + checkPlayer.getNormalID() + " in the list, returning: " + checkPlayer.name);
             return checkPlayer;
         }
 

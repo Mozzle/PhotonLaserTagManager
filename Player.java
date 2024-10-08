@@ -178,16 +178,16 @@ public class Player
 
     /*-----------------------------------------------------------
      * 
-     *  update())
+     *  update()
      * 
-     *  DESCRIPTION: Update method for player object, syncs references
-     *  to currently held values
+     *  DESCRIPTION: Update method for player object, syncs current
+     *  values to the set references
      * 
     ---------------------------------------------------------- */
     public void update() {
 
         // If our references are null, exit early
-        if (refID == null || refEquipID == null)
+        if (refID == null || refEquipID == null) 
             return;
         if (refEquipID.getText().equals("") || refID.getText().equals(""))
             return;
@@ -210,5 +210,22 @@ public class Player
         if (p == null)
             return false;
         return (p.name.equals(name) && p.equipmentID == equipmentID && p.normalID == normalID);
+    }
+
+    /*-----------------------------------------------------------
+     * 
+     *  syncRefs()
+     * 
+     *  DESCRIPTION: Synchronizes the references with the current
+     *  values of the player object
+     * 
+    ---------------------------------------------------------- */
+    public void syncRefs() {
+        if (refID != null)
+            refID.setText(String.valueOf(normalID));
+        if (refEquipID != null)
+            refEquipID.setText(String.valueOf(equipmentID));
+        if (refName != null)
+            refName.setText(name);
     }
 }

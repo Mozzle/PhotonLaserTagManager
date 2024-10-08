@@ -80,6 +80,8 @@ public class View extends JPanel {
     public boolean CountDownVar; 
     public Timer timer;
 
+    private boolean finishPopup;
+
     // Game Action Screen
     JPanel GameActionScreen, RedTeamScorePane, GameActionPane, GreenTeamScorePane;
 
@@ -120,6 +122,9 @@ public class View extends JPanel {
         lastSelectedRow = 99;
         lastSelectedTeam = 'R';
         PlayerEntryPanePadding = 0;
+
+        // Init finish-popup flag
+        finishPopup = false;
 
         //For countdown variable
         CountDownVar=true;
@@ -243,7 +248,7 @@ public class View extends JPanel {
             -----------------------------------------------------*/
             // Check if a text field has a current focus, if so handle it
             if (KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner() != null) {
-                REWRITEdrawFocus();
+                handleFocusDrawing();
             }
             
             // Check if model is telling us to do create a New Player Popup window
@@ -291,7 +296,13 @@ public class View extends JPanel {
         
     }
 
-    public void REWRITEhandleFocus(JTextField ID, JTextField Equip, JTextField Name) {
+    public void handleNewFocus(JTextField ID, JTextField Equip, JTextField Name) {
+
+        // Exit if we focus is switched due to pop-up menu
+        if (finishPopup) {
+            finishPopup = false;
+            return;
+        }
 
         // If our references are invalid, exit early
         if (ID == null || Equip == null || Name == null)
@@ -301,6 +312,11 @@ public class View extends JPanel {
         if (Equip.getText().equals("") || ID.getText().equals(""))
             return;
 
+        // Check if a player already lives in this row
+        if (controller.checkRefForPlayer(ID, Equip, Name) != null) {
+            return;
+        }
+
         // Create our new player object
         Player newPlayer = Player.createPlayer(
             Name.getText(), 
@@ -308,6 +324,7 @@ public class View extends JPanel {
             Integer.valueOf(ID.getText()));
 
         // Add our player to the local playerlist, exit method early if failed to insert
+        System.out.println("Adding player [HANDLE]");
         if (!model.addPlayer(newPlayer)) {
             // Clear reference text boxes and print a tooltip
             ID.setText("");
@@ -348,29 +365,12 @@ public class View extends JPanel {
 
         // If ID does not exist in the database and the connection is good, add the ID to the DB
         else {
-            // Create a popup window to prompt the user to add a new player
-            String popupInputID = "";
-            JTextField NewPlayerIDField = new JTextField();
-            JTextField PlayerCodenameField = new JTextField();
-
-            // Grab the ID based on the selected team
-            if (lastSelectedTeam == 'R') {
-                popupInputID = model.PlayerIDBoxes.get(lastSelectedRow).getTextFromField();
-                NewPlayerIDField = model.PlayerIDBoxes.get(lastSelectedRow).getTextBox();
-                PlayerCodenameField = model.CodenameBoxes.get(lastSelectedRow).getTextBox();
-            }
-            else if (lastSelectedTeam == 'G') {
-                popupInputID = model.PlayerIDBoxes.get(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextFromField();
-                NewPlayerIDField = model.PlayerIDBoxes.get(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextBox();
-                PlayerCodenameField = model.CodenameBoxes.get(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).getTextBox();
-            }
-
             // Create the New Player Entry Popup screen
-            NewPlayerPopupScreen(popupInputID, NewPlayerIDField, PlayerCodenameField, "Unknown Player ID entered, would", "you like to create a new Player?");
+            NewPlayerPopupScreen(ID.getText(), ID, Name, "Unknown Player ID entered, would", "you like to create a new Player?");
         }
     }
 
-    public void REWRITEdrawFocus() {
+    public void handleFocusDrawing() {
 
         // Create a reference to the last object that has been focused
         Component selectedComponent = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
@@ -421,7 +421,7 @@ public class View extends JPanel {
         if ((selectedRow.length() == 2 || selectedRow.length() == 3) 
         && (lastSelectedRow != selectedRowValue)
             || (lastSelectedTeam != selectedRow.charAt(0))) {
-                REWRITEhandleFocus(IDBox, EquipIDBox, CodenameBox);
+                handleNewFocus(IDBox, EquipIDBox, CodenameBox);
             }
 
         // Update our lastSelected variables
@@ -582,7 +582,7 @@ public class View extends JPanel {
         NewPlayerButton.addKeyListener(buttonKeys);
         NewPlayerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
-                NewPlayerPopupScreen("", null, null, "Enter new Player information", "");
+                NewPlayerPopupScreen("", null, null, "Enter new player information to add to DB only", "");
             }  
         });
         ButtonsCenter.add(NewPlayerButton);
@@ -955,6 +955,9 @@ public class View extends JPanel {
 
     public boolean NewPlayerPopupScreen(String idInput, JTextField IDBox, JTextField NameBox, String hint1, String hint2) {
 
+        // Set our finish popup flag to fix focus issues
+        finishPopup = true;
+
          // Ensure another popup isn't already open
          if (model.getNewPopup())
             return false;
@@ -1047,8 +1050,8 @@ public class View extends JPanel {
                 // Declare new player vars and set references
                 Player newPlayer = new Player();
                 boolean addPlayer = true;
-                newPlayer.setReferences(IDBox, null, NameBox);
 
+                // Ensure our references exist before using them
                 if (NewPlayerID != null) {
                     newPlayer.setNormalID(Integer.valueOf(NewPlayerID.getText()));
                 }
@@ -1080,11 +1083,16 @@ public class View extends JPanel {
                         addPlayer = false;
                     }
 
+                    // Find a reference to the equipment ID field to link for our player
+                    int tempIDReference = model.getTextBoxIndexFromName(IDBox.getName());
+                    JTextField tempEquipIDBox = model.getEquipmentIDBoxAt(tempIDReference);
+
                     // Apply changes to the players references and add to playerlist
                     if (addPlayer) {
                         model.addPlayer(newPlayer);
+                        newPlayer.setReferences(IDBox, tempEquipIDBox, NameBox);
+                        newPlayer.syncRefs();
                     } else {
-                        int tempIDReference = model.getTextBoxIndexFromName(IDBox.getName());
                         model.getEquipmentIDBoxAt(tempIDReference).setText("");
                         IDBox.setText("");
                         NameBox.setText("");
@@ -1110,9 +1118,9 @@ public class View extends JPanel {
                     hintLine1 = "You did something really weird,";
                     hintLine2 = "something went wrong.";
                 }
-            
-            // Logic to run if the user clicked CANCEL or CLOSED out of the JPanel
             }
+
+            // Logic to run if the user clicked CANCEL or CLOSED out of the JPanel
             else if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.CLOSED_OPTION) {
                 int tempIDReference = model.getTextBoxIndexFromName(IDBox.getName());
                 model.getEquipmentIDBoxAt(tempIDReference).setText("");

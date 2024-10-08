@@ -33,7 +33,6 @@ public class PhotonSystem extends JFrame {
         netController = new NetController();
         view = new View(controller, model, netController);
         view.addMouseListener(controller);
-        view.addMouseListener(controller);
 		this.addKeyListener(controller);
 
         this.setTitle("Photon Manager");
