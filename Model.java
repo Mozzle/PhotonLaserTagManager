@@ -62,6 +62,8 @@ public class Model
     public boolean playerUpdateFlag;                // Flag to allow player updates in model.update() to avoid concurrentexception
 
     public ArrayList<JLabel> gameEventsQueue;              // For Game Action Screen
+    
+    private NetController netController;            // Network controller for the program
 
     /*-----------------------------------------------------
      * 
@@ -113,6 +115,7 @@ public class Model
     public Model()
     {   
         database = new Database();
+        netController = null;
 
         system_State = INITIALIZE;
         // Initialization
@@ -180,6 +183,12 @@ public class Model
                 Player p = it.next();
                 if (p != null)
                     p.update();
+                
+                if (!p.getStatus()) {
+                    // Retransmit if the player is not verified
+                    netController.transmit(String.valueOf(p.getNormalID()));
+                    p.verify();
+                }
               }
             
             // Remove any needed players
@@ -1036,7 +1045,7 @@ public class Model
         dataTBQueue.add(s);
     }
 
-    /// DATABASE METHODS
-
-    /// NETCONTROLLER METHODS
+    public void setNet(NetController n) {
+        netController = n;
+    }
 }

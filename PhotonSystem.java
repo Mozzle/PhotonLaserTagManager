@@ -41,6 +41,7 @@ public class PhotonSystem extends JFrame {
 		this.getContentPane().add(view);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setVisible(true);
+        model.setNet(netController);
         netController.startListener();
     }
 

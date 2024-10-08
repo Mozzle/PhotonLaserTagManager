@@ -334,6 +334,10 @@ public class View extends JPanel {
             return;
         }
 
+        // Transmit the new player to the server
+        netController.transmit(String.valueOf(newPlayer.getNormalID()));
+        newPlayer.verify();
+
         // Update player references if successfully added
         newPlayer.setReferences(ID,Equip,Name);
 
@@ -1325,6 +1329,13 @@ public class View extends JPanel {
                         error = true;
                 if (dChanged)
                     model.setDebugMode(debugField.isSelected());
+
+                // Check if send port has changed, if so unverify all players
+                if (sChanged || aChanged) {
+                    for (Player p : model.playerList) {
+                        p.revoke();
+                    }
+                }
 
                 // Success/fail tooltip
                 if(!error)
