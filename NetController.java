@@ -56,8 +56,9 @@ public class NetController
     private Thread listenerThread;
     private boolean isListening;
 
-    /// Return flag
+    /// Return flag and message notification flag
     private boolean returnFlag;
+    public boolean pingFlag;
 
     /// Send buffer and socket
     private byte[] sendBuffer;
@@ -80,6 +81,9 @@ public class NetController
 
         // Set listener flag to false
         isListening = false;
+
+        // Set ping flag to false
+        pingFlag = false;
     }
 
     /*-----------------------------------------------------------
@@ -241,6 +245,9 @@ public class NetController
 
         // Log message
         System.out.println("[NetController - " + timestamp() + "] Received message, data: " + receivedData[MAX_MESSAGES - 1]);
+
+        // Update ping flag
+        pingFlag = true;
     }
 
     /*-----------------------------------------------------------

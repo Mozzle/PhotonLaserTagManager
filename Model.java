@@ -208,7 +208,28 @@ public class Model
 
                 break;
 
+            // Do nothing for countdown screen
             case COUNTDOWN_SCREEN:
+                break;
+
+            // Handle received network data for player action screen
+            case PLAY_ACTION_SCREEN:
+            // Check for new data
+            if (netController.pingFlag) {
+                // Update our ping flag so we can continue receiving
+                netController.pingFlag = false;
+
+                // Get the data
+                String data = netController.pop();
+
+                // Match the string to two different player IDs, format of string should be (int:int)
+                    // If the match fails for both players, exit early
+
+                // Update scoring for both teams
+
+                // Update any other methods or references here
+            }
+                
                 break;
 
             default:
