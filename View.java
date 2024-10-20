@@ -317,11 +317,21 @@ public class View extends JPanel {
             return;
         }
 
+        // Find out what team our new player is on.
+        int newPlayerTeam = -1;
+        if (lastSelectedTeam == 'R') {
+            newPlayerTeam = Player.RED_TEAM;
+        }
+        else if (lastSelectedTeam == 'G') {
+            newPlayerTeam = Player.GREEN_TEAM;
+        }
+
         // Create our new player object
         Player newPlayer = Player.createPlayer(
             Name.getText(), 
             Integer.valueOf(Equip.getText()),
-            Integer.valueOf(ID.getText()));
+            Integer.valueOf(ID.getText()),
+            newPlayerTeam);
 
         // Add our player to the local playerlist, exit method early if failed to insert
         if (!model.addPlayer(newPlayer)) {
@@ -1468,39 +1478,60 @@ public class View extends JPanel {
         constraint.ipady = 8;
         constraint.ipadx = 10;
         
-        for (int i = 0; i < Model.NUM_MAX_PLAYERS_PER_TEAM; i++) {
-            // Player
-            constraint.gridy = i + 1;
-            constraint.gridx = 0;
-            tmpJLabel = new JLabel("Jerry");
-            tmpJLabel.setForeground(Color.WHITE);
-            tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
-            RedTeamScorePane.add(tmpJLabel, constraint);            
+        int drawingIndex = 0;
 
-            // Score
-            constraint.gridx = 2;
-            tmpJLabel = new JLabel("1400", SwingConstants.RIGHT);
-            tmpJLabel.setForeground(Color.WHITE);
-            tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
-            RedTeamScorePane.add(tmpJLabel, constraint);
+        // For all players in PlayerList
+        for (int startingIndex = 0; startingIndex < model.getPlayerListSize(); startingIndex++) {
+            // Iterate through playerList to find the next Green Team Member.
+            while (startingIndex < model.getPlayerListSize() && model.getPlayer(startingIndex).getTeam() != Player.RED_TEAM) {
+                startingIndex++;
+            }
+            if (startingIndex < model.getPlayerListSize()) {
+                // Player
+                constraint.gridy = drawingIndex + 1;
+                constraint.gridx = 0;
+                tmpJLabel = new JLabel(model.getPlayer(startingIndex).name);
+                tmpJLabel.setForeground(Color.WHITE);
+                tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
+                RedTeamScorePane.add(tmpJLabel, constraint);            
+
+                // Score
+                constraint.gridx = 2;
+                tmpJLabel = new JLabel("0", SwingConstants.RIGHT);
+                tmpJLabel.setForeground(Color.WHITE);
+                tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
+                RedTeamScorePane.add(tmpJLabel, constraint);
+
+                drawingIndex++;
+            }
         }
 
-        // Green Team Players and their Scores
-        for (int i = 0; i < Model.NUM_MAX_PLAYERS_PER_TEAM; i++) {
-            // Player
-            constraint.gridy = i + 1;
-            constraint.gridx = 0;
-            tmpJLabel = new JLabel("Tommy Joe");
-            tmpJLabel.setForeground(Color.WHITE);
-            tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
-            GreenTeamScorePane.add(tmpJLabel, constraint);
+        drawingIndex = 0;
 
-            // Score
-            constraint.gridx = 2;
-            tmpJLabel = new JLabel("800", SwingConstants.RIGHT);
-            tmpJLabel.setForeground(Color.WHITE);
-            tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
-            GreenTeamScorePane.add(tmpJLabel, constraint);
+        // Green Team Players and their Scores
+        for (int startingIndex = 0; startingIndex < model.getPlayerListSize(); startingIndex++) {
+            // Iterate through playerList to find the next Green Team Member.
+            while (startingIndex < model.getPlayerListSize() && model.getPlayer(startingIndex).getTeam() != Player.GREEN_TEAM) {
+                startingIndex++;
+            }
+            if (startingIndex < model.getPlayerListSize()) {
+                // Player
+                constraint.gridy = drawingIndex + 1;
+                constraint.gridx = 0;
+                tmpJLabel = new JLabel(model.getPlayer(startingIndex).name);
+                tmpJLabel.setForeground(Color.WHITE);
+                tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
+                GreenTeamScorePane.add(tmpJLabel, constraint);
+
+                // Score
+                constraint.gridx = 2;
+                tmpJLabel = new JLabel("0", SwingConstants.RIGHT);
+                tmpJLabel.setForeground(Color.WHITE);
+                tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
+                GreenTeamScorePane.add(tmpJLabel, constraint);
+
+                drawingIndex++;
+            }
         }
 
         // Red Team Total Score
@@ -1535,8 +1566,9 @@ public class View extends JPanel {
         }
         
         // DELETE ME AFTER IMPLEMENTING DYNAMIC STUFF
-        model.getGameEventQueueAtNum(14).setText("Jerry hit Tommy Joe.");
-        model.getGameEventQueueAtNum(15).setText("Tommy Joe hit Jerry.");
+        model.getGameEventQueueAtNum(13).setText("Jerry hit Tommy Joe.");
+        model.getGameEventQueueAtNum(14).setText("Tommy Joe hit Jerry.");
+        model.getGameEventQueueAtNum(15).setText("Sample static sample");
 
         GameActionPane.add(gameEventsScroll, constraint);
 

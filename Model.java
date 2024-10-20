@@ -958,6 +958,19 @@ public class Model
 
     /*-------------------------------------------------
      *
+     *  getPlayerListSize()
+     *
+     *  DESCRIPTION: Returns size of playerList
+     *  arrayList, used for looping purposes.
+     *
+    ------------------------------------------------- */
+
+    public int getPlayerListSize() {
+        return playerList.size();
+    }
+
+    /*-------------------------------------------------
+     *
      *  removePlayer(Player p)
      *
      *  DESCRIPTION: Removes a player from the playerlist

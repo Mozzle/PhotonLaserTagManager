@@ -43,6 +43,7 @@ public class Player
     private boolean verified;
     private int equipmentID;
     private int normalID;
+    private int team;
 
     /// Reference flags for player entry screen
     private JTextField refID;
@@ -51,6 +52,10 @@ public class Player
 
     /// Identifies which row this player lives in
     public int rowIdentifier;
+
+    /// Team ENUMS
+    public static final int RED_TEAM = 0;
+    public static final int GREEN_TEAM = 1;
 
     /*-----------------------------------------------------------
      * 
@@ -69,17 +74,18 @@ public class Player
 
     /*-----------------------------------------------------------
      * 
-     *  createPlayer(String NAME, int equipID, int normID)
+     *  createPlayer(String NAME, int equipID, int normID, int team)
      * 
      *  DESCRIPTION: Static method used to create a player object
      * 
     ---------------------------------------------------------- */
-    public static Player createPlayer(String NAME, int equipID, int normID) {
+    public static Player createPlayer(String NAME, int equipID, int normID, int team) {
         Player p = new Player();
 
         p.name = NAME;
         p.equipmentID = equipID;
         p.normalID = normID;
+        p.team = team;
 
         return p;
     }
@@ -146,6 +152,26 @@ public class Player
 
     public int getNormalID() {
         return normalID;
+    }
+
+    /*-----------------------------------------------------------
+     * 
+     *  setTeam(int team) and getTeam()
+     * 
+     *  DESCRIPTION: Getter and setter for team
+     * 
+    ---------------------------------------------------------- */
+
+    public boolean setTeam(int team) {
+        if (team >= 0 && team <= 1) {
+            this.team = team;
+        }
+
+        return this.team == team;
+    }
+
+    public int getTeam() {
+        return this.team;
     }
 
     /*-----------------------------------------------------------
