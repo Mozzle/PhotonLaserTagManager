@@ -226,35 +226,25 @@ public class Model
 
             // Handle received network data for player action screen
             case PLAY_ACTION_SCREEN:
-            // Check for new data
-            if (netController.pingFlag) {
-                // Update our ping flag so we can continue receiving
-                netController.pingFlag = false;
+                // Handle incoming UDP data
+                if (netController.pingFlag) {
+                    // Update our ping flag so we can continue receiving
+                    netController.pingFlag = false;
 
-                // NOTE: THIS HERE IS NOT TESTED CODE!!
-                // Get the data
-                String data = netController.pop();
-                int transmittingPlayerID = -1;
-                int hitID = -1;
-                
-                try {
-                transmittingPlayerID = Integer.valueOf(data.substring(0, data.indexOf(";")));
-                hitID = Integer.valueOf(data.substring(data.indexOf(";")) + 1);
+                    String data = netController.pop();
+                    Player[] shotPlayers = new Player[2];
+                    shotPlayers = processNetworkData(data);
+
+                    // If we have received a shot, update the player scores
+                    if (receivedPlayers != null) {
+                        if (receivedPlayers[0] != null) {
+                            receivedPlayers[0].setScore(receivedPlayers[0].getScore() + 100);
+                        }
+                        if (receivedPlayers[1] != null) {
+                            receivedPlayers[1].setScore(receivedPlayers[1].getScore() + 100);
+                        }
+                    }
                 }
-                catch (Exception e) {
-                    System.out.println("Error in Model.update() Play Action Screen");
-                    System.out.println(data);
-                }
-
-
-                // Match the string to two different player IDs, format of string should be (int:int)
-                    // If the match fails for both players, exit early
-
-                // Update scoring for both teams
-
-                // Update any other methods or references here
-            }
-                
                 break;
 
             default:
@@ -1178,5 +1168,50 @@ public class Model
 
     public void setNet(NetController n) {
         netController = n;
+    }
+
+    /*-------------------------------------------------
+     *
+     *  Player[] processNetworkData(String data)
+     *
+     *  DESCRIPTION: Parses a received network code
+     *  and returns references to the players found in
+     *  the codes
+     * 
+     *  Returns an array with two players, with the order:
+     *  [0] = player that hit, [1] = player that got hit
+     * 
+     *  Will return an empty player array with null entries
+     *  if no players are matched.
+     *
+    ------------------------------------------------- */
+    private Player[] processNetworkData(String data) {
+        int playerIdentifierParam1 = -1;
+        int playerIdentifierParam2 = -1;
+        Player[] returnPlayers = new Player[2];
+
+        // Splice the string for the number:number format if possible, and return to two integers
+        String[] tempSplitString = fetchedCodeData.split(":");
+
+        // Parse the first part of the received data
+        try {
+            playerIdentifierParam1 = Integer.parseInt(splitData[0]);
+        } catch (Exception e) {
+            System.out.println("[Model] Error parsing player 1 network data.");
+        }
+
+        // Parse the second part of the received data
+        try {
+            playerIdentifierParam2 = Integer.parseInt(splitData[1]);
+        } catch (Exception e) {
+            System.out.println("[Model] Error parsing player 2 network data.");
+        }
+
+        Player firstIdentifiedPlayer = identifyPlayer(playerIdentifierParam1, -1, "NULL", -1);
+        Player secondIdentifiedPlayer = identifyPlayer(playerIdentifierParam2, -1, "NULL", -1);
+        returnPlayers[0] = firstIdentifiedPlayer;
+        returnPlayers[1] = secondIdentifiedPlayer;
+
+        return returnPlayers;
     }
 }
