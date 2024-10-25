@@ -84,6 +84,9 @@ public class View extends JPanel {
 
     // Game Action Screen
     JPanel GameActionScreen, RedTeamScorePane, GameActionPane, GreenTeamScorePane;
+    //View copy of the Model value
+    public int vSecondsRemainingInGame;
+    public JLabel TimeRemainingLabel;
 
     /*-------------------------------------------------
      *
@@ -134,7 +137,11 @@ public class View extends JPanel {
             View.this.remove(countDownLabel);
             model.system_State = Model.PLAY_ACTION_SCREEN;
             }
+
         };
+
+        vSecondsRemainingInGame = 0;
+
     }
 
     /*-------------------------------------------------
@@ -287,12 +294,18 @@ public class View extends JPanel {
             inCountDownScreen = false;
             inGameScreen = true;
             drawPlayActionScreen();
+            netController.transmit(202);
+            netController.transmit(202);
+            netController.transmit(202);
             
             // TODO: Link a method here that handles all the sprites and objects
             // for the game screen. Or implement it here directly.
         }
         else if (model.getSystemState() == Model.PLAY_ACTION_SCREEN && inGameScreen) {
-
+            if (vSecondsRemainingInGame != model.getGameSecondsRemaining()) {
+                TimeRemainingLabel.setText(model.getGameTimeRemaining());
+                vSecondsRemainingInGame = model.getGameSecondsRemaining();
+            }
         }
         
     }
@@ -1576,10 +1589,10 @@ public class View extends JPanel {
         // Time.
         constraint.gridy = 12;
         constraint.ipady = 5;
-        tmpJLabel = new JLabel(model.getGameTimeRemaining(), SwingConstants.CENTER);
-        tmpJLabel.setForeground(Color.WHITE);
-        tmpJLabel.setFont(new Font("Arial", Font.BOLD, 35));
-        GameActionPane.add(tmpJLabel, constraint);
+        TimeRemainingLabel = new JLabel(model.getGameTimeRemaining(), SwingConstants.CENTER);
+        TimeRemainingLabel.setForeground(Color.WHITE);
+        TimeRemainingLabel.setFont(new Font("Arial", Font.BOLD, 35));
+        GameActionPane.add(TimeRemainingLabel, constraint);
 
         // Add Game Action Screen to the main JFrame (The View class)
         constraint.gridx = 0;

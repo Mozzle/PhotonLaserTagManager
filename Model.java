@@ -66,6 +66,8 @@ public class Model
     public int greenTeamScore;                      // For the Play Action Screen
     public int redTeamScore;                        // For the Play Action Screen
     public int secondsRemainingInGame;              // For the Play Action Screen
+    public Timer gameCountdownTimer;
+    public TimerTask gameCountdownTask;
 
     public ArrayList<JLabel> gameEventsQueue;       // For Game Action Screen
     
@@ -232,19 +234,52 @@ public class Model
                     netController.pingFlag = false;
 
                     String data = netController.pop();
-                    Player[] shotPlayers = new Player[2];
-                    shotPlayers = processNetworkData(data);
+                    Integer[] receivedPlayers = new Integer[2];
+                    receivedPlayers = processNetworkData(data);
+
+                    Player firstIdentifiedPlayer = identifyPlayer(receivedPlayers[0], -1, "NULL", -1);
+                    Player secondIdentifiedPlayer = identifyPlayer(receivedPlayers[1], -1, "NULL", -1);
 
                     // If we have received a shot, update the player scores
-                    if (receivedPlayers != null) {
-                        if (receivedPlayers[0] != null) {
-                            receivedPlayers[0].setScore(receivedPlayers[0].getScore() + 100);
+                    if (firstIdentifiedPlayer != null) {
+                            // If firstIdentifiedPlayer DID NOT hit the base
+                            if (receivedPlayers[1] != 53 && receivedPlayers[1] != 43 && secondIdentifiedPlayer != null) {
+                                // If firstIdentifiedPlayer hit a player on the opposite team
+                                if (firstIdentifiedPlayer.getTeam() != secondIdentifiedPlayer.getTeam()) {
+                                    firstIdentifiedPlayer.setScore(firstIdentifiedPlayer.getScore() + 10);
+                                    netController.transmit(secondIdentifiedPlayer.getNormalID());
+                                    updateGameEventsQueue(firstIdentifiedPlayer.name, secondIdentifiedPlayer.name);
+                                }
+                                // If firstIdentifiedPlayer hit a player on the SAME team
+                                else  {
+                                    firstIdentifiedPlayer.setScore(firstIdentifiedPlayer.getScore() - 10);
+                                    netController.transmit(firstIdentifiedPlayer.getNormalID());
+                                    updateGameEventsQueue(firstIdentifiedPlayer.name, secondIdentifiedPlayer.name);
+                                }
+                            }
+                            // If firstIdentifiedPlayer DID hit the base
+                            else if (receivedPlayers[1] == 53 || receivedPlayers[1] == 43) {
+                                // If Red Team player scored the green team base.
+                                if (firstIdentifiedPlayer.getTeam() == Player.RED_TEAM && receivedPlayers[1] == 43) {
+                                    firstIdentifiedPlayer.setScore(firstIdentifiedPlayer.getScore() + 100);
+                                    updateGameEventsQueue(firstIdentifiedPlayer.name, "Green Team Base");
+                                }
+                                else if (firstIdentifiedPlayer.getTeam() == Player.GREEN_TEAM && receivedPlayers[1] == 53) {
+                                    firstIdentifiedPlayer.setScore(firstIdentifiedPlayer.getScore() + 100);
+                                    updateGameEventsQueue(firstIdentifiedPlayer.name, "Red Team Base");
+                                }
+                                else {
+                                    // Do we want to have some action for player hitting their own base?
+                                }
+                            }
                         }
-                        if (receivedPlayers[1] != null) {
-                            receivedPlayers[1].setScore(receivedPlayers[1].getScore() + 100);
-                        }
-                    }
+
+                        // TODO: Update team scores funciton
+                    
                 }
+
+
+
                 break;
 
             default:
@@ -884,6 +919,21 @@ public class Model
         redTeamScore = 0;
         greenTeamScore = 0;
         secondsRemainingInGame = 360; //set to 6:00 minutes
+        gameCountdownTimer = new Timer();
+        gameCountdownTask = new TimerTask() {
+            public void run() {
+                secondsRemainingInGame--;
+
+                if (secondsRemainingInGame <= 0) {
+                    // TODO: END GAME
+                    // IDEA: A POPUP SCREEN LIKE THE SETTINGS/NEW PLAYER
+                    // ENTRY POPUP SCREENS THAT PROMPTS THE USER TO RESTART or
+                    // Go back to the player entry screen
+                    gameCountdownTimer.cancel();
+                }
+            }
+        };
+        gameCountdownTimer.schedule(gameCountdownTask, 1000, 1000);
 
         for (int i = 0; i < 16; i++) {
             gameEventsQueue.add(new JLabel(""));
@@ -960,11 +1010,25 @@ public class Model
         return greenTeamScore;
     }
 
+    public void updateGameEventsQueue(String playerNameShooting, String playerNameHit) {
+        // Move all the text up the screen
+        for (int i = 1; i < 16; i++) {
+            gameEventsQueue.get(i-1).setText(gameEventsQueue.get(i).getText());
+        }
+
+        gameEventsQueue.get(15).setText(playerNameShooting + " hit " + playerNameHit);
+
+    }
+
     public String getGameTimeRemaining() {
         
         int minutes = secondsRemainingInGame / 60;
         int seconds = secondsRemainingInGame % 60;
         return (String.valueOf(minutes) + ":" + String.format("%02d", seconds));
+    }
+
+    public int getGameSecondsRemaining() {
+        return secondsRemainingInGame;
     }
 
     public int returnNextAvailableBox(boolean team) {
@@ -1175,42 +1239,40 @@ public class Model
      *  Player[] processNetworkData(String data)
      *
      *  DESCRIPTION: Parses a received network code
-     *  and returns references to the players found in
-     *  the codes
      * 
-     *  Returns an array with two players, with the order:
-     *  [0] = player that hit, [1] = player that got hit
+     *  Returns an array with two integers, those received
+     *  in the received packet
      * 
-     *  Will return an empty player array with null entries
-     *  if no players are matched.
+     *  Will return an empty array with -1 entries
+     *  if error occurs
      *
     ------------------------------------------------- */
-    private Player[] processNetworkData(String data) {
+    private Integer[] processNetworkData(String data) {
         int playerIdentifierParam1 = -1;
         int playerIdentifierParam2 = -1;
-        Player[] returnPlayers = new Player[2];
+        Integer[] returnPlayers = new Integer[2];
 
         // Splice the string for the number:number format if possible, and return to two integers
-        String[] tempSplitString = fetchedCodeData.split(":");
+        String[] tempSplitString = data.split(":");
 
         // Parse the first part of the received data
         try {
-            playerIdentifierParam1 = Integer.parseInt(splitData[0]);
+            playerIdentifierParam1 = Integer.parseInt(tempSplitString[0]);
         } catch (Exception e) {
             System.out.println("[Model] Error parsing player 1 network data.");
         }
 
         // Parse the second part of the received data
         try {
-            playerIdentifierParam2 = Integer.parseInt(splitData[1]);
+            playerIdentifierParam2 = Integer.parseInt(tempSplitString[1]);
         } catch (Exception e) {
             System.out.println("[Model] Error parsing player 2 network data.");
         }
 
         Player firstIdentifiedPlayer = identifyPlayer(playerIdentifierParam1, -1, "NULL", -1);
         Player secondIdentifiedPlayer = identifyPlayer(playerIdentifierParam2, -1, "NULL", -1);
-        returnPlayers[0] = firstIdentifiedPlayer;
-        returnPlayers[1] = secondIdentifiedPlayer;
+        returnPlayers[0] = playerIdentifierParam1;
+        returnPlayers[1] = playerIdentifierParam2;
 
         return returnPlayers;
     }
