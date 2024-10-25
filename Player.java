@@ -44,6 +44,7 @@ public class Player
     private int equipmentID;
     private int normalID;
     private int team;
+    private int score;
 
     /// Reference flags for player entry screen
     private JTextField refID;
@@ -86,6 +87,7 @@ public class Player
         p.equipmentID = equipID;
         p.normalID = normID;
         p.team = team;
+        p.score = 0;
 
         return p;
     }
@@ -172,6 +174,26 @@ public class Player
 
     public int getTeam() {
         return this.team;
+    }
+
+    /*-----------------------------------------------------------
+     * 
+     *  setScore(int s) and getScore()
+     * 
+     *  DESCRIPTION: Getter and setter for score
+     * 
+    ---------------------------------------------------------- */
+
+    public boolean setScore(int s) {
+        if (s >= 0 ) {
+            score = s;
+        }
+
+        return score == s;
+    }
+
+    public int getScore() {
+        return score;
     }
 
     /*-----------------------------------------------------------

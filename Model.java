@@ -32,9 +32,11 @@ public class Model
                                                     // See the 'System_States' enums above
 
     public ArrayList<Player> playerList;            // Local player list for the game
-    public ArrayList<Player> removePlayerQueue;           // Queue for players to be removed from the game
-    public ArrayList<JTextField> setTBQueue;     // Queue for textboxes to be set with text
-    public ArrayList<String> dataTBQueue;   // Queue of text to be set with a textbox
+    public ArrayList<Integer> redTeamPlayerList;    // List of playerList indicies that belong to Red team members.
+    public ArrayList<Integer> greenTeamPlayerList;  // List of playerList indicies that belong to Red team members.
+    public ArrayList<Player> removePlayerQueue;     // Queue for players to be removed from the game
+    public ArrayList<JTextField> setTBQueue;        // Queue for textboxes to be set with text
+    public ArrayList<String> dataTBQueue;           // Queue of text to be set with a textbox
 
     public ArrayList<Sprite> windowObjects;         // This arrayList contains all elements that
                                                     //  will be drawn to the scrren
@@ -61,7 +63,11 @@ public class Model
 
     public boolean playerUpdateFlag;                // Flag to allow player updates in model.update() to avoid concurrentexception
 
-    public ArrayList<JLabel> gameEventsQueue;              // For Game Action Screen
+    public int greenTeamScore;                      // For the Play Action Screen
+    public int redTeamScore;                        // For the Play Action Screen
+    public int secondsRemainingInGame;              // For the Play Action Screen
+
+    public ArrayList<JLabel> gameEventsQueue;       // For Game Action Screen
     
     private NetController netController;            // Network controller for the program
 
@@ -125,6 +131,8 @@ public class Model
         CodenameBoxes = new ArrayList<TextBox>();
         gameEventsQueue = new ArrayList<JLabel>();
         playerList = new ArrayList<Player>();
+        redTeamPlayerList = new ArrayList<Integer>();
+        greenTeamPlayerList = new ArrayList<Integer>();
 
         // Init our remove and set queues
         removePlayerQueue = new ArrayList<Player>();
@@ -145,6 +153,10 @@ public class Model
         makeSettingsPopup = false;
         debugMode = false;
         playerUpdateFlag = true;
+
+        redTeamScore = 0;
+        greenTeamScore = 0;
+        secondsRemainingInGame = 0;
         
         // If we are not connected to the database, make a tooltip to warn the user.
         if (database.getdbConnectionStatus() == false) {
@@ -219,8 +231,21 @@ public class Model
                 // Update our ping flag so we can continue receiving
                 netController.pingFlag = false;
 
+                // NOTE: THIS HERE IS NOT TESTED CODE!!
                 // Get the data
                 String data = netController.pop();
+                int transmittingPlayerID = -1;
+                int hitID = -1;
+                
+                try {
+                transmittingPlayerID = Integer.valueOf(data.substring(0, data.indexOf(";")));
+                hitID = Integer.valueOf(data.substring(data.indexOf(";")) + 1);
+                }
+                catch (Exception e) {
+                    System.out.println("Error in Model.update() Play Action Screen");
+                    System.out.println(data);
+                }
+
 
                 // Match the string to two different player IDs, format of string should be (int:int)
                     // If the match fails for both players, exit early
@@ -252,7 +277,7 @@ public class Model
     // to the Countdown screen
     public void PlayerEntryScreenDeleter()
     {
-        //creates the tables for the player entry screen
+        //removes the tables for the player entry screen
         for (int i = 0; i < getNumPlayerIDBoxes(); i++) {
             PlayerIDBoxes.remove(i);
             EquipmentIDBoxes.remove(i);
@@ -865,11 +890,68 @@ public class Model
     }
 
     public void PlayActionScreenDataInitializer() {
+
+        redTeamScore = 0;
+        greenTeamScore = 0;
+        secondsRemainingInGame = 360; //set to 6:00 minutes
+
         for (int i = 0; i < 16; i++) {
             gameEventsQueue.add(new JLabel(""));
             gameEventsQueue.get(i).setForeground(Color.WHITE);
             gameEventsQueue.get(i).setFont(new Font("Arial", Font.BOLD, 20));
         }
+
+        for (int i = 0; i < getPlayerListSize(); i++) {
+            // Iterate through playerList to find the next Green Team Member.
+            if (getPlayer(i).getTeam() == Player.RED_TEAM) {
+                redTeamPlayerList.add(i);
+            }
+            else if (getPlayer(i).getTeam() == Player.GREEN_TEAM) {
+                greenTeamPlayerList.add(i);
+            }
+            else {
+                //Throw error.
+            }
+        }
+
+    }
+
+    /*-------------------------------------------------
+     *
+     *  getRedTeamPlayerListAt(int i) and
+     *  getGreenTeamPlayerListAt(int i)
+     *
+     *  DESCRIPTION: Returns the playerList index stored
+     *  at the given red/greenTeamPlayerList index.
+     *  The red/greenTeamPlayerList ArrayLists only
+     *  store the indexes of Players stored in playerList,
+     *  sorted by team.
+     *
+    ------------------------------------------------- */
+
+    public int getRedTeamPlayerListAt(int i) {
+        return redTeamPlayerList.get(i);
+    }
+
+    public int getGreenTeamPlayerListAt(int i) {
+        return greenTeamPlayerList.get(i);
+    }
+
+    /*-------------------------------------------------
+     *
+     *  getRedTeamPlayerListSize() and
+     *  getGreenTeamPlayerListSize()
+     *
+     *  DESCRIPTION: Returns size of the lists
+     *
+    ------------------------------------------------- */
+
+    public int getRedTeamPlayerListSize() {
+        return redTeamPlayerList.size();
+    }
+
+    public int getGreenTeamPlayerListSize() {
+        return greenTeamPlayerList.size();
     }
 
     public JLabel getGameEventQueueAtNum(int i) {
@@ -878,6 +960,21 @@ public class Model
 
     public int getNumGameEventQueue() {
         return gameEventsQueue.size();
+    }
+
+    public int getRedTeamScore() {
+        return redTeamScore;
+    }
+
+    public int getGreenTeamScore() {
+        return greenTeamScore;
+    }
+
+    public String getGameTimeRemaining() {
+        
+        int minutes = secondsRemainingInGame / 60;
+        int seconds = secondsRemainingInGame % 60;
+        return (String.valueOf(minutes) + ":" + String.format("%02d", seconds));
     }
 
     public int returnNextAvailableBox(boolean team) {

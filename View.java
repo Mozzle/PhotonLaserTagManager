@@ -1480,71 +1480,55 @@ public class View extends JPanel {
         
         int drawingIndex = 0;
 
-        // For all players in PlayerList
-        for (int startingIndex = 0; startingIndex < model.getPlayerListSize(); startingIndex++) {
-            // Iterate through playerList to find the next Green Team Member.
-            while (startingIndex < model.getPlayerListSize() && model.getPlayer(startingIndex).getTeam() != Player.RED_TEAM) {
-                startingIndex++;
-            }
-            if (startingIndex < model.getPlayerListSize()) {
-                // Player
-                constraint.gridy = drawingIndex + 1;
-                constraint.gridx = 0;
-                tmpJLabel = new JLabel(model.getPlayer(startingIndex).name);
-                tmpJLabel.setForeground(Color.WHITE);
-                tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
-                RedTeamScorePane.add(tmpJLabel, constraint);            
-
-                // Score
-                constraint.gridx = 2;
-                tmpJLabel = new JLabel("0", SwingConstants.RIGHT);
-                tmpJLabel.setForeground(Color.WHITE);
-                tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
-                RedTeamScorePane.add(tmpJLabel, constraint);
-
-                drawingIndex++;
-            }
+        for (int i = 0; i < model.getRedTeamPlayerListSize(); i++) {
+            constraint.gridy = drawingIndex + 1;
+            constraint.gridx = 0;
+            tmpJLabel = new JLabel(model.getPlayer(model.getRedTeamPlayerListAt(i)).name);
+            tmpJLabel.setForeground(Color.WHITE);
+            tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
+            RedTeamScorePane.add(tmpJLabel, constraint);            
+            // Score
+            constraint.gridx = 2;
+            tmpJLabel = new JLabel(String.valueOf(model.getPlayer(model.getRedTeamPlayerListAt(i)).getScore()), SwingConstants.RIGHT);
+            tmpJLabel.setForeground(Color.WHITE);
+            tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
+            RedTeamScorePane.add(tmpJLabel, constraint);
+            drawingIndex++;
         }
 
         drawingIndex = 0;
 
         // Green Team Players and their Scores
-        for (int startingIndex = 0; startingIndex < model.getPlayerListSize(); startingIndex++) {
-            // Iterate through playerList to find the next Green Team Member.
-            while (startingIndex < model.getPlayerListSize() && model.getPlayer(startingIndex).getTeam() != Player.GREEN_TEAM) {
-                startingIndex++;
-            }
-            if (startingIndex < model.getPlayerListSize()) {
+        for (int i = 0; i < model.getGreenTeamPlayerListSize(); i++) {
                 // Player
                 constraint.gridy = drawingIndex + 1;
                 constraint.gridx = 0;
-                tmpJLabel = new JLabel(model.getPlayer(startingIndex).name);
+                tmpJLabel = new JLabel(model.getPlayer(model.getGreenTeamPlayerListAt(i)).name);
                 tmpJLabel.setForeground(Color.WHITE);
                 tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
                 GreenTeamScorePane.add(tmpJLabel, constraint);
 
                 // Score
                 constraint.gridx = 2;
-                tmpJLabel = new JLabel("0", SwingConstants.RIGHT);
+                tmpJLabel = new JLabel(String.valueOf(model.getPlayer(model.getGreenTeamPlayerListAt(i)).getScore()), SwingConstants.RIGHT);
                 tmpJLabel.setForeground(Color.WHITE);
                 tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
                 GreenTeamScorePane.add(tmpJLabel, constraint);
 
                 drawingIndex++;
             }
-        }
 
         // Red Team Total Score
         constraint.ipady = 25;
         constraint.gridx = 0;
         constraint.gridy = 17;
         constraint.gridwidth = 3;
-        tmpJLabel = new JLabel("6120", SwingConstants.CENTER);
+        tmpJLabel = new JLabel(String.valueOf(model.getRedTeamScore()), SwingConstants.CENTER);
         tmpJLabel.setForeground(Color.WHITE);
         tmpJLabel.setFont(new Font("Arial", Font.BOLD, 35));
         RedTeamScorePane.add(tmpJLabel, constraint);
         // And Green Team Total Score
-        tmpJLabel = new JLabel("4120", SwingConstants.CENTER);
+        tmpJLabel = new JLabel(String.valueOf(model.getGreenTeamScore()), SwingConstants.CENTER);
         tmpJLabel.setForeground(Color.WHITE);
         tmpJLabel.setFont(new Font("Arial", Font.BOLD, 35));
         GreenTeamScorePane.add(tmpJLabel, constraint);
@@ -1589,10 +1573,10 @@ public class View extends JPanel {
         tmpJLabel.setFont(new Font("Arial", Font.BOLD, 32));
         GameActionPane.add(tmpJLabel, constraint);
 
-        // Time. NEEDS TO BE REPLACED WITH DYNAMIC
+        // Time.
         constraint.gridy = 12;
         constraint.ipady = 5;
-        tmpJLabel = new JLabel("5:27", SwingConstants.CENTER);
+        tmpJLabel = new JLabel(model.getGameTimeRemaining(), SwingConstants.CENTER);
         tmpJLabel.setForeground(Color.WHITE);
         tmpJLabel.setFont(new Font("Arial", Font.BOLD, 35));
         GameActionPane.add(tmpJLabel, constraint);
