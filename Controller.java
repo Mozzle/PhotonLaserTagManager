@@ -305,8 +305,12 @@ public class Controller implements ActionListener, MouseListener, KeyListener
                     
 				break;
 
-            // Case F2 -- No logic
+            // Case F2 -- Does Countdown Skip
 			case KeyEvent.VK_F2:
+            if(model.getSystemState()== Model.PLAYER_ENTRY_SCREEN){
+                    view.CountDownDebug();
+                    System.out.println("Countdown skipped");
+                }
 				break;
 
             // Case F3 -- No logic
@@ -345,11 +349,9 @@ public class Controller implements ActionListener, MouseListener, KeyListener
                 }
                 break;
 
-            case KeyEvent.VK_D:
-                if(model.getSystemState()== Model.PLAYER_ENTRY_SCREEN){
-                    view.CountDownDebug();
-                    System.out.println("Button Pressed");
-                }
+            
+                
+
 
             // Default case -- Do nothing
 			default:

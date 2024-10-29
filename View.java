@@ -875,7 +875,14 @@ public class View extends JPanel {
         add(countDownLabel);
         countDownLabel.setVisible(true);
 
-        setBorder(BorderFactory.createLineBorder(Color.RED, 50));
+        TimerTask task0 = new TimerTask() {
+            @Override
+            public void run() {
+                setBorder(BorderFactory.createLineBorder(Color.RED, 50));
+            }
+        };
+        
+        
         
         //If timer scheulde is true thne run belwo function
         TimerTask task = new TimerTask() {
@@ -883,7 +890,8 @@ public class View extends JPanel {
             public void run() {
             View.this.remove(countDownLabel);
             View.this.removeAll();
-            model.system_State = Model.PLAY_ACTION_SCREEN;
+            model.system_State = Model.PLAY_ACTION_SCREEN; 
+            
             }
         };
 
@@ -908,6 +916,17 @@ public class View extends JPanel {
             }
         };
 
+        TimerTask taskKill = new TimerTask() {
+            @Override
+            public void run(){
+                View.this.remove(countDownLabel);
+                View.this.removeAll();
+                model.system_State = Model.PLAY_ACTION_SCREEN;
+            }
+        };
+
+        //timer.schedule(task, 0);
+        timer.schedule(task0, 0);
         timer.schedule(task1, 10000);
         timer.schedule(task2, 20000);
         timer.schedule(task3, 30000);
@@ -916,9 +935,13 @@ public class View extends JPanel {
         
         timer.schedule(task, 30000);
         
-        if(CountDownVar==false){
-            task.cancel(); 
+        if(CountDownVar==false && (CountDownVar==false || model.getDebugMode())){
+            task0.cancel(); 
+            task1.cancel();
+            task2.cancel();
+            task3.cancel(); 
             View.this.remove(countDownLabel); 
+            View.this.removeAll();
             model.system_State=Model.PLAY_ACTION_SCREEN;
         }
         
