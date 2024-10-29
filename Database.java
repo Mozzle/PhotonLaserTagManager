@@ -279,7 +279,6 @@ public class Database {
      boolean getdbConnectionStatus() {
         return dbStatus;
      }
-
 }
 
 

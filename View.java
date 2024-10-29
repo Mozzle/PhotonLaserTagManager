@@ -84,6 +84,9 @@ public class View extends JPanel {
 
     // Game Action Screen
     JPanel GameActionScreen, RedTeamScorePane, GameActionPane, GreenTeamScorePane;
+    //View copy of the Model value
+    public int vSecondsRemainingInGame;
+    public JLabel TimeRemainingLabel;
 
     /*-------------------------------------------------
      *
@@ -134,7 +137,11 @@ public class View extends JPanel {
             View.this.remove(countDownLabel);
             model.system_State = Model.PLAY_ACTION_SCREEN;
             }
+
         };
+
+        vSecondsRemainingInGame = 0;
+
     }
 
     /*-------------------------------------------------
@@ -287,12 +294,18 @@ public class View extends JPanel {
             inCountDownScreen = false;
             inGameScreen = true;
             drawPlayActionScreen();
+            netController.transmit(202);
+            netController.transmit(202);
+            netController.transmit(202);
             
             // TODO: Link a method here that handles all the sprites and objects
             // for the game screen. Or implement it here directly.
         }
         else if (model.getSystemState() == Model.PLAY_ACTION_SCREEN && inGameScreen) {
-
+            if (vSecondsRemainingInGame != model.getGameSecondsRemaining()) {
+                TimeRemainingLabel.setText(model.getGameTimeRemaining());
+                vSecondsRemainingInGame = model.getGameSecondsRemaining();
+            }
         }
         
     }
@@ -317,11 +330,21 @@ public class View extends JPanel {
             return;
         }
 
+        // Find out what team our new player is on.
+        int newPlayerTeam = -1;
+        if (lastSelectedTeam == 'R') {
+            newPlayerTeam = Player.RED_TEAM;
+        }
+        else if (lastSelectedTeam == 'G') {
+            newPlayerTeam = Player.GREEN_TEAM;
+        }
+
         // Create our new player object
         Player newPlayer = Player.createPlayer(
             Name.getText(), 
             Integer.valueOf(Equip.getText()),
-            Integer.valueOf(ID.getText()));
+            Integer.valueOf(ID.getText()),
+            newPlayerTeam);
 
         // Add our player to the local playerlist, exit method early if failed to insert
         if (!model.addPlayer(newPlayer)) {
@@ -356,7 +379,11 @@ public class View extends JPanel {
             else if (lastSelectedTeam == 'G') {
                 model.getCodenameBoxAt(lastSelectedRow + Model.NUM_MAX_PLAYERS_PER_TEAM).setText(newPlayer.name);
             }
+
             model.toolTip(newPlayer.name + " added successfully!", 4500);
+            // Transmit the new player to the server
+            netController.transmit(String.valueOf(newPlayer.getEquipID()));
+            newPlayer.verify();
         }
 
         // Print a tooltip and adjust playerlist if database connection fails
@@ -1349,6 +1376,13 @@ public class View extends JPanel {
                 if (dChanged)
                     model.setDebugMode(debugField.isSelected());
 
+                // Check if send port has changed, if so unverify all players
+                if (sChanged || aChanged) {
+                    for (Player p : model.playerList) {
+                        p.revoke();
+                    }
+                }
+
                 // Success/fail tooltip
                 if(!error)
                     model.toolTip("Settings updated successfully!", 2500);
@@ -1480,52 +1514,57 @@ public class View extends JPanel {
         constraint.ipady = 8;
         constraint.ipadx = 10;
         
-        for (int i = 0; i < Model.NUM_MAX_PLAYERS_PER_TEAM; i++) {
-            // Player
-            constraint.gridy = i + 1;
+        int drawingIndex = 0;
+
+        for (int i = 0; i < model.getRedTeamPlayerListSize(); i++) {
+            constraint.gridy = drawingIndex + 1;
             constraint.gridx = 0;
-            tmpJLabel = new JLabel("Jerry");
+            tmpJLabel = new JLabel(model.getPlayer(model.getRedTeamPlayerListAt(i)).name);
             tmpJLabel.setForeground(Color.WHITE);
             tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
             RedTeamScorePane.add(tmpJLabel, constraint);            
-
             // Score
             constraint.gridx = 2;
-            tmpJLabel = new JLabel("1400", SwingConstants.RIGHT);
+            tmpJLabel = new JLabel(String.valueOf(model.getPlayer(model.getRedTeamPlayerListAt(i)).getScore()), SwingConstants.RIGHT);
             tmpJLabel.setForeground(Color.WHITE);
             tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
             RedTeamScorePane.add(tmpJLabel, constraint);
+            drawingIndex++;
         }
+
+        drawingIndex = 0;
 
         // Green Team Players and their Scores
-        for (int i = 0; i < Model.NUM_MAX_PLAYERS_PER_TEAM; i++) {
-            // Player
-            constraint.gridy = i + 1;
-            constraint.gridx = 0;
-            tmpJLabel = new JLabel("Tommy Joe");
-            tmpJLabel.setForeground(Color.WHITE);
-            tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
-            GreenTeamScorePane.add(tmpJLabel, constraint);
+        for (int i = 0; i < model.getGreenTeamPlayerListSize(); i++) {
+                // Player
+                constraint.gridy = drawingIndex + 1;
+                constraint.gridx = 0;
+                tmpJLabel = new JLabel(model.getPlayer(model.getGreenTeamPlayerListAt(i)).name);
+                tmpJLabel.setForeground(Color.WHITE);
+                tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
+                GreenTeamScorePane.add(tmpJLabel, constraint);
 
-            // Score
-            constraint.gridx = 2;
-            tmpJLabel = new JLabel("800", SwingConstants.RIGHT);
-            tmpJLabel.setForeground(Color.WHITE);
-            tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
-            GreenTeamScorePane.add(tmpJLabel, constraint);
-        }
+                // Score
+                constraint.gridx = 2;
+                tmpJLabel = new JLabel(String.valueOf(model.getPlayer(model.getGreenTeamPlayerListAt(i)).getScore()), SwingConstants.RIGHT);
+                tmpJLabel.setForeground(Color.WHITE);
+                tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
+                GreenTeamScorePane.add(tmpJLabel, constraint);
+
+                drawingIndex++;
+            }
 
         // Red Team Total Score
         constraint.ipady = 25;
         constraint.gridx = 0;
         constraint.gridy = 17;
         constraint.gridwidth = 3;
-        tmpJLabel = new JLabel("6120", SwingConstants.CENTER);
+        tmpJLabel = new JLabel(String.valueOf(model.getRedTeamScore()), SwingConstants.CENTER);
         tmpJLabel.setForeground(Color.WHITE);
         tmpJLabel.setFont(new Font("Arial", Font.BOLD, 35));
         RedTeamScorePane.add(tmpJLabel, constraint);
         // And Green Team Total Score
-        tmpJLabel = new JLabel("4120", SwingConstants.CENTER);
+        tmpJLabel = new JLabel(String.valueOf(model.getGreenTeamScore()), SwingConstants.CENTER);
         tmpJLabel.setForeground(Color.WHITE);
         tmpJLabel.setFont(new Font("Arial", Font.BOLD, 35));
         GreenTeamScorePane.add(tmpJLabel, constraint);
@@ -1547,8 +1586,9 @@ public class View extends JPanel {
         }
         
         // DELETE ME AFTER IMPLEMENTING DYNAMIC STUFF
-        model.getGameEventQueueAtNum(14).setText("Jerry hit Tommy Joe.");
-        model.getGameEventQueueAtNum(15).setText("Tommy Joe hit Jerry.");
+        model.getGameEventQueueAtNum(13).setText("Jerry hit Tommy Joe.");
+        model.getGameEventQueueAtNum(14).setText("Tommy Joe hit Jerry.");
+        model.getGameEventQueueAtNum(15).setText("Sample static sample");
 
         GameActionPane.add(gameEventsScroll, constraint);
 
@@ -1569,13 +1609,13 @@ public class View extends JPanel {
         tmpJLabel.setFont(new Font("Arial", Font.BOLD, 32));
         GameActionPane.add(tmpJLabel, constraint);
 
-        // Time. NEEDS TO BE REPLACED WITH DYNAMIC
+        // Time.
         constraint.gridy = 12;
         constraint.ipady = 5;
-        tmpJLabel = new JLabel("5:27", SwingConstants.CENTER);
-        tmpJLabel.setForeground(Color.WHITE);
-        tmpJLabel.setFont(new Font("Arial", Font.BOLD, 35));
-        GameActionPane.add(tmpJLabel, constraint);
+        TimeRemainingLabel = new JLabel(model.getGameTimeRemaining(), SwingConstants.CENTER);
+        TimeRemainingLabel.setForeground(Color.WHITE);
+        TimeRemainingLabel.setFont(new Font("Arial", Font.BOLD, 35));
+        GameActionPane.add(TimeRemainingLabel, constraint);
 
         // Add Game Action Screen to the main JFrame (The View class)
         constraint.gridx = 0;

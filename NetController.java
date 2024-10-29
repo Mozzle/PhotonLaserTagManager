@@ -6,6 +6,7 @@ import java.net.SocketException;
 import java.util.Arrays;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.nio.ByteBuffer;
 
     /*-----------------------------------------------------------
      * 
@@ -56,8 +57,9 @@ public class NetController
     private Thread listenerThread;
     private boolean isListening;
 
-    /// Return flag
+    /// Return flag and message notification flag
     private boolean returnFlag;
+    public boolean pingFlag;
 
     /// Send buffer and socket
     private byte[] sendBuffer;
@@ -80,6 +82,9 @@ public class NetController
 
         // Set listener flag to false
         isListening = false;
+
+        // Set ping flag to false
+        pingFlag = false;
     }
 
     /*-----------------------------------------------------------
@@ -118,6 +123,55 @@ public class NetController
 
         // Convert the message to a byte array
         sendBuffer = msg.getBytes();
+
+        // Try to send our data
+        try {
+            // Create an InetAddress object to store our address, and use it to create a packet to send
+            InetAddress address = InetAddress.getByName(SEND_ADDRESS);
+            DatagramPacket sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, address, SEND_PORT);
+
+            // Send the packet
+            sendSocket.send(sendPacket);
+
+            // Log message
+            System.out.println("[NetController - " + timestamp() + "] Sending packet to " 
+            + SEND_ADDRESS + ":" + SEND_PORT + ", data: " + new String(sendPacket.getData()));
+
+            // Close the socket since we are done with it
+            sendSocket.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            returnFlag = false;
+        }
+
+        return returnFlag; 
+    }
+
+    public boolean transmit(int msg)
+    {
+        returnFlag = true;
+
+        // Send data buffer used to hold packet contents
+        sendBuffer = new byte[1024];
+
+        // Try/catch attempt to open a socket for sending data
+        try {
+            sendSocket = new DatagramSocket(SEND_PORT);
+        } 
+        // Exception is typically thrown when the port is in use, or already open
+        catch (SocketException e) {
+            e.printStackTrace();
+            returnFlag = false;
+        }
+        // We have no idea what threw the exception
+        catch (Exception e) {
+            e.printStackTrace();
+            returnFlag = false;
+        }
+
+        // Convert the message to a byte array
+        sendBuffer = ByteBuffer.allocate(4).putInt(msg).array();
 
         // Try to send our data
         try {
@@ -241,6 +295,9 @@ public class NetController
 
         // Log message
         System.out.println("[NetController - " + timestamp() + "] Received message, data: " + receivedData[MAX_MESSAGES - 1]);
+
+        // Update ping flag
+        pingFlag = true;
     }
 
     /*-----------------------------------------------------------
