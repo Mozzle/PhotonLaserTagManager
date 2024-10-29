@@ -294,9 +294,9 @@ public class View extends JPanel {
             inCountDownScreen = false;
             inGameScreen = true;
             drawPlayActionScreen();
-            netController.transmit(202);
-            netController.transmit(202);
-            netController.transmit(202);
+            //netController.transmit(202);
+            //netController.transmit(202);
+            netController.transmit(String.valueOf(202));
             
             // TODO: Link a method here that handles all the sprites and objects
             // for the game screen. Or implement it here directly.

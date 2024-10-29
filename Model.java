@@ -1259,18 +1259,20 @@ public class Model
         try {
             playerIdentifierParam1 = Integer.parseInt(tempSplitString[0]);
         } catch (Exception e) {
-            System.out.println("[Model] Error parsing player 1 network data.");
+            System.out.println("[Model] Error parsing player 1 network data. '" + tempSplitString[0] + "'");
         }
 
         // Parse the second part of the received data
         try {
+            tempSplitString[1] = tempSplitString[1].replaceAll("\0", "");
             playerIdentifierParam2 = Integer.parseInt(tempSplitString[1]);
         } catch (Exception e) {
-            System.out.println("[Model] Error parsing player 2 network data.");
+            System.out.println("[Model] Error parsing player 2 network data. '" + tempSplitString[1] + "'");
+            System.out.println(tempSplitString[1].length());
         }
 
-        Player firstIdentifiedPlayer = identifyPlayer(playerIdentifierParam1, -1, "NULL", -1);
-        Player secondIdentifiedPlayer = identifyPlayer(playerIdentifierParam2, -1, "NULL", -1);
+        //Player firstIdentifiedPlayer = identifyPlayer(playerIdentifierParam1, -1, "NULL", -1);
+        //Player secondIdentifiedPlayer = identifyPlayer(playerIdentifierParam2, -1, "NULL", -1);
         returnPlayers[0] = playerIdentifierParam1;
         returnPlayers[1] = playerIdentifierParam2;
 

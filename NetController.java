@@ -49,7 +49,7 @@ public class NetController
     /// Define default ports and addresses
     private int RECEIVE_PORT = 7501;
     private int SEND_PORT = 7500;
-    private String SEND_ADDRESS = "192.168.1.100";
+    private String SEND_ADDRESS = "127.0.0.1";
     private final int MAX_MESSAGES = 10;
 
     /// Listener object and thread
@@ -108,7 +108,7 @@ public class NetController
 
         // Try/catch attempt to open a socket for sending data
         try {
-            sendSocket = new DatagramSocket(SEND_PORT);
+            sendSocket = new DatagramSocket();
         } 
         // Exception is typically thrown when the port is in use, or already open
         catch (SocketException e) {
@@ -130,6 +130,7 @@ public class NetController
             InetAddress address = InetAddress.getByName(SEND_ADDRESS);
             DatagramPacket sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, address, SEND_PORT);
 
+            sendSocket.connect(address, SEND_PORT);
             // Send the packet
             sendSocket.send(sendPacket);
 
@@ -138,6 +139,7 @@ public class NetController
             + SEND_ADDRESS + ":" + SEND_PORT + ", data: " + new String(sendPacket.getData()));
 
             // Close the socket since we are done with it
+            sendSocket.disconnect();
             sendSocket.close();
         }
         catch (Exception e) {
@@ -157,7 +159,7 @@ public class NetController
 
         // Try/catch attempt to open a socket for sending data
         try {
-            sendSocket = new DatagramSocket(SEND_PORT);
+            sendSocket = new DatagramSocket();
         } 
         // Exception is typically thrown when the port is in use, or already open
         catch (SocketException e) {
@@ -179,6 +181,7 @@ public class NetController
             InetAddress address = InetAddress.getByName(SEND_ADDRESS);
             DatagramPacket sendPacket = new DatagramPacket(sendBuffer, sendBuffer.length, address, SEND_PORT);
 
+            sendSocket.connect(address, SEND_PORT);
             // Send the packet
             sendSocket.send(sendPacket);
 
@@ -187,6 +190,7 @@ public class NetController
             + SEND_ADDRESS + ":" + SEND_PORT + ", data: " + new String(sendPacket.getData()));
 
             // Close the socket since we are done with it
+            sendSocket.disconnect();
             sendSocket.close();
         }
         catch (Exception e) {
