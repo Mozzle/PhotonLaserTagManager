@@ -118,7 +118,7 @@ public class TextBox {
 								//Do nothing
 							}
 
-						case KeyEvent.VK_D:
+						case KeyEvent.VK_F2:
 							if(m.getSystemState()==Model.PLAY_ACTION_SCREEN){
 								view.CountDownDebug();
 								System.out.println("Countdown Skip Button Pressed Textbox");
