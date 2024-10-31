@@ -62,7 +62,8 @@ public class Model
     public boolean debugMode;                       // Flag to enable debug mode
 
     public boolean playerUpdateFlag;                // Flag to allow player updates in model.update() to avoid concurrentexception
-
+    
+    public boolean scoreUpdatedFlag;                // Flag to View to update scores
     public int greenTeamScore;                      // For the Play Action Screen
     public int redTeamScore;                        // For the Play Action Screen
     public int secondsRemainingInGame;              // For the Play Action Screen
@@ -156,6 +157,7 @@ public class Model
         debugMode = false;
         playerUpdateFlag = true;
 
+        scoreUpdatedFlag = false;
         redTeamScore = 0;
         greenTeamScore = 0;
         secondsRemainingInGame = 0;
@@ -237,8 +239,8 @@ public class Model
                     Integer[] receivedPlayers = new Integer[2];
                     receivedPlayers = processNetworkData(data);
 
-                    Player firstIdentifiedPlayer = identifyPlayer(receivedPlayers[0], -1, "NULL", -1);
-                    Player secondIdentifiedPlayer = identifyPlayer(receivedPlayers[1], -1, "NULL", -1);
+                    Player firstIdentifiedPlayer = identifyPlayer(-1, receivedPlayers[0], "NULL", -1);
+                    Player secondIdentifiedPlayer = identifyPlayer(-1, receivedPlayers[1], "NULL", -1);
 
                     // If we have received a shot, update the player scores
                     if (firstIdentifiedPlayer != null) {
@@ -247,13 +249,15 @@ public class Model
                                 // If firstIdentifiedPlayer hit a player on the opposite team
                                 if (firstIdentifiedPlayer.getTeam() != secondIdentifiedPlayer.getTeam()) {
                                     firstIdentifiedPlayer.setScore(firstIdentifiedPlayer.getScore() + 10);
-                                    netController.transmit(secondIdentifiedPlayer.getNormalID());
+                                    scoreUpdatedFlag = true;
+                                    netController.transmit(String.valueOf(secondIdentifiedPlayer.getEquipID()));
                                     updateGameEventsQueue(firstIdentifiedPlayer.name, secondIdentifiedPlayer.name);
                                 }
                                 // If firstIdentifiedPlayer hit a player on the SAME team
                                 else  {
                                     firstIdentifiedPlayer.setScore(firstIdentifiedPlayer.getScore() - 10);
-                                    netController.transmit(firstIdentifiedPlayer.getNormalID());
+                                    scoreUpdatedFlag = true;
+                                    netController.transmit(String.valueOf(firstIdentifiedPlayer.getEquipID()));
                                     updateGameEventsQueue(firstIdentifiedPlayer.name, secondIdentifiedPlayer.name);
                                 }
                             }
@@ -262,10 +266,16 @@ public class Model
                                 // If Red Team player scored the green team base.
                                 if (firstIdentifiedPlayer.getTeam() == Player.RED_TEAM && receivedPlayers[1] == 43) {
                                     firstIdentifiedPlayer.setScore(firstIdentifiedPlayer.getScore() + 100);
+                                    scoreUpdatedFlag = true;
+                                    // Verify with Mr. Strother that we are supposed to transmit the value of the Base!
+                                    netController.transmit(String.valueOf(receivedPlayers[1]));
                                     updateGameEventsQueue(firstIdentifiedPlayer.name, "Green Team Base");
                                 }
                                 else if (firstIdentifiedPlayer.getTeam() == Player.GREEN_TEAM && receivedPlayers[1] == 53) {
                                     firstIdentifiedPlayer.setScore(firstIdentifiedPlayer.getScore() + 100);
+                                    scoreUpdatedFlag = true;
+                                    // Verify with Mr. Strother that we are supposed to transmit the value of the Base!
+                                    netController.transmit(String.valueOf(receivedPlayers[1]));
                                     updateGameEventsQueue(firstIdentifiedPlayer.name, "Red Team Base");
                                 }
                                 else {
@@ -274,7 +284,6 @@ public class Model
                             }
                         }
 
-                        // TODO: Update team scores funciton
                     
                 }
 
@@ -1010,6 +1019,14 @@ public class Model
         return greenTeamScore;
     }
 
+    public boolean getScoreUpdatedFlag() {
+        return scoreUpdatedFlag;
+    }
+
+    public void setScoreUpdatedFlag(boolean val) {
+        scoreUpdatedFlag = val;
+    }
+
     public void updateGameEventsQueue(String playerNameShooting, String playerNameHit) {
         // Move all the text up the screen
         for (int i = 1; i < 16; i++) {
@@ -1206,7 +1223,7 @@ public class Model
         }
 
         // If no match is found on either list, then return null
-        System.out.println("No player match found");
+        System.out.println("No player match found " + normID);
         return null;
     }
 

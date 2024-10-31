@@ -68,6 +68,7 @@ public class NetListener
                 dataSocket.receive(packet);
                 // Send the data to the master controller
                 master.ping(packet.getData());
+                dataBuffer = new byte[1024];
             }
             // Exception is typically thrown when the port is in use, or already open
             catch (SocketException e) {

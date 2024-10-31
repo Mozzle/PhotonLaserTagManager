@@ -43,6 +43,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
+import java.util.Comparator;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -84,6 +85,12 @@ public class View extends JPanel {
 
     // Game Action Screen
     JPanel GameActionScreen, RedTeamScorePane, GameActionPane, GreenTeamScorePane;
+    public ArrayList<JLabel> redTeamScores;
+    public ArrayList<JLabel> redTeamNames;
+    public ArrayList<JLabel> greenTeamScores;
+    public ArrayList<JLabel> greenTeamNames;
+    public JLabel redTeamTotScore;
+    public JLabel greenTeamTotScore;
     //View copy of the Model value
     public int vSecondsRemainingInGame;
     public JLabel TimeRemainingLabel;
@@ -125,6 +132,11 @@ public class View extends JPanel {
         lastSelectedRow = 99;
         lastSelectedTeam = 'R';
         PlayerEntryPanePadding = 0;
+
+        redTeamScores = new ArrayList<JLabel>();
+        redTeamNames = new ArrayList<JLabel>();
+        greenTeamScores = new ArrayList<JLabel>();
+        greenTeamNames = new ArrayList<JLabel>();
 
         // Init finish-popup flag
         finishPopup = false;
@@ -306,6 +318,12 @@ public class View extends JPanel {
                 TimeRemainingLabel.setText(model.getGameTimeRemaining());
                 vSecondsRemainingInGame = model.getGameSecondsRemaining();
             }
+
+            if (model.getScoreUpdatedFlag() == true) {
+                model.setScoreUpdatedFlag(false);
+                updateScores();
+            }
+
         }
         
     }
@@ -1519,18 +1537,28 @@ public class View extends JPanel {
         for (int i = 0; i < model.getRedTeamPlayerListSize(); i++) {
             constraint.gridy = drawingIndex + 1;
             constraint.gridx = 0;
-            tmpJLabel = new JLabel(model.getPlayer(model.getRedTeamPlayerListAt(i)).name);
-            tmpJLabel.setForeground(Color.WHITE);
-            tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
-            RedTeamScorePane.add(tmpJLabel, constraint);            
+            redTeamNames.add(new JLabel(model.getPlayer(model.getRedTeamPlayerListAt(i)).name));
+            redTeamNames.get(i).setForeground(Color.WHITE);
+            redTeamNames.get(i).setFont(new Font("Arial", Font.BOLD, 20));
+            RedTeamScorePane.add(redTeamNames.get(i), constraint);            
             // Score
             constraint.gridx = 2;
-            tmpJLabel = new JLabel(String.valueOf(model.getPlayer(model.getRedTeamPlayerListAt(i)).getScore()), SwingConstants.RIGHT);
+            redTeamScores.add(new JLabel(String.valueOf(model.getPlayer(model.getRedTeamPlayerListAt(i)).getScore()), SwingConstants.RIGHT));
+            redTeamScores.get(i).setForeground(Color.WHITE);
+            redTeamScores.get(i).setFont(new Font("Arial", Font.BOLD, 20));
+            RedTeamScorePane.add(redTeamScores.get(i), constraint);
+            drawingIndex++;
+        }
+
+        while (drawingIndex < 15) {
+            constraint.gridy = drawingIndex + 1;
+            constraint.gridx = 0;
+            tmpJLabel = new JLabel(" ");
             tmpJLabel.setForeground(Color.WHITE);
             tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
             RedTeamScorePane.add(tmpJLabel, constraint);
             drawingIndex++;
-        }
+    } 
 
         drawingIndex = 0;
 
@@ -1539,35 +1567,45 @@ public class View extends JPanel {
                 // Player
                 constraint.gridy = drawingIndex + 1;
                 constraint.gridx = 0;
-                tmpJLabel = new JLabel(model.getPlayer(model.getGreenTeamPlayerListAt(i)).name);
-                tmpJLabel.setForeground(Color.WHITE);
-                tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
-                GreenTeamScorePane.add(tmpJLabel, constraint);
+                greenTeamNames.add(new JLabel(model.getPlayer(model.getGreenTeamPlayerListAt(i)).name));
+                greenTeamNames.get(i).setForeground(Color.WHITE);
+                greenTeamNames.get(i).setFont(new Font("Arial", Font.BOLD, 20));
+                GreenTeamScorePane.add(greenTeamNames.get(i), constraint);
 
                 // Score
                 constraint.gridx = 2;
-                tmpJLabel = new JLabel(String.valueOf(model.getPlayer(model.getGreenTeamPlayerListAt(i)).getScore()), SwingConstants.RIGHT);
-                tmpJLabel.setForeground(Color.WHITE);
-                tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
-                GreenTeamScorePane.add(tmpJLabel, constraint);
+                greenTeamScores.add(new JLabel(String.valueOf(model.getPlayer(model.getGreenTeamPlayerListAt(i)).getScore()), SwingConstants.RIGHT));
+                greenTeamScores.get(i).setForeground(Color.WHITE);
+                greenTeamScores.get(i).setFont(new Font("Arial", Font.BOLD, 20));
+                GreenTeamScorePane.add(greenTeamScores.get(i), constraint);
 
                 drawingIndex++;
             }
+        
+        while (drawingIndex < 15) {
+                constraint.gridy = drawingIndex + 1;
+                constraint.gridx = 0;
+                tmpJLabel = new JLabel(" ");
+                tmpJLabel.setForeground(Color.WHITE);
+                tmpJLabel.setFont(new Font("Arial", Font.BOLD, 20));
+                GreenTeamScorePane.add(tmpJLabel, constraint);
+                drawingIndex++;
+        } 
 
         // Red Team Total Score
         constraint.ipady = 25;
         constraint.gridx = 0;
         constraint.gridy = 17;
         constraint.gridwidth = 3;
-        tmpJLabel = new JLabel(String.valueOf(model.getRedTeamScore()), SwingConstants.CENTER);
-        tmpJLabel.setForeground(Color.WHITE);
-        tmpJLabel.setFont(new Font("Arial", Font.BOLD, 35));
-        RedTeamScorePane.add(tmpJLabel, constraint);
+        redTeamTotScore = new JLabel(String.valueOf(model.getRedTeamScore()), SwingConstants.CENTER);
+        redTeamTotScore.setForeground(Color.WHITE);
+        redTeamTotScore.setFont(new Font("Arial", Font.BOLD, 35));
+        RedTeamScorePane.add(redTeamTotScore, constraint);
         // And Green Team Total Score
-        tmpJLabel = new JLabel(String.valueOf(model.getGreenTeamScore()), SwingConstants.CENTER);
-        tmpJLabel.setForeground(Color.WHITE);
-        tmpJLabel.setFont(new Font("Arial", Font.BOLD, 35));
-        GreenTeamScorePane.add(tmpJLabel, constraint);
+        greenTeamTotScore = new JLabel(String.valueOf(model.getGreenTeamScore()), SwingConstants.CENTER);
+        greenTeamTotScore.setForeground(Color.WHITE);
+        greenTeamTotScore.setFont(new Font("Arial", Font.BOLD, 35));
+        GreenTeamScorePane.add(greenTeamTotScore, constraint);
 
         // Game Events Scroll
         JLabel gameEventsScroll = new JLabel();
@@ -1585,10 +1623,6 @@ public class View extends JPanel {
             gameEventsScroll.add(model.getGameEventQueueAtNum(i));
         }
         
-        // DELETE ME AFTER IMPLEMENTING DYNAMIC STUFF
-        model.getGameEventQueueAtNum(13).setText("Jerry hit Tommy Joe.");
-        model.getGameEventQueueAtNum(14).setText("Tommy Joe hit Jerry.");
-        model.getGameEventQueueAtNum(15).setText("Sample static sample");
 
         GameActionPane.add(gameEventsScroll, constraint);
 
@@ -1632,5 +1666,98 @@ public class View extends JPanel {
         this.revalidate();
         
      }
+
+    /*--------------------------------------------------
+     * 
+     *  updateScores()
+     * 
+     *  DESCRIPTION: Handles the drawing of updated
+     *  individual and total scores to the screen.
+     * 
+     *  REQUIREMENTS: 
+     * 
+     --------------------------------------------------*/
+    public void updateScores() {
+        int score = 0;
+        ArrayList<Integer> rankedScores = new ArrayList<Integer>();
+        ArrayList<Integer> rankedPlayers = new ArrayList<Integer>();
+
+        for (int i = 0; i < model.getRedTeamPlayerListSize(); i++) {
+            rankedScores.add(model.getPlayer(model.getRedTeamPlayerListAt(i)).getScore());
+        }
+        rankedScores.sort(Comparator.reverseOrder());
+
+        // For the ranked scores arraylist
+        for (int i = 0; i < model.getRedTeamPlayerListSize(); i++) {
+            // for all players in red team
+            for (int j = 0; j < model.getRedTeamPlayerListSize(); j++) {
+                // If ranked score at i is equal to red team player's score at j
+                if (rankedScores.get(i) == model.getPlayer(model.getRedTeamPlayerListAt(j)).getScore()) {
+                    boolean alreadyRanked = false;
+                    // and if red team player at j is not already in the rankedPlayers list
+                     for (int element : rankedPlayers) {
+                         if (element == model.getRedTeamPlayerListAt(j)) {
+                             alreadyRanked = true;
+                         }
+                    }
+                    // Add the player to their position in the list.
+                    if (!alreadyRanked) {
+                        rankedPlayers.add(model.getRedTeamPlayerListAt(j));
+                    }
+                }
+            }
+        }
+
+        // Set text and score for all players
+        for (int i = 0; i < model.getRedTeamPlayerListSize(); i++) {
+            redTeamScores.get(i).setText(String.valueOf(model.getPlayer(rankedPlayers.get(i)).getScore()));
+            redTeamNames.get(i).setText(model.getPlayer(rankedPlayers.get(i)).name);
+            score += model.getPlayer(rankedPlayers.get(i)).getScore();
+        }
+        // Set total team score
+        redTeamTotScore.setText(String.valueOf(score));
+
+        // GREEN TEAM
+        rankedScores = new ArrayList<Integer>();
+        rankedPlayers = new ArrayList<Integer>();
+        score = 0;
+
+        // Add all green team scores to an arrayList
+        for (int i = 0; i < model.getGreenTeamPlayerListSize(); i++) {
+            rankedScores.add(model.getPlayer(model.getGreenTeamPlayerListAt(i)).getScore());
+        }
+        // Sort rankedScores in reverse order
+        rankedScores.sort(Comparator.reverseOrder());
+
+        // For the ranked scores arraylist
+        for (int i = 0; i < model.getGreenTeamPlayerListSize(); i++) {
+            // For all players in green team
+            for (int j = 0; j < model.getGreenTeamPlayerListSize(); j++) {
+                // If ranked score at i is equal to green team player's score at j
+                if (rankedScores.get(i) == model.getPlayer(model.getGreenTeamPlayerListAt(j)).getScore()) {
+                    boolean alreadyRanked = false;
+                    // and if green team player at j is not already in the rankedPlayers list
+                     for (int element : rankedPlayers) {
+                         if (element == model.getGreenTeamPlayerListAt(j)) {
+                             alreadyRanked = true;
+                         }
+                    }
+                    // Add the player to their position in the list.
+                    if (!alreadyRanked) {
+                        rankedPlayers.add(model.getGreenTeamPlayerListAt(j));
+                    }
+                }
+            }
+        }
+
+        // Set text and score for all players
+        for (int i = 0; i < model.getGreenTeamPlayerListSize(); i++) {
+            greenTeamScores.get(i).setText(String.valueOf(model.getPlayer(rankedPlayers.get(i)).getScore()));
+            greenTeamNames.get(i).setText(model.getPlayer(rankedPlayers.get(i)).name);
+            score += model.getPlayer(rankedPlayers.get(i)).getScore();
+        }
+        // Set total team score
+        greenTeamTotScore.setText(String.valueOf(score));
+    }
 }
 
