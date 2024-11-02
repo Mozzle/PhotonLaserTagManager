@@ -45,6 +45,7 @@ public class Player
     private int normalID;
     private int team;
     private int score;
+    private boolean hasHitBase; // true if player has hit enemy base
 
     /// Reference flags for player entry screen
     private JTextField refID;
@@ -71,6 +72,7 @@ public class Player
         equipmentID = -1;
         normalID = -1;
         rowIdentifier = -1;
+        hasHitBase = false;
     }
 
     /*-----------------------------------------------------------
@@ -279,5 +281,24 @@ public class Player
             refEquipID.setText(String.valueOf(equipmentID));
         if (refName != null)
             refName.setText(name);
+    }
+
+    /*-----------------------------------------------------------
+     * 
+     *  getHasHitBase() and setHasHitBase(boolean val)
+     * 
+     *  DESCRIPTION: Sets and gets the hasHitBase boolean.
+     *  This is a flag that is true if the player has hit the
+     *  enemy base, meaning they should have a stylized '[B]'
+     *  next to their name on the Play Action Screen.
+     * 
+    ---------------------------------------------------------- */
+
+    public boolean getHasHitBase() {
+        return hasHitBase;
+    }
+
+    public void setHasHitBase(boolean val) {
+        hasHitBase = val;
     }
 }

@@ -2,3 +2,5 @@
 *.class
 #ignore the temporary excel file
 ~$PhotonManager_Requirments.xlsx
+#ignore the traffic generator test file
+python_trafficgenarator_v2.py

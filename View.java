@@ -58,7 +58,7 @@ public class View extends JPanel {
     private int windowHeight, windowWidth, PlayerEntryPanePadding;
     
     // Declare current state flags (to determine what to draw)
-    private boolean inPlayerEntryScreen, inCountDownScreen, inGameScreen;
+    private boolean inPlayerEntryScreen, inCountDownScreen, inGameScreen, inGameOverScreen;
 
     // Declare panes for the main JPanel
     public JPanel RedTeamTextBoxPane, GreenTeamTextBoxPane, PlayerEntryPanes;
@@ -86,8 +86,8 @@ public class View extends JPanel {
     // Game Action Screen
     JPanel GameActionScreen, RedTeamScorePane, GameActionPane, GreenTeamScorePane;
     public ArrayList<JLabel> redTeamScores;
-    public ArrayList<JLabel> redTeamNames;
-    public ArrayList<JLabel> greenTeamScores;
+    public ArrayList<JLabel> redTeamNames, redTeamBaseLabel;
+    public ArrayList<JLabel> greenTeamScores, greenTeamBaseLabel;
     public ArrayList<JLabel> greenTeamNames;
     public JLabel redTeamTotScore;
     public JLabel greenTeamTotScore;
@@ -117,6 +117,7 @@ public class View extends JPanel {
         inPlayerEntryScreen = false;
         inCountDownScreen = false;
         inGameScreen = false;
+        inGameOverScreen = false;
 
         // Create the red and green team panes, set them to visible
         RedTeamTextBoxPane = new JPanel();
@@ -135,6 +136,8 @@ public class View extends JPanel {
 
         redTeamScores = new ArrayList<JLabel>();
         redTeamNames = new ArrayList<JLabel>();
+        redTeamBaseLabel = new ArrayList<JLabel>();
+        greenTeamBaseLabel = new ArrayList<JLabel>();
         greenTeamScores = new ArrayList<JLabel>();
         greenTeamNames = new ArrayList<JLabel>();
 
@@ -243,7 +246,9 @@ public class View extends JPanel {
         if (model.getSystemState() == Model.PLAYER_ENTRY_SCREEN) {
              
             if (!inPlayerEntryScreen) { // If first time in Player Entry Screen
+            PreviousScreenDeleter();
             inPlayerEntryScreen = true;
+            inGameOverScreen = false;
             this.drawPlayerEntryScreen();
             }
             
@@ -291,9 +296,10 @@ public class View extends JPanel {
             // If it's our first time in the COUNTDOWN SCREEN
             if (!inCountDownScreen) {
             inPlayerEntryScreen = false;
-            inCountDownScreen=true; 
+            inCountDownScreen = true; 
+            inGameOverScreen = false;
             // Delete Player Entry Screen
-            this.PlayerEntryScreenDeleter();
+            this.PreviousScreenDeleter();
             // Draw the Countdown Screen 
             this.drawCountDownScreen();
             // Schedule the end of the countdown screen
@@ -324,6 +330,16 @@ public class View extends JPanel {
                 updateScores();
             }
 
+        }
+
+        if (model.getSystemState() == Model.GAME_OVER) {
+
+            if (!inGameOverScreen) {
+                inGameScreen = false;
+                inGameOverScreen = true;
+                GameOverScreen();
+
+            }
         }
         
     }
@@ -773,8 +789,8 @@ public class View extends JPanel {
 
         tFR.ipady = 5;
         tFG.ipady = 5;
-
-        if (model.getNumPlayerIDBoxes() != 0) {
+        
+        if (model.GameDataStatus == Model.FIRST_GAME) {
             // Draw the Red Team Text Boxes row by row
             for (int i = 0; i < Model.NUM_MAX_PLAYERS_PER_TEAM; i++) {
                 // ">>>>>" Row selection labels
@@ -854,6 +870,7 @@ public class View extends JPanel {
                 tFG.gridwidth = 1;
                 TextFieldsG.add(model.getCodenameBoxAt(i), tFG);
             }
+        }
             TextFieldsR.setPreferredSize(new Dimension(415, 587));
             TextFieldsG.setPreferredSize(new Dimension(415, 587));
             RedTeamTextBoxPane.add(TextFieldsR, tFR);
@@ -864,9 +881,12 @@ public class View extends JPanel {
             //this.add(GreenTeamTextBoxPane, BorderLayout.CENTER);
             this.add(PlayerEntryPanes, BorderLayout.NORTH);
 
-        }
+        
         RedTeamTextBoxPane.setVisible(true);
         GreenTeamTextBoxPane.setVisible(true);
+        this.setVisible(true);
+        this.repaint();
+        //this.revalidate();
 
         controller.initTextboxListener();
     }
@@ -1004,17 +1024,16 @@ public class View extends JPanel {
 
     /*--------------------------------------------------
      * 
-     *  PlayerEntryScreenDeleter()
+     *  PreviousScreenDeleter()
      * 
-     *  DESCRIPTION: Deletes the player entry screen.
-     *  Used for transitioning into the Countdown 
-     *  screen.
+     *  DESCRIPTION: Deletes the previous screen.
+     *  Used for transitioning between screens
      * 
      *  REQUIREMENTS: 0013
      * 
      --------------------------------------------------*/
 
-    public void PlayerEntryScreenDeleter(){
+    public void PreviousScreenDeleter(){
         for(int i=this.getComponentCount() - 1; i>= 0 ; i--)
             this.remove(i);        
     }
@@ -1536,6 +1555,13 @@ public class View extends JPanel {
 
         for (int i = 0; i < model.getRedTeamPlayerListSize(); i++) {
             constraint.gridy = drawingIndex + 1;
+
+            constraint.gridx = 0;
+            redTeamBaseLabel.add(new JLabel(""));
+            redTeamBaseLabel.get(i).setForeground(Color.YELLOW);
+            redTeamBaseLabel.get(i).setFont(new Font("Arial", Font.BOLD, 20));
+            RedTeamScorePane.add(redTeamBaseLabel.get(i), constraint); 
+
             constraint.gridx = 0;
             redTeamNames.add(new JLabel(model.getPlayer(model.getRedTeamPlayerListAt(i)).name));
             redTeamNames.get(i).setForeground(Color.WHITE);
@@ -1550,6 +1576,7 @@ public class View extends JPanel {
             drawingIndex++;
         }
 
+        // Fill the remaining spaces with blank rows
         while (drawingIndex < 15) {
             constraint.gridy = drawingIndex + 1;
             constraint.gridx = 0;
@@ -1566,7 +1593,16 @@ public class View extends JPanel {
         for (int i = 0; i < model.getGreenTeamPlayerListSize(); i++) {
                 // Player
                 constraint.gridy = drawingIndex + 1;
+
                 constraint.gridx = 0;
+                constraint.weightx = 0.1;
+                greenTeamBaseLabel.add(new JLabel(""));
+                greenTeamBaseLabel.get(i).setForeground(Color.YELLOW);
+                greenTeamBaseLabel.get(i).setFont(new Font("Arial", Font.BOLD, 20));
+                GreenTeamScorePane.add(greenTeamBaseLabel.get(i), constraint); 
+
+                constraint.gridx = 0;
+                constraint.weightx = 1000;
                 greenTeamNames.add(new JLabel(model.getPlayer(model.getGreenTeamPlayerListAt(i)).name));
                 greenTeamNames.get(i).setForeground(Color.WHITE);
                 greenTeamNames.get(i).setFont(new Font("Arial", Font.BOLD, 20));
@@ -1582,6 +1618,7 @@ public class View extends JPanel {
                 drawingIndex++;
             }
         
+        // Fill the remaining spaces with blank rows
         while (drawingIndex < 15) {
                 constraint.gridy = drawingIndex + 1;
                 constraint.gridx = 0;
@@ -1711,7 +1748,15 @@ public class View extends JPanel {
         // Set text and score for all players
         for (int i = 0; i < model.getRedTeamPlayerListSize(); i++) {
             redTeamScores.get(i).setText(String.valueOf(model.getPlayer(rankedPlayers.get(i)).getScore()));
-            redTeamNames.get(i).setText(model.getPlayer(rankedPlayers.get(i)).name);
+
+            if (model.getPlayer(rankedPlayers.get(i)).getHasHitBase()) {
+                redTeamBaseLabel.get(i).setText("[B]");
+                redTeamNames.get(i).setText("     " + model.getPlayer(rankedPlayers.get(i)).name);
+            }
+            else {
+                redTeamBaseLabel.get(i).setText("");
+                redTeamNames.get(i).setText(model.getPlayer(rankedPlayers.get(i)).name);
+            }
             score += model.getPlayer(rankedPlayers.get(i)).getScore();
         }
         // Set total team score
@@ -1753,11 +1798,45 @@ public class View extends JPanel {
         // Set text and score for all players
         for (int i = 0; i < model.getGreenTeamPlayerListSize(); i++) {
             greenTeamScores.get(i).setText(String.valueOf(model.getPlayer(rankedPlayers.get(i)).getScore()));
-            greenTeamNames.get(i).setText(model.getPlayer(rankedPlayers.get(i)).name);
+
+            if (model.getPlayer(rankedPlayers.get(i)).getHasHitBase()) {
+                greenTeamBaseLabel.get(i).setText("[B]");
+                greenTeamNames.get(i).setText("     " + model.getPlayer(rankedPlayers.get(i)).name);
+            }
+            else {
+                greenTeamBaseLabel.get(i).setText("");
+                greenTeamNames.get(i).setText(model.getPlayer(rankedPlayers.get(i)).name);
+            }
             score += model.getPlayer(rankedPlayers.get(i)).getScore();
         }
         // Set total team score
         greenTeamTotScore.setText(String.valueOf(score));
+    }
+
+    public boolean GameOverScreen() {
+
+        Object[] options = { "Restart", "Back To Player Entry", "Exit Photon"};
+
+        int choice = JOptionPane.showOptionDialog(null, "    Game Over! Do you want to restart the game?", model.calculateGameWinner(), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+
+        // If user selects to restart game
+        if (choice == JOptionPane.YES_OPTION) {
+            // Reset play action message queue
+            // Reset Player Lists
+            // Revalidate Equipment/Send out Revalidation codes to equpment
+            model.setSystemState(Model.COUNTDOWN_SCREEN);
+            model.GameDataStatus = Model.SECOND_GAME_RESET;
+        }
+        // If user selects to navigate to the Player Entry Screen
+        else if (choice == JOptionPane.NO_OPTION) {
+            model.GameDataStatus = Model.SECOND_GAME_NEW_ENTRY;
+            model.setSystemState(Model.PLAYER_ENTRY_SCREEN);
+        }
+        // If the user selects "Exit Photon" or hits the 'X' button
+        else {
+            System.exit(0);
+        }
+        return true;
     }
 }
 

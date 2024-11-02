@@ -22,7 +22,13 @@ public class Model
     public static final int PLAYER_ENTRY_SCREEN = 2;
     public static final int COUNTDOWN_SCREEN = 3;
     public static final int PLAY_ACTION_SCREEN = 4;
-    public static final int NUM_SCREENS = 5;
+    public static final int GAME_OVER = 5;
+    public static final int NUM_SCREENS = 6;
+
+    // GameDataStatus
+    public static final int FIRST_GAME = 0;
+    public static final int SECOND_GAME_RESET = 1;
+    public static final int SECOND_GAME_NEW_ENTRY = 2;
 
     // Max players per team
     public static final int NUM_MAX_PLAYERS_PER_TEAM = 15;
@@ -30,6 +36,7 @@ public class Model
     Database database;
     public int system_State;                        // Controls the state of the program.
                                                     // See the 'System_States' enums above
+    public int GameDataStatus;
 
     public ArrayList<Player> playerList;            // Local player list for the game
     public ArrayList<Integer> redTeamPlayerList;    // List of playerList indicies that belong to Red team members.
@@ -94,6 +101,10 @@ public class Model
         {
             // removes the splashscreen picture
             windowObjects.remove(0);
+
+            PlayerIDBoxes.clear();
+            EquipmentIDBoxes.clear();
+            CodenameBoxes.clear();
             // creates the tables for the player entry screen
             for (int i = 0; i < NUM_MAX_PLAYERS_PER_TEAM; i++) {
                 // Red Team
@@ -127,6 +138,7 @@ public class Model
         netController = null;
 
         system_State = INITIALIZE;
+        GameDataStatus = FIRST_GAME;
         // Initialization
         windowObjects = new ArrayList<Sprite>();
         PlayerIDBoxes = new ArrayList<TextBox>();
@@ -266,6 +278,7 @@ public class Model
                                 // If Red Team player scored the green team base.
                                 if (firstIdentifiedPlayer.getTeam() == Player.RED_TEAM && receivedPlayers[1] == 43) {
                                     firstIdentifiedPlayer.setScore(firstIdentifiedPlayer.getScore() + 100);
+                                    firstIdentifiedPlayer.setHasHitBase(true);
                                     scoreUpdatedFlag = true;
                                     // Verify with Mr. Strother that we are supposed to transmit the value of the Base!
                                     netController.transmit(String.valueOf(receivedPlayers[1]));
@@ -273,6 +286,7 @@ public class Model
                                 }
                                 else if (firstIdentifiedPlayer.getTeam() == Player.GREEN_TEAM && receivedPlayers[1] == 53) {
                                     firstIdentifiedPlayer.setScore(firstIdentifiedPlayer.getScore() + 100);
+                                    firstIdentifiedPlayer.setHasHitBase(true);
                                     scoreUpdatedFlag = true;
                                     // Verify with Mr. Strother that we are supposed to transmit the value of the Base!
                                     netController.transmit(String.valueOf(receivedPlayers[1]));
@@ -288,6 +302,10 @@ public class Model
                 }
 
 
+
+                break;
+
+            case GAME_OVER:
 
                 break;
 
@@ -313,9 +331,9 @@ public class Model
     {
         //removes the tables for the player entry screen
         for (int i = 0; i < getNumPlayerIDBoxes(); i++) {
-            PlayerIDBoxes.remove(i);
-            EquipmentIDBoxes.remove(i);
-            CodenameBoxes.remove(i);
+            //PlayerIDBoxes.remove(i);
+            //EquipmentIDBoxes.remove(i);
+            //CodenameBoxes.remove(i);
         }
         system_State = COUNTDOWN_SCREEN;
     }
@@ -495,6 +513,13 @@ public class Model
 
     public int getSystemState() {
         return system_State;
+    }
+
+    public void setSystemState(int state) {
+        if (state < NUM_SCREENS) {
+            system_State = state;
+        }
+        
     }
 
     /*-------------------------------------------------
@@ -927,22 +952,30 @@ public class Model
 
         redTeamScore = 0;
         greenTeamScore = 0;
-        secondsRemainingInGame = 360; //set to 6:00 minutes
+        //TODO: RESET TO 360 RESET TO 360
+        //AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
+        secondsRemainingInGame = 10; //set to 6:00 minutes
         gameCountdownTimer = new Timer();
         gameCountdownTask = new TimerTask() {
             public void run() {
                 secondsRemainingInGame--;
 
-                if (secondsRemainingInGame <= 0) {
+                if (secondsRemainingInGame < 0) {
                     // TODO: END GAME
                     // IDEA: A POPUP SCREEN LIKE THE SETTINGS/NEW PLAYER
                     // ENTRY POPUP SCREENS THAT PROMPTS THE USER TO RESTART or
                     // Go back to the player entry screen
+                    netController.transmit("221");
+                    netController.transmit("221");
+                    netController.transmit("221");
+                    system_State = GAME_OVER;
                     gameCountdownTimer.cancel();
                 }
             }
         };
         gameCountdownTimer.schedule(gameCountdownTask, 1000, 1000);
+
+        gameEventsQueue.clear();
 
         for (int i = 0; i < 16; i++) {
             gameEventsQueue.add(new JLabel(""));
@@ -950,16 +983,26 @@ public class Model
             gameEventsQueue.get(i).setFont(new Font("Arial", Font.BOLD, 20));
         }
 
-        for (int i = 0; i < getPlayerListSize(); i++) {
-            // Iterate through playerList to find the next Green Team Member.
-            if (getPlayer(i).getTeam() == Player.RED_TEAM) {
-                redTeamPlayerList.add(i);
+        if (GameDataStatus == FIRST_GAME) {
+            for (int i = 0; i < getPlayerListSize(); i++) {
+                // Iterate through playerList to find the next Green Team Member.
+                if (getPlayer(i).getTeam() == Player.RED_TEAM) {
+                    redTeamPlayerList.add(i);
+                }
+                else if (getPlayer(i).getTeam() == Player.GREEN_TEAM) {
+                    greenTeamPlayerList.add(i);
+                }
+                else {
+                    //Throw error.
+                }
             }
-            else if (getPlayer(i).getTeam() == Player.GREEN_TEAM) {
-                greenTeamPlayerList.add(i);
-            }
-            else {
-                //Throw error.
+        }
+        // If replaying a game, turn all of the equipment back on, and reset scores
+        else {
+            for (int i = 0; i < getPlayerListSize(); i++) {
+                netController.transmit(String.valueOf(getPlayer(i).getEquipID()));
+                getPlayer(i).verify();
+                getPlayer(i).setScore(0);
             }
         }
 
@@ -1294,5 +1337,31 @@ public class Model
         returnPlayers[1] = playerIdentifierParam2;
 
         return returnPlayers;
+    }
+
+    public String calculateGameWinner() {
+        int rScore = 0, gScore = 0;
+
+        for (int i = 0; i < getRedTeamPlayerListSize(); i++) {
+            rScore += getPlayer(getRedTeamPlayerListAt(i)).getScore();
+        }
+
+        for (int i = 0; i < getGreenTeamPlayerListSize(); i++) {
+            gScore += getPlayer(getGreenTeamPlayerListAt(i)).getScore();
+        }
+
+        if (rScore > gScore) {
+            return "RED TEAM WINS!!!";
+        }
+        else if (gScore > rScore) {
+            return "GREEN TEAM WINS!!!";
+        }
+        else {
+            return "TIE GAME! NO WINNERS!";
+        }
+    }
+
+    public void gameRestartDataReset() {
+
     }
 }
