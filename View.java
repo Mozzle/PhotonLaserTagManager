@@ -886,7 +886,7 @@ public class View extends JPanel {
         GreenTeamTextBoxPane.setVisible(true);
         this.setVisible(true);
         this.repaint();
-        //this.revalidate();
+        this.revalidate();
 
         controller.initTextboxListener();
     }

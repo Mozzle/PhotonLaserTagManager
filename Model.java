@@ -952,9 +952,7 @@ public class Model
 
         redTeamScore = 0;
         greenTeamScore = 0;
-        //TODO: RESET TO 360 RESET TO 360
-        //AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-        secondsRemainingInGame = 10; //set to 6:00 minutes
+        secondsRemainingInGame = 360;
         gameCountdownTimer = new Timer();
         gameCountdownTask = new TimerTask() {
             public void run() {
@@ -984,6 +982,22 @@ public class Model
         }
 
         if (GameDataStatus == FIRST_GAME) {
+            for (int i = 0; i < getPlayerListSize(); i++) {
+                // Iterate through playerList to find the next Green Team Member.
+                if (getPlayer(i).getTeam() == Player.RED_TEAM) {
+                    redTeamPlayerList.add(i);
+                }
+                else if (getPlayer(i).getTeam() == Player.GREEN_TEAM) {
+                    greenTeamPlayerList.add(i);
+                }
+                else {
+                    //Throw error.
+                }
+            }
+        }
+        else if (GameDataStatus == SECOND_GAME_NEW_ENTRY) {
+            redTeamPlayerList.clear();
+            greenTeamPlayerList.clear();
             for (int i = 0; i < getPlayerListSize(); i++) {
                 // Iterate through playerList to find the next Green Team Member.
                 if (getPlayer(i).getTeam() == Player.RED_TEAM) {
