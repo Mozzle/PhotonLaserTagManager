@@ -270,7 +270,7 @@ public class View extends JPanel {
             if (model.getMakePlayerPopupFlag()) {
                 model.setMakePlayerPopupFlag(false);
                 finishPopup = true;
-                NewPlayerPopupScreen("", null, null, "Add player to", "the database only");
+                NewPlayerPopupScreen("", null, null, "Add New Player", "");
             }
 
             // Check if the model is telling us to create a new settings window
@@ -312,8 +312,8 @@ public class View extends JPanel {
             inCountDownScreen = false;
             inGameScreen = true;
             drawPlayActionScreen();
-            //netController.transmit(202);
-            //netController.transmit(202);
+            netController.transmit(String.valueOf(202));
+            netController.transmit(String.valueOf(202));
             netController.transmit(String.valueOf(202));
             
             // TODO: Link a method here that handles all the sprites and objects
@@ -653,7 +653,7 @@ public class View extends JPanel {
         NewPlayerButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
                 finishPopup = true;
-                NewPlayerPopupScreen("", null, null, "Add Player to the", "database only");
+                NewPlayerPopupScreen("", null, null, "Add New Player", "");
             }  
         });
         ButtonsCenter.add(NewPlayerButton);
@@ -1294,7 +1294,7 @@ public class View extends JPanel {
         // Text fields on popup window
         JTextField sendPort = new JTextField(5);
         JTextField receivePort = new JTextField(5);
-        JTextField sendAddress = new JTextField(9);
+        JTextField sendAddress = new JTextField(6);
         JCheckBox debugField = new JCheckBox("Debug Mode");
 
         // Input sanitation -- use a plain document as the method to push input, we can sanitize from here
@@ -1550,6 +1550,7 @@ public class View extends JPanel {
         constraint.gridwidth = 1;
         constraint.ipady = 8;
         constraint.ipadx = 10;
+        redTeamBaseLabel.clear();
         
         int drawingIndex = 0;
 
@@ -1588,6 +1589,7 @@ public class View extends JPanel {
     } 
 
         drawingIndex = 0;
+        greenTeamBaseLabel.clear();
 
         // Green Team Players and their Scores
         for (int i = 0; i < model.getGreenTeamPlayerListSize(); i++) {
@@ -1817,7 +1819,7 @@ public class View extends JPanel {
 
         Object[] options = { "Restart", "Back To Player Entry", "Exit Photon"};
 
-        int choice = JOptionPane.showOptionDialog(null, "    Game Over! Do you want to restart the game?", model.calculateGameWinner(), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+        int choice = JOptionPane.showOptionDialog(null, "                    Game Over! Do you want to restart the game?", model.calculateGameWinner(), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
 
         // If user selects to restart game
         if (choice == JOptionPane.YES_OPTION) {
