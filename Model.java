@@ -1098,6 +1098,10 @@ public class Model
         
         int minutes = secondsRemainingInGame / 60;
         int seconds = secondsRemainingInGame % 60;
+        if (secondsRemainingInGame < 0) {
+            minutes = 0;
+            seconds = 0;
+        }
         return (String.valueOf(minutes) + ":" + String.format("%02d", seconds));
     }
 
@@ -1128,7 +1132,7 @@ public class Model
 
         return index;
     }
-
+ 
     /*-------------------------------------------------
      *
      *  clearPlayerList()

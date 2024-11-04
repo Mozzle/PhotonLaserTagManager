@@ -313,8 +313,6 @@ public class View extends JPanel {
             inGameScreen = true;
             drawPlayActionScreen();
             netController.transmit(String.valueOf(202));
-            netController.transmit(String.valueOf(202));
-            netController.transmit(String.valueOf(202));
             
             // TODO: Link a method here that handles all the sprites and objects
             // for the game screen. Or implement it here directly.
@@ -1551,6 +1549,10 @@ public class View extends JPanel {
         constraint.ipady = 8;
         constraint.ipadx = 10;
         redTeamBaseLabel.clear();
+
+        for (int i = 0; i < model.getRedTeamPlayerListSize(); i++) {
+            model.getPlayer(model.getRedTeamPlayerListAt(i)).setScore(0);
+        }
         
         int drawingIndex = 0;
 
@@ -1590,6 +1592,10 @@ public class View extends JPanel {
 
         drawingIndex = 0;
         greenTeamBaseLabel.clear();
+
+        for (int i = 0; i < model.getGreenTeamPlayerListSize(); i++) {
+            model.getPlayer(model.getGreenTeamPlayerListAt(i)).setScore(0);
+        }
 
         // Green Team Players and their Scores
         for (int i = 0; i < model.getGreenTeamPlayerListSize(); i++) {
