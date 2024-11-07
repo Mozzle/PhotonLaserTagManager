@@ -248,6 +248,7 @@ public class Model
                 break;
 
             case COUNTDOWN_SCREEN:
+                
                 break;
 
             // Handle received network data for player action screen
@@ -414,6 +415,10 @@ public class Model
 
     public void startSplashScreen() {
         windowObjects.add(new SplashScreen(0, 0, 900, 450));
+    }
+
+    public void BackGroundCountDown(){
+        windowObjects.add(new BackGroundCountDown(0,0,800,800));
     }
 
     public void updateScreenSize(int screenW, int screenH) {
