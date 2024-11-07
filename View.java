@@ -15,6 +15,9 @@ import javax.swing.text.PlainDocument;
 import javax.swing.JComponent;
 import javax.swing.JSeparator;
 import javax.swing.text.AttributeSet;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.JSlider;
 
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -82,6 +85,7 @@ public class View extends JPanel {
     public Timer timer;
 
     public boolean finishPopup;
+    private int setNewMaxVolume;
 
     // Game Action Screen
     JPanel GameActionScreen, RedTeamScorePane, GameActionPane, GreenTeamScorePane;
@@ -416,6 +420,9 @@ public class View extends JPanel {
             // Transmit the new player to the server
             netController.transmit(String.valueOf(newPlayer.getEquipID()));
             newPlayer.verify();
+
+            // Play audio to confirm verification
+            model.sfxControl.playAudio(model.sfxControl.sfx.get(AudioHandler.hitown));
         }
 
         // Print a tooltip and adjust playerlist if database connection fails
@@ -1295,6 +1302,8 @@ public class View extends JPanel {
         if (model.getNewPopup())
             return false;
 
+        setNewMaxVolume = -1;
+
         // Set popup flag
         model.setNewPopup(true);
 
@@ -1303,6 +1312,24 @@ public class View extends JPanel {
         JTextField receivePort = new JTextField(5);
         JTextField sendAddress = new JTextField(6);
         JCheckBox debugField = new JCheckBox("Debug Mode");
+        JSlider volumeSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, AudioHandler.MASTER_VOLUME);
+
+        // Create slider logic and details
+        volumeSlider.setMajorTickSpacing(10);
+        volumeSlider.setMinorTickSpacing(1);
+        volumeSlider.setPaintTicks(true);
+        volumeSlider.setPaintLabels(true);
+        volumeSlider.setSnapToTicks(true);
+        volumeSlider.setBorder(BorderFactory.createTitledBorder("Volume"));
+        volumeSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                JSlider changedSource = (JSlider)e.getSource();
+                if (!changedSource.getValueIsAdjusting()) {
+                    setNewMaxVolume = changedSource.getValue();
+                }
+            }
+        });
 
         // Input sanitation -- use a plain document as the method to push input, we can sanitize from here
         sendPort.setDocument(new PlainDocument() {
@@ -1372,6 +1399,8 @@ public class View extends JPanel {
             NewSettingsPopup.add(sendAddress,BorderLayout.EAST);
             NewSettingsPopup.add(Box.createVerticalStrut(20));
             NewSettingsPopup.add(debugField);
+            NewSettingsPopup.add(Box.createVerticalStrut(20));
+            NewSettingsPopup.add(volumeSlider);
 
             // Create the dialog popup with the ok/cancel buttons and wait for the window to be closed
             int result = JOptionPane.showConfirmDialog(null, NewSettingsPopup, "Settings", JOptionPane.OK_CANCEL_OPTION);
@@ -1432,6 +1461,11 @@ public class View extends JPanel {
                     model.toolTip("Settings updated successfully!", 2500);
                 else if (error && !duplicatePorts)
                     model.toolTip("Error! Not all settings may have saved!", 2500);
+
+                // If the volume has changed, update the volume
+                if (setNewMaxVolume != -1) {
+                    AudioHandler.MASTER_VOLUME = setNewMaxVolume;
+                }
 
                 closePopupFlag = true;
             }
