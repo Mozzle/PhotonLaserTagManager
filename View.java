@@ -904,8 +904,17 @@ public class View extends JPanel {
         
         Timer timer = new Timer();
         BorderFactory border1;
+        //background
+        //the gif
+        /* 
+        ImageIcon imgIconBack = new ImageIcon(this.getClass().getResource("src/background.png"));
+        countDownLabel = new JLabel(imgIconBack);
+        countDownLabel.setBounds(0, 0, 800, 800); // Adjust these values to suit your layout
+        add(countDownLabel);
+        countDownLabel.setVisible(true);*/
 
-        ImageIcon imgIcon = new ImageIcon(this.getClass().getResource("src/timer.gif"));
+        model.BackGroundCountDown(); 
+        ImageIcon imgIcon = new ImageIcon(this.getClass().getResource("src/NewTimer.gif"));
         countDownLabel = new JLabel(imgIcon);
         countDownLabel.setBounds((int)((windowWidth - 256) / 2), (int)((windowHeight - 256) / 2), 256, 256); // Adjust these values to suit your layout
         add(countDownLabel);
@@ -1845,6 +1854,6 @@ public class View extends JPanel {
             System.exit(0);
         }
         return true;
-    }
+    }    
 }
 
