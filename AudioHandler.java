@@ -55,7 +55,7 @@ public class AudioHandler
 
         // Hard-coded paths for audio files
         for (int i = 0; i < 8; i++) {
-            tracks.add("/src/photon_tracks/Track0" + (i+1) + ".mp3");
+            tracks.add("/src/photon_tracks/Track0" + (i+1) + ".wav");
         }
 
         sfx.add("/src/sfx/gethit.wav");

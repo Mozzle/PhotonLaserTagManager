@@ -82,8 +82,7 @@ public class Model
     public ArrayList<JLabel> gameEventsQueue;       // For Game Action Screen
     
     private NetController netController;            // Network controller for the program
-    public AudioHandler sfxControl;              // SFX audio handler for the program
-    public AudioHandler trackControl;            // Track audio handler for the program
+    public AudioHandler audioHandler;              // SFX audio handler for the program
 
     /*-----------------------------------------------------
      * 
@@ -123,8 +122,7 @@ public class Model
                 CodenameBoxes.add(new TextBox("G"+i, 8, Model.this, TextBox.DISPLAY_ONLY_NO_TYPE));
             }
             system_State = PLAYER_ENTRY_SCREEN;
-            sfxControl.stopAudio();
-            trackControl.stopAudio();
+            audioHandler.stopAudio();
         }
     }
 
@@ -141,8 +139,7 @@ public class Model
     {   
         database = new Database();
         netController = null;
-        sfxControl = new AudioHandler();
-        trackControl = new AudioHandler();
+        audioHandler = new AudioHandler();;
         playOnce = false;
 
         system_State = INITIALIZE;
@@ -211,7 +208,7 @@ public class Model
             case SPLASH_SCREEN:
 
             if (!playOnce) {
-                sfxControl.playAudio(sfxControl.sfx.get(AudioHandler.reset));
+                audioHandler.playAudio(audioHandler.sfx.get(AudioHandler.reset));
                 playOnce = true;
             }
                 break;
@@ -228,7 +225,7 @@ public class Model
                 if (!p.getStatus()) {
                     // Retransmit if the player is not verified
                     netController.transmit(String.valueOf(p.getEquipID()));
-                    sfxControl.playAudio(sfxControl.sfx.get(AudioHandler.hitown));
+                    audioHandler.playAudio(audioHandler.sfx.get(AudioHandler.hitown));
                     p.verify();
                 }
               }
@@ -250,8 +247,12 @@ public class Model
 
                 break;
 
-            // Do nothing for countdown screen
             case COUNTDOWN_SCREEN:
+            if (!playOnce) {
+                // Use randomization to select countdown track
+                audioHandler.playAudio(audioHandler.tracks.get((int) Math.random() * 8));
+                playOnce = true;
+            }
                 break;
 
             // Handle received network data for player action screen
@@ -277,6 +278,7 @@ public class Model
                                     firstIdentifiedPlayer.setScore(firstIdentifiedPlayer.getScore() + 10);
                                     scoreUpdatedFlag = true;
                                     netController.transmit(String.valueOf(secondIdentifiedPlayer.getEquipID()));
+                                    audioHandler.playAudio(audioHandler.sfx.get(AudioHandler.hit));
                                     updateGameEventsQueue(firstIdentifiedPlayer.name, secondIdentifiedPlayer.name);
                                 }
                                 // If firstIdentifiedPlayer hit a player on the SAME team
@@ -284,6 +286,7 @@ public class Model
                                     firstIdentifiedPlayer.setScore(firstIdentifiedPlayer.getScore() - 10);
                                     scoreUpdatedFlag = true;
                                     netController.transmit(String.valueOf(firstIdentifiedPlayer.getEquipID()));
+                                    audioHandler.playAudio(audioHandler.sfx.get(AudioHandler.hit));
                                     updateGameEventsQueue(firstIdentifiedPlayer.name, secondIdentifiedPlayer.name);
                                 }
                             }
@@ -296,6 +299,7 @@ public class Model
                                     scoreUpdatedFlag = true;
                                     // Verify with Mr. Strother that we are supposed to transmit the value of the Base!
                                     netController.transmit(String.valueOf(receivedPlayers[1]));
+                                    audioHandler.playAudio(audioHandler.sfx.get(AudioHandler.gethit));
                                     updateGameEventsQueue(firstIdentifiedPlayer.name, "Green Team Base");
                                 }
                                 else if (firstIdentifiedPlayer.getTeam() == Player.GREEN_TEAM && receivedPlayers[1] == 53) {
@@ -304,6 +308,7 @@ public class Model
                                     scoreUpdatedFlag = true;
                                     // Verify with Mr. Strother that we are supposed to transmit the value of the Base!
                                     netController.transmit(String.valueOf(receivedPlayers[1]));
+                                    audioHandler.playAudio(audioHandler.sfx.get(AudioHandler.gethit));
                                     updateGameEventsQueue(firstIdentifiedPlayer.name, "Red Team Base");
                                 }
                                 else {
@@ -350,6 +355,7 @@ public class Model
             //CodenameBoxes.remove(i);
         }
         system_State = COUNTDOWN_SCREEN;
+        playOnce = false;
     }
     
     /*--------------------------------------------------
@@ -367,6 +373,7 @@ public class Model
         // TODO: Implement this function after the countdown screen
         // is completed. Ensure it transitions to the play action screen
          system_State = PLAY_ACTION_SCREEN;
+         playOnce = false;
      }
     
 
@@ -1032,7 +1039,7 @@ public class Model
                 getPlayer(i).verify();
                 getPlayer(i).setScore(0);
             }
-            sfxControl.playAudio(sfxControl.sfx.get(AudioHandler.hitown));
+            audioHandler.playAudio(audioHandler.sfx.get(AudioHandler.hitown));
         }
 
     }

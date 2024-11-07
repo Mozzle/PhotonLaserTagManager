@@ -422,7 +422,7 @@ public class View extends JPanel {
             newPlayer.verify();
 
             // Play audio to confirm verification
-            model.sfxControl.playAudio(model.sfxControl.sfx.get(AudioHandler.hitown));
+            model.audioHandler.playAudio(model.audioHandler.sfx.get(AudioHandler.hitown));
         }
 
         // Print a tooltip and adjust playerlist if database connection fails
