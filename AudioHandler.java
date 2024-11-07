@@ -107,53 +107,28 @@ public class AudioHandler
 
     /*-----------------------------------------------------------
      * 
-     *  loadAudio(String path)
+     *  playAudio(String path)
      * 
-     *  DESCRIPTION: Loads a specific audio file into the audio handler.
-     *  Returns true if audio was successfully loaded
-     *  Returns false if audio failed to load.
-     * 
-    ---------------------------------------------------------- */
-    public boolean loadAudio(String path) {
-        try {
-            AudioInputStream audio = AudioSystem.getAudioInputStream(getClass().getResource(path));
-            currentAudio = AudioSystem.getClip();
-            currentAudio.open(audio);
-            return true;
-        } 
-        catch (IllegalStateException e) {
-            // Do nothing so console isn't spammed
-            return false;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    /*-----------------------------------------------------------
-     * 
-     *  playAudio()
-     * 
-     *  DESCRIPTION: Plays the current loaded track.
+     *  DESCRIPTION: Loads an audio file from the given path and plays it.
      *  Returns true if audio successfully begins playing
      *  Returns false if audio fails to play.
      * 
     ---------------------------------------------------------- */
-    public boolean playAudio() {
+    public boolean playAudio(String path) {
 
-        if (isPlaying) {
+        try {
+            AudioInputStream audio = AudioSystem.getAudioInputStream(getClass().getResource(path));
+            currentAudio = AudioSystem.getClip();
+            currentAudio.open(audio);
+            currentAudio.start();
+        } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
 
-        if (currentAudio != null) {
-            currentAudio.start();
-            isPlaying = true;
-            System.out.println("[AudioHandler] Playing " + currentAudio.toString());
-            return true;
-        }
-
-        return false;
+        isPlaying = true;
+        System.out.println("[AudioHandler] Playing " + currentAudio.toString());
+        return true;
     }
 
     /*-----------------------------------------------------------
@@ -174,6 +149,7 @@ public class AudioHandler
         if (currentAudio != null) {
             currentAudio.stop();
             isPlaying = false;
+            currentAudio.close();
             System.out.println("[AudioHandler] Stopping current track...");
             return true;
         }

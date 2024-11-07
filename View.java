@@ -420,6 +420,9 @@ public class View extends JPanel {
             // Transmit the new player to the server
             netController.transmit(String.valueOf(newPlayer.getEquipID()));
             newPlayer.verify();
+
+            // Play audio to confirm verification
+            model.sfxControl.playAudio(model.sfxControl.sfx.get(AudioHandler.hitown));
         }
 
         // Print a tooltip and adjust playerlist if database connection fails

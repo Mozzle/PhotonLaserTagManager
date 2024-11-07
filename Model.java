@@ -69,6 +69,8 @@ public class Model
     public boolean debugMode;                       // Flag to enable debug mode
 
     public boolean playerUpdateFlag;                // Flag to allow player updates in model.update() to avoid concurrentexception
+
+    private boolean playOnce;
     
     public boolean scoreUpdatedFlag;                // Flag to View to update scores
     public int greenTeamScore;                      // For the Play Action Screen
@@ -141,6 +143,7 @@ public class Model
         netController = null;
         sfxControl = new AudioHandler();
         trackControl = new AudioHandler();
+        playOnce = false;
 
         system_State = INITIALIZE;
         GameDataStatus = FIRST_GAME;
@@ -206,10 +209,10 @@ public class Model
 
         switch(system_State) {
             case SPLASH_SCREEN:
-            boolean playOnce = false;
+
             if (!playOnce) {
-                sfxControl.loadAudio(sfxControl.sfx.get(sfxControl.reset));
-                sfxControl.playAudio();
+                sfxControl.playAudio(sfxControl.sfx.get(AudioHandler.reset));
+                playOnce = true;
             }
                 break;
 
@@ -225,8 +228,7 @@ public class Model
                 if (!p.getStatus()) {
                     // Retransmit if the player is not verified
                     netController.transmit(String.valueOf(p.getEquipID()));
-                    sfxControl.loadAudio(sfxControl.sfx.get(AudioHandler.hitown));
-                    sfxControl.playAudio();
+                    sfxControl.playAudio(sfxControl.sfx.get(AudioHandler.hitown));
                     p.verify();
                 }
               }
@@ -1030,8 +1032,7 @@ public class Model
                 getPlayer(i).verify();
                 getPlayer(i).setScore(0);
             }
-            sfxControl.loadAudio(sfxControl.sfx.get(sfxControl.hitown));
-            sfxControl.playAudio();
+            sfxControl.playAudio(sfxControl.sfx.get(AudioHandler.hitown));
         }
 
     }
