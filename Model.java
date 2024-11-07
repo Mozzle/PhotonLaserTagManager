@@ -248,11 +248,6 @@ public class Model
                 break;
 
             case COUNTDOWN_SCREEN:
-            if (!playOnce) {
-                // Use randomization to select countdown track
-                audioHandler.playAudio(audioHandler.tracks.get((int) Math.random() * 8));
-                playOnce = true;
-            }
                 break;
 
             // Handle received network data for player action screen

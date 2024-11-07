@@ -924,10 +924,15 @@ public class View extends JPanel {
                 setBorder(BorderFactory.createLineBorder(Color.RED, 50));
             }
         };
+
+        TimerTask musicTask = new TimerTask() {
+            @Override
+            public void run() {
+                model.audioHandler.playAudio(model.audioHandler.tracks.get(0));
+            }
+        };
         
-        
-        
-        //If timer scheulde is true thne run belwo function
+        //If timer schedule is true thne run belwo function
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
@@ -971,6 +976,7 @@ public class View extends JPanel {
         //timer.schedule(task, 0);
         timer.schedule(task0, 0);
         timer.schedule(task1, 10000);
+        timer.schedule(musicTask, 14000);
         timer.schedule(task2, 20000);
         timer.schedule(task3, 30000);
         
