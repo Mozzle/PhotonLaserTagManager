@@ -80,6 +80,7 @@ public class Model
     public ArrayList<JLabel> gameEventsQueue;       // For Game Action Screen
     
     private NetController netController;            // Network controller for the program
+    private AudioHandler audioHandler;              // Audio handler for the program
 
     /*-----------------------------------------------------
      * 
@@ -119,7 +120,7 @@ public class Model
                 CodenameBoxes.add(new TextBox("G"+i, 8, Model.this, TextBox.DISPLAY_ONLY_NO_TYPE));
             }
             system_State = PLAYER_ENTRY_SCREEN;
-
+            audioHandler.stopAudio();
         }
     }
 
@@ -136,6 +137,7 @@ public class Model
     {   
         database = new Database();
         netController = null;
+        audioHandler = new AudioHandler();
 
         system_State = INITIALIZE;
         GameDataStatus = FIRST_GAME;
@@ -201,6 +203,8 @@ public class Model
 
         switch(system_State) {
             case SPLASH_SCREEN:
+            audioHandler.loadAudio(audioHandler.sfx.get(audioHandler.reset));
+            audioHandler.playAudio();
                 break;
 
             case PLAYER_ENTRY_SCREEN:
