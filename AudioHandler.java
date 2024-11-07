@@ -22,7 +22,6 @@ import java.util.ArrayList;
 public class AudioHandler
 {
     public static int MASTER_VOLUME;
-    private int VOLUME;
     private Clip currentAudio;
     private boolean isPlaying;
 
@@ -46,7 +45,6 @@ public class AudioHandler
     ---------------------------------------------------------- */
     public AudioHandler() {
         MASTER_VOLUME = 100;
-        VOLUME = 100;
         currentAudio = null;
         isPlaying = false;
 
@@ -76,22 +74,20 @@ public class AudioHandler
     ---------------------------------------------------------- */
     public boolean setVolume(int n) {
         if (n < 0) {
-            VOLUME = 0;
+            MASTER_VOLUME = 0;
         }
         if (n > 100) {
-            VOLUME = 100;
+            MASTER_VOLUME = 100;
         }
-        VOLUME = n;
-
-        double effectiveVolume = ((double) (MASTER_VOLUME/100) * (VOLUME));
+        MASTER_VOLUME = n;
 
         if (currentAudio != null) {
             FloatControl gainControl = (FloatControl) currentAudio.getControl(FloatControl.Type.MASTER_GAIN);
-            double dB = (Math.log(effectiveVolume / 100.0) / Math.log(10.0) * 20.0);
+            double dB = (Math.log(MASTER_VOLUME / 100.0) / Math.log(10.0) * 20.0);
             gainControl.setValue((float) dB);
         }
 
-        return n == VOLUME;
+        return n == MASTER_VOLUME;
     }
 
     /*-----------------------------------------------------------
@@ -102,7 +98,7 @@ public class AudioHandler
      * 
     ---------------------------------------------------------- */
     public int getVolume() {
-        return VOLUME;
+        return MASTER_VOLUME;
     }
 
     /*-----------------------------------------------------------
