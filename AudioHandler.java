@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 public class AudioHandler
 {
-    private static int MASTER_VOLUME;
+    public static int MASTER_VOLUME;
     private int VOLUME;
     private Clip currentAudio;
     private boolean isPlaying;
@@ -148,6 +148,7 @@ public class AudioHandler
 
         if (currentAudio != null) {
             currentAudio.start();
+            isPlaying = true;
             System.out.println("[AudioHandler] Playing " + currentAudio.toString());
             return true;
         }
@@ -172,6 +173,7 @@ public class AudioHandler
 
         if (currentAudio != null) {
             currentAudio.stop();
+            isPlaying = false;
             System.out.println("[AudioHandler] Stopping current track...");
             return true;
         }

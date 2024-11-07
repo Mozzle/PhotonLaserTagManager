@@ -80,7 +80,8 @@ public class Model
     public ArrayList<JLabel> gameEventsQueue;       // For Game Action Screen
     
     private NetController netController;            // Network controller for the program
-    private AudioHandler audioHandler;              // Audio handler for the program
+    public AudioHandler sfxControl;              // SFX audio handler for the program
+    public AudioHandler trackControl;            // Track audio handler for the program
 
     /*-----------------------------------------------------
      * 
@@ -120,7 +121,8 @@ public class Model
                 CodenameBoxes.add(new TextBox("G"+i, 8, Model.this, TextBox.DISPLAY_ONLY_NO_TYPE));
             }
             system_State = PLAYER_ENTRY_SCREEN;
-            audioHandler.stopAudio();
+            sfxControl.stopAudio();
+            trackControl.stopAudio();
         }
     }
 
@@ -137,7 +139,8 @@ public class Model
     {   
         database = new Database();
         netController = null;
-        audioHandler = new AudioHandler();
+        sfxControl = new AudioHandler();
+        trackControl = new AudioHandler();
 
         system_State = INITIALIZE;
         GameDataStatus = FIRST_GAME;
@@ -203,8 +206,11 @@ public class Model
 
         switch(system_State) {
             case SPLASH_SCREEN:
-            audioHandler.loadAudio(audioHandler.sfx.get(audioHandler.reset));
-            audioHandler.playAudio();
+            boolean playOnce = false;
+            if (!playOnce) {
+                sfxControl.loadAudio(sfxControl.sfx.get(sfxControl.reset));
+                sfxControl.playAudio();
+            }
                 break;
 
             case PLAYER_ENTRY_SCREEN:
@@ -219,6 +225,8 @@ public class Model
                 if (!p.getStatus()) {
                     // Retransmit if the player is not verified
                     netController.transmit(String.valueOf(p.getEquipID()));
+                    sfxControl.loadAudio(sfxControl.sfx.get(AudioHandler.hitown));
+                    sfxControl.playAudio();
                     p.verify();
                 }
               }
@@ -1022,6 +1030,8 @@ public class Model
                 getPlayer(i).verify();
                 getPlayer(i).setScore(0);
             }
+            sfxControl.loadAudio(sfxControl.sfx.get(sfxControl.hitown));
+            sfxControl.playAudio();
         }
 
     }
