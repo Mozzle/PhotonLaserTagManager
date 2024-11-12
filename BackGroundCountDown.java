@@ -35,7 +35,7 @@ public class BackGroundCountDown extends Sprite{
         this.screenW = screenW;
         this.screenH = screenH;
         this.x = (int)((this.screenW / 2) - (this.w / 2));
-        this.y = (int)((this.screenH / 2) - (this.h / 2));
+        this.y = (int)((this.screenH / 2) - (this.h / 2)) - (int)(this.screenH * 0.09);
     }
 }
 

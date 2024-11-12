@@ -418,7 +418,7 @@ public class Model
     }
 
     public void BackGroundCountDown(){
-        windowObjects.add(new BackGroundCountDown(0,0,800,800));
+        windowObjects.add(new BackGroundCountDown(0,-30,800,800));
     }
 
     public void updateScreenSize(int screenW, int screenH) {
