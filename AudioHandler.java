@@ -2,6 +2,8 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.LineEvent;
+
 import java.util.ArrayList;
 
     /*-----------------------------------------------------------
@@ -115,6 +117,11 @@ public class AudioHandler
         try {
             AudioInputStream audio = AudioSystem.getAudioInputStream(getClass().getResource(path));
             currentAudio = AudioSystem.getClip();
+            currentAudio.addLineListener(event -> {
+                if(LineEvent.Type.STOP.equals(event.getType())) {
+                currentAudio.close();
+                }
+            });
             currentAudio.open(audio);
             currentAudio.start();
         } catch (Exception e) {

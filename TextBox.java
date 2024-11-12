@@ -76,6 +76,7 @@ public class TextBox {
 						case KeyEvent.VK_F1:
 							if (m.getSystemState() == Model.PLAYER_ENTRY_SCREEN 
 							&& m.getNewPopup() == false) {
+								m.clearPlayerList();
 								m.clearTextBoxes();
 							}
 							break;

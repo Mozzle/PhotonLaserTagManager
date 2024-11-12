@@ -302,6 +302,7 @@ public class Controller implements ActionListener, MouseListener, KeyListener
                  && model.getNewPopup() == false) {
                     model.clearTextBoxes();
                     model.audioHandler.playAudio(model.audioHandler.sfx.get(AudioHandler.reset));
+                    model.clearPlayerList();
                  }
                     
 				break;

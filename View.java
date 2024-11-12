@@ -254,6 +254,8 @@ public class View extends JPanel {
             inPlayerEntryScreen = true;
             inGameOverScreen = false;
             this.drawPlayerEntryScreen();
+            PlayerEntryPanePadding = (int)((windowWidth - 850)/ 2);
+            PlayerEntryPanes.setBorder(new EmptyBorder(0, PlayerEntryPanePadding, 0, PlayerEntryPanePadding));
             }
             
             // Adjust padding on the outsides of the red and green panes
@@ -315,6 +317,7 @@ public class View extends JPanel {
         if (model.getSystemState() == Model.PLAY_ACTION_SCREEN && !inGameScreen) {
             inCountDownScreen = false;
             inGameScreen = true;
+            model.clearWindowObjects();
             drawPlayActionScreen();
             netController.transmit(String.valueOf(202));
             
@@ -1601,6 +1604,7 @@ public class View extends JPanel {
 
         for (int i = 0; i < model.getRedTeamPlayerListSize(); i++) {
             model.getPlayer(model.getRedTeamPlayerListAt(i)).setScore(0);
+            model.getPlayer(model.getRedTeamPlayerListAt(i)).setHasHitBase(false);
         }
         
         int drawingIndex = 0;
@@ -1640,10 +1644,12 @@ public class View extends JPanel {
     } 
 
         drawingIndex = 0;
+
         greenTeamBaseLabel.clear();
 
         for (int i = 0; i < model.getGreenTeamPlayerListSize(); i++) {
             model.getPlayer(model.getGreenTeamPlayerListAt(i)).setScore(0);
+            model.getPlayer(model.getGreenTeamPlayerListAt(i)).setHasHitBase(false);
         }
 
         // Green Team Players and their Scores

@@ -388,6 +388,10 @@ public class Model
 		return windowObjects.size();
 	}
 
+    public void clearWindowObjects() {
+        windowObjects.clear();
+    }
+
     /*-------------------------------------------------
      *
      *      getWindowObjectAt()
@@ -1238,12 +1242,15 @@ public class Model
 
         // Clear reference text boxes for given player
         JTextField j[] = p.getReferences();
-        if (j[0] != null)
+        if (j[0] != null){
             j[0].setText("");
-        if (j[1] != null)
+        }
+        if (j[1] != null) {
             j[1].setText("");
-        if (j[2] != null)
+        }
+        if (j[2] != null) {
             j[2].setText("");
+        }
 
         // Attempt to find & remove player from list -- return result as boolean
         boolean result = playerList.remove(p);
