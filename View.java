@@ -95,9 +95,12 @@ public class View extends JPanel {
     public ArrayList<JLabel> greenTeamNames;
     public JLabel redTeamTotScore;
     public JLabel greenTeamTotScore;
+    public boolean greenTeamInTheLead, redTeamInTheLead;
+    public int RedScore, GreenScore;
     //View copy of the Model value
     public int vSecondsRemainingInGame;
     public JLabel TimeRemainingLabel;
+    public boolean doOnce;
 
     /*-------------------------------------------------
      *
@@ -144,6 +147,11 @@ public class View extends JPanel {
         greenTeamBaseLabel = new ArrayList<JLabel>();
         greenTeamScores = new ArrayList<JLabel>();
         greenTeamNames = new ArrayList<JLabel>();
+        greenTeamInTheLead = false;
+        redTeamInTheLead = false;
+        RedScore = 0;
+        GreenScore = 0;
+        doOnce = false;
 
         // Init finish-popup flag
         finishPopup = false;
@@ -321,8 +329,8 @@ public class View extends JPanel {
             drawPlayActionScreen();
             netController.transmit(String.valueOf(202));
             
-            // TODO: Link a method here that handles all the sprites and objects
-            // for the game screen. Or implement it here directly.
+            greenTeamInTheLead = false;
+            redTeamInTheLead = false;
         }
         else if (model.getSystemState() == Model.PLAY_ACTION_SCREEN && inGameScreen) {
             if (vSecondsRemainingInGame != model.getGameSecondsRemaining()) {
@@ -1755,6 +1763,49 @@ public class View extends JPanel {
         constraint.gridx = 0;
         constraint.gridy = 0;
         this.add(GameActionScreen, constraint);
+
+        if (doOnce == false) {
+           TimerTask redflashOn = new TimerTask() {
+               @Override
+                   public void run() {
+                       redTeamTotScore.setForeground(Color.WHITE);
+                   }
+           };
+           TimerTask redflashOff = new TimerTask() {
+               @Override
+                   public void run() {
+                       if (RedScore > GreenScore) {
+                           redTeamTotScore.setForeground(new Color (136, 0, 21));
+                       }
+                       else {
+                           redTeamTotScore.setForeground(Color.WHITE);
+                       }
+                   }
+           };
+           TimerTask greenflashOn = new TimerTask() {
+               @Override
+                   public void run() {
+                       greenTeamTotScore.setForeground(Color.WHITE);
+                   }
+           };
+           TimerTask greenflashOff = new TimerTask() {
+               @Override
+                   public void run() {
+                       if (GreenScore > RedScore) {
+                           greenTeamTotScore.setForeground(new Color (29, 156, 66));
+                       }
+                       else {
+                           greenTeamTotScore.setForeground(Color.WHITE);
+                       }
+                   }
+           };
+
+           timer.schedule(redflashOn, 0, 1300);
+           timer.schedule(redflashOff, 900, 1300);
+           timer.schedule(greenflashOn, 0, 1300);
+           timer.schedule(greenflashOff, 900, 1300);
+           doOnce = true;
+        }
         
         // Set Everything visible and force the screen to update
         RedTeamScorePane.setVisible(true);
@@ -1778,7 +1829,8 @@ public class View extends JPanel {
      * 
      --------------------------------------------------*/
     public void updateScores() {
-        int score = 0;
+        RedScore = 0;
+        GreenScore = 0;
         ArrayList<Integer> rankedScores = new ArrayList<Integer>();
         ArrayList<Integer> rankedPlayers = new ArrayList<Integer>();
 
@@ -1820,15 +1872,14 @@ public class View extends JPanel {
                 redTeamBaseLabel.get(i).setText("");
                 redTeamNames.get(i).setText(model.getPlayer(rankedPlayers.get(i)).name);
             }
-            score += model.getPlayer(rankedPlayers.get(i)).getScore();
+            RedScore += model.getPlayer(rankedPlayers.get(i)).getScore();
         }
         // Set total team score
-        redTeamTotScore.setText(String.valueOf(score));
+        redTeamTotScore.setText(String.valueOf(RedScore));
 
         // GREEN TEAM
         rankedScores = new ArrayList<Integer>();
         rankedPlayers = new ArrayList<Integer>();
-        score = 0;
 
         // Add all green team scores to an arrayList
         for (int i = 0; i < model.getGreenTeamPlayerListSize(); i++) {
@@ -1870,10 +1921,37 @@ public class View extends JPanel {
                 greenTeamBaseLabel.get(i).setText("");
                 greenTeamNames.get(i).setText(model.getPlayer(rankedPlayers.get(i)).name);
             }
-            score += model.getPlayer(rankedPlayers.get(i)).getScore();
+            GreenScore += model.getPlayer(rankedPlayers.get(i)).getScore();
         }
         // Set total team score
-        greenTeamTotScore.setText(String.valueOf(score));
+        greenTeamTotScore.setText(String.valueOf(GreenScore));
+
+        // If red team in the lead
+        if (RedScore > GreenScore && redTeamInTheLead == false) {
+            //Set red team text flashing
+            greenTeamInTheLead = false;
+            redTeamInTheLead = true;
+            greenTeamTotScore.setForeground(Color.WHITE);
+
+        }
+        // If green team in the lead
+        else if (GreenScore > RedScore && greenTeamInTheLead == false)
+        {
+            //Set green team text flashing
+            redTeamInTheLead = false;
+            greenTeamInTheLead = true;
+            redTeamTotScore.setForeground(Color.WHITE);
+
+            
+
+        }
+        else if (GreenScore == RedScore) {
+            redTeamInTheLead = false;
+            greenTeamInTheLead = false;
+            greenTeamTotScore.setForeground(Color.WHITE);
+            redTeamTotScore.setForeground(Color.WHITE);
+        }
+
     }
 
     public boolean GameOverScreen() {
