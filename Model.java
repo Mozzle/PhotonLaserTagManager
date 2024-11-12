@@ -1,11 +1,8 @@
 
 import java.util.ArrayList;
-import java.awt.image.BufferedImage;
-import java.lang.Math;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.*;
-import javax.xml.crypto.Data;
 import java.util.Iterator;
 
 import java.awt.event.*;
@@ -366,8 +363,7 @@ public class Model
 
      public void CountDownScreenDeleter() 
      {
-        // TODO: Implement this function after the countdown screen
-        // is completed. Ensure it transitions to the play action screen
+
          system_State = PLAY_ACTION_SCREEN;
          playOnce = false;
      }
@@ -984,10 +980,7 @@ public class Model
                 secondsRemainingInGame--;
 
                 if (secondsRemainingInGame < 0) {
-                    // TODO: END GAME
-                    // IDEA: A POPUP SCREEN LIKE THE SETTINGS/NEW PLAYER
-                    // ENTRY POPUP SCREENS THAT PROMPTS THE USER TO RESTART or
-                    // Go back to the player entry screen
+
                     netController.transmit("221");
                     netController.transmit("221");
                     netController.transmit("221");

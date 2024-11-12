@@ -1,6 +1,5 @@
 
 import javax.swing.JFrame;
-
 import java.awt.*;
 
 public class PhotonSystem extends JFrame {

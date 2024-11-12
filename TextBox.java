@@ -1,8 +1,6 @@
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.PlainDocument;
-
-import java.awt.font.*;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.*;
@@ -131,11 +129,7 @@ public class TextBox {
 			 }); 
 		}
 		else if (TextFieldType == ALPHA_NUMERIC_TEXT_FIELD_TYPE) {
-			/*
-			field.addKeyListener(new KeyAdapter() {
-				//TODO: Implement Me!
-			});
-			*/
+
 		}
 		else if (TextFieldType == DISPLAY_ONLY_NO_TYPE) {
 			field.setEditable(false);

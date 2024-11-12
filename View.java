@@ -2,43 +2,32 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.JCheckBox;
 import javax.swing.SwingConstants;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.PlainDocument;
-import javax.swing.JComponent;
 import javax.swing.JSeparator;
 import javax.swing.text.AttributeSet;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.JSlider;
-
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.KeyboardFocusManager;
 import java.awt.LayoutManager;
-import java.awt.Point;
 import java.awt.Component;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
-import javax.management.AttributeList;
-
-import java.io.IOException;
-import java.lang.reflect.Array;
 import java.io.File;
-import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -47,8 +36,6 @@ import java.util.TimerTask;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import java.util.Comparator;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class View extends JPanel {
 
@@ -1941,8 +1928,6 @@ public class View extends JPanel {
             redTeamInTheLead = false;
             greenTeamInTheLead = true;
             redTeamTotScore.setForeground(Color.WHITE);
-
-            
 
         }
         else if (GreenScore == RedScore) {

@@ -6,13 +6,11 @@ import javax.swing.event.DocumentListener;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionListener;
-import java.awt.RenderingHints.Key;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 
 public class Controller implements ActionListener, MouseListener, KeyListener
@@ -291,10 +289,6 @@ public class Controller implements ActionListener, MouseListener, KeyListener
 	public void keyReleased(KeyEvent e)
 	{
 		switch(e.getKeyCode()) {
-            
-            /// TODO: Ensure for case F1, when the text boxes are cleared any updates needed
-            /// are made accordingly with the DB. If the DB is not needed to be updated 
-            /// on clearing, then ignore this and remove this comment please.
 
             // Case F1 -- Clear all player entries
 			case KeyEvent.VK_F1:
