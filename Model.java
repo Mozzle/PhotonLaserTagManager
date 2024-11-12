@@ -977,7 +977,7 @@ public class Model
 
         redTeamScore = 0;
         greenTeamScore = 0;
-        secondsRemainingInGame = 45;
+        secondsRemainingInGame = 360;
         gameCountdownTimer = new Timer();
         gameCountdownTask = new TimerTask() {
             public void run() {
