@@ -83,12 +83,6 @@ public class AudioHandler
         }
         MASTER_VOLUME = n;
 
-        if (currentAudio != null) {
-            FloatControl gainControl = (FloatControl) currentAudio.getControl(FloatControl.Type.MASTER_GAIN);
-            double dB = (Math.log(MASTER_VOLUME / 100.0) / Math.log(10.0) * 20.0);
-            gainControl.setValue((float) dB);
-        }
-
         return n == MASTER_VOLUME;
     }
 
@@ -122,7 +116,13 @@ public class AudioHandler
                 currentAudio.close();
                 }
             });
+
+            // Open the clip and adjust audio before playing
             currentAudio.open(audio);
+            FloatControl gainControl = (FloatControl) currentAudio.getControl(FloatControl.Type.MASTER_GAIN);
+            double dB = (Math.log(MASTER_VOLUME / 100.0) / Math.log(10.0) * 20.0);
+            gainControl.setValue((float) dB);
+
             currentAudio.start();
         } catch (Exception e) {
             e.printStackTrace();
