@@ -244,7 +244,7 @@ public class Database {
             int i = 1;
             boolean foundFlag = false;
 
-            while (i < ids.size() + 1 && !foundFlag) {
+            while (i < ids.size() + 2 && !foundFlag) {
                 if (!ids.contains(i)) {
                     lowestUnusedID = i;
                     foundFlag = true;
